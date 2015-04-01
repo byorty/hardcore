@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"bufio"
 	"github.com/byorty/hardcore"
+	"regexp"
 )
 
 type Builder interface {
@@ -34,13 +35,21 @@ var (
 		enumBuilderKind: new(enumBuilder),
 	}
 	itemsByKind = make(map[builderKind][]interface{})
+	imports = make([]string, 0)
+	endYRegex = regexp.MustCompile(`y$`)
+	endSRegex = regexp.MustCompile(`s$`)
 )
+
+func AddImport(imp string) {
+	imports = append(imports, imp)
+}
 
 func RegisterEnums(enums ...interface{}) {
 	itemsByKind[enumBuilderKind] = enums
 }
 
 func Build() {
+	AddImport("github.com/byorty/hardcore")
 	results := make([]*BuildResult, 0)
 	for kind, items := range itemsByKind {
 		results = append(results, builders[kind].Build(items...)...)
@@ -62,7 +71,6 @@ func Build() {
 
 	for path, autoFile := range autoFiles {
 		filename := fmt.Sprintf("%ssrc/%s/auto.go", projectPath, path)
-		fmt.Println(filename)
 		dir := filepath.Dir(filename)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			panic(fmt.Sprintf("dir \"%s\" not exists", dir))
@@ -72,7 +80,6 @@ func Build() {
 		if os.IsNotExist(err) {
 			file, err = os.Create(filename)
 		} else {
-//			file, err = os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModePerm)
 			file, err = os.OpenFile(filename, os.O_WRONLY, os.ModePerm)
 		}
 		if err == nil {
@@ -83,9 +90,12 @@ func Build() {
 			writer.WriteRune(hardcore.EOL)
 			writer.WriteString("import (")
 			writer.WriteRune(hardcore.EOL)
-			writer.WriteString("    \"github.com/byorty/hardcore\"")
+			for _, imp := range imports {
+				writer.WriteString(fmt.Sprintf("    \"%s\"", imp))
+			}
 			writer.WriteRune(hardcore.EOL)
 			writer.WriteString(")")
+			writer.WriteRune(hardcore.EOL)
 			writer.WriteRune(hardcore.EOL)
 			for _, part := range autoFile.Parts {
 				writer.Write(part)

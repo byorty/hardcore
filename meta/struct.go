@@ -7,15 +7,16 @@ import (
 )
 
 type Struct struct {
-	Name      string
-	Pkg       string
-	PkgPath   string
-	fullname  string
+	Name       string
+	PluralName string
+	Pkg        string
+	PkgPath    string
+	fullname   string
 //	Value     reflect.Value
 //	Type      reflect.Type
-	FieldMap  FieldMap
-	Fields    Fields
-	IdField   *Field
+	FieldMap   FieldMap
+	Fields     Fields
+	IdField    *Field
 }
 
 type StructMap map[string]*Struct
@@ -74,8 +75,17 @@ func AnalyzeStruct(data interface{}) *Struct {
 			return metaStruct
 		} else {
 			parts := strings.Split(valType.PkgPath(), "/")
+			pluralName := name
+			if endSRegex.MatchString(pluralName) {
+				pluralName = pluralName + "es"
+			} else if endYRegex.MatchString(pluralName) {
+				pluralName = endYRegex.ReplaceAllString(name, "ie") + "s"
+			} else {
+				pluralName = pluralName + "s"
+			}
 			metaStruct := &Struct{
 				Name: name,
+				PluralName: pluralName,
 				Pkg: parts[len(parts)-1],
 				PkgPath: valType.PkgPath(),
 				fullname: fullname,

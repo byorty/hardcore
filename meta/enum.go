@@ -8,6 +8,28 @@ import (
 	"github.com/byorty/hardcore"
 )
 
+var enumTypes = map[string]string{
+		reflect.Int.String()       : "hardcore.Enum",
+		reflect.Int8.String()      : "hardcore.Enum8",
+		reflect.Int16.String()     : "hardcore.Enum16",
+		reflect.Int32.String()     : "hardcore.Enum32",
+		reflect.Int64.String()     : "hardcore.Enum64",
+		reflect.Uint.String()      : "hardcore.UEnum",
+		reflect.Uint8.String()     : "hardcore.UEnum8",
+		reflect.Uint16.String()    : "hardcore.UEnum16",
+		reflect.Uint32.String()    : "hardcore.UEnum32",
+		reflect.Uint64.String()    : "hardcore.UEnum64",
+		reflect.Float32.String()   : "hardcore.Float32Enum",
+		reflect.Float64.String()   : "hardcore.Float64Enum",
+		reflect.Complex64.String() : "hardcore.Complex64Enum",
+		reflect.Complex128.String(): "hardcore.Complex128Enum",
+		reflect.String.String()    : "hardcore.StringEnum",
+	}
+
+func AddEnumType(enumType, interfaceName string) {
+	enumTypes[enumType] = interfaceName
+}
+
 type enumInst struct {
 	Id   string
 	Var  string
@@ -66,22 +88,33 @@ func (e *enumBuilder) Build(enums ...interface{}) []*BuildResult {
 				mapNameAsEnum := fmt.Sprintf("__auto%sAsEnumMap", info.Name)
 				sliceName := fmt.Sprintf("__auto%sSlice", info.Name)
 				sliceNameAsEnum := fmt.Sprintf("__auto%sAsEnumSlice", info.Name)
+				enumType, ok := enumTypes[info.IdField.Kind.String()]
+				if !ok {
+					panic(fmt.Sprintf("unknow enum type \"%s\"", info.IdField.Kind.String()))
+				}
+
 				e.writeMap(buf, mapName, info.IdField.Kind.String(), info.Name, true, insts)
-				e.writeMap(buf, mapNameAsEnum, info.IdField.Kind.String(), "hardcore.Enum", false, insts)
+				e.writeMap(buf, mapNameAsEnum, info.IdField.Kind.String(), enumType, false, insts)
 				e.writeSlice(buf, sliceName, info.Name, true, insts)
-				e.writeSlice(buf, sliceNameAsEnum, "hardcore.Enum", false, insts)
+				e.writeSlice(buf, sliceNameAsEnum, enumType, false, insts)
 
 				buf.WriteString(")")
 				buf.WriteRune(hardcore.EOL)
 				buf.WriteRune(hardcore.EOL)
 
-				e.writeMapGetter(buf, info.Name + "Map", info.IdField.Kind.String(), info.Name, mapName, true)
-				e.writeMapGetter(buf, info.Name + "AsEnumMap", info.IdField.Kind.String(), "hardcore.Enum", mapNameAsEnum, false)
-				e.writeSliceGetter(buf, info.Name + "Slice", info.Name, sliceName, true)
-				e.writeSliceGetter(buf, info.Name + "AsEnumSlice", "hardcore.Enum", sliceNameAsEnum, false)
+				for _, field := range info.Fields {
+					if len(field.Tag.Get("enum")) > 0 {
+						e.writeGetter(buf, info, field)
+					}
+				}
+
+				e.writeMapGetter(buf, info.PluralName + "AsMap", info.IdField.Kind.String(), info.Name, mapName, true)
+				e.writeMapGetter(buf, info.PluralName + "AsEnumMap", info.IdField.Kind.String(), enumType, mapNameAsEnum, false)
+				e.writeSliceGetter(buf, info.PluralName + "AsSlice", info.Name, sliceName, true)
+				e.writeSliceGetter(buf, info.PluralName + "AsEnumSlice", enumType, sliceNameAsEnum, false)
 
 				e.writeByIdGetter(buf, info.Name, info.IdField.Kind.String(), info.Name, insts, true)
-				e.writeByIdGetter(buf, info.Name + "AsEnum", info.IdField.Kind.String(), "hardcore.Enum", insts, false)
+				e.writeByIdGetter(buf, info.Name + "AsEnum", info.IdField.Kind.String(), enumType, insts, false)
 
 				results = append(results, &BuildResult{Pkg: info.Pkg, PkgPath: info.PkgPath, Bytes: buf.Bytes()})
 			}
@@ -174,6 +207,25 @@ func (e *enumBuilder) writeByIdGetter(buf *bytes.Buffer, name, keyType, returnTy
 	buf.WriteString("    default: return nil")
 	buf.WriteRune(hardcore.EOL)
 	buf.WriteString("    }")
+	buf.WriteRune(hardcore.EOL)
+	buf.WriteString("}")
+	buf.WriteRune(hardcore.EOL)
+	buf.WriteRune(hardcore.EOL)
+}
+
+func (e *enumBuilder) writeGetter(buf *bytes.Buffer, info *Struct, field *Field) {
+	structShortName := strings.ToLower(string([]rune(info.Name)[0]))
+	buf.WriteString(
+		fmt.Sprintf(
+			"func (%s *%s) Get%s() %s {",
+			structShortName,
+			info.Name,
+			field.Name,
+			field.Kind.String(),
+		),
+	)
+	buf.WriteRune(hardcore.EOL)
+	buf.WriteString(fmt.Sprintf("   return %s.%s", structShortName, field.Name))
 	buf.WriteRune(hardcore.EOL)
 	buf.WriteString("}")
 	buf.WriteRune(hardcore.EOL)
