@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"github.com/byorty/hardcore"
 	"regexp"
+	"reflect"
 )
 
 type Builder interface {
@@ -38,6 +39,24 @@ var (
 	imports = make([]string, 0)
 	endYRegex = regexp.MustCompile(`y$`)
 	endSRegex = regexp.MustCompile(`s$`)
+	IdentifiableByType = map[string]string{
+		reflect.Int.String()       : "hardcore.IntIdentifiable",
+		reflect.Int8.String()      : "hardcore.Int8Identifiable",
+		reflect.Int16.String()     : "hardcore.Int16Identifiable",
+		reflect.Int32.String()     : "hardcore.Int32Identifiable",
+		reflect.Int64.String()     : "hardcore.Int64Identifiable",
+		reflect.Uint.String()      : "hardcore.UintIdentifiable",
+		reflect.Uint8.String()     : "hardcore.Uint8Identifiable",
+		reflect.Uint16.String()    : "hardcore.Uint16Identifiable",
+		reflect.Uint32.String()    : "hardcore.Uint32Identifiable",
+		reflect.Uint64.String()    : "hardcore.Uint64Identifiable",
+		reflect.Float32.String()   : "hardcore.Float32Identifiable",
+		reflect.Float64.String()   : "hardcore.Float64Identifiable",
+		reflect.Complex64.String() : "hardcore.Complex64Identifiable",
+		reflect.Complex128.String(): "hardcore.Complex128Identifiable",
+		reflect.String.String()    : "hardcore.StringIdentifiable",
+		"rune"                     : "hardcore.RuneIdentifiable",
+	}
 )
 
 func AddImport(imp string) {
@@ -88,15 +107,17 @@ func Build() {
 			writer.WriteString(autoFile.Pkg)
 			writer.WriteRune(hardcore.EOL)
 			writer.WriteRune(hardcore.EOL)
-			writer.WriteString("import (")
-			writer.WriteRune(hardcore.EOL)
-			for _, imp := range imports {
-				writer.WriteString(fmt.Sprintf("    \"%s\"", imp))
+			if len(imports) > 0 {
+				writer.WriteString("import (")
+				writer.WriteRune(hardcore.EOL)
+				for _, imp := range imports {
+					writer.WriteString(fmt.Sprintf("    \"%s\"", imp))
+				}
+				writer.WriteRune(hardcore.EOL)
+				writer.WriteString(")")
+				writer.WriteRune(hardcore.EOL)
+				writer.WriteRune(hardcore.EOL)
 			}
-			writer.WriteRune(hardcore.EOL)
-			writer.WriteString(")")
-			writer.WriteRune(hardcore.EOL)
-			writer.WriteRune(hardcore.EOL)
 			for _, part := range autoFile.Parts {
 				writer.Write(part)
 			}

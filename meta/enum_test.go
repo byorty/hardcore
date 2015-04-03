@@ -9,14 +9,6 @@ type SomeStatus struct {
 	Name string `enum:"one,two,three"`
 }
 
-func (s *SomeStatus) GetId() int {
-	return s.Id
-}
-
-func (s *SomeStatus) GetName() string {
-	return s.Name
-}
-
 const (
 	FirstType int = 1 << iota
 	SecondType
@@ -41,63 +33,80 @@ func TestEnum1(t *testing.T) {
 	results := builder.Build(
 		new(SomeStatus),
 	)
-	code := `var (
-    __autoEnumSomeStatusInst0 = &SomeStatus{Id: 1, Name: "one"}
-    __autoEnumSomeStatusInst1 = &SomeStatus{Id: 2, Name: "two"}
-    __autoEnumSomeStatusInst2 = &SomeStatus{Id: 3, Name: "three"}
-    __autoSomeStatusMap = map[int]*SomeStatus{
-        1: __autoEnumSomeStatusInst0,
-        2: __autoEnumSomeStatusInst1,
-        3: __autoEnumSomeStatusInst2,
-    }
-    __autoSomeStatusAsEnumMap = map[int]hardcore.Enum{
-        1: __autoEnumSomeStatusInst0,
-        2: __autoEnumSomeStatusInst1,
-        3: __autoEnumSomeStatusInst2,
-    }
-    __autoSomeStatusSlice = []*SomeStatus{
-        __autoEnumSomeStatusInst0,
-        __autoEnumSomeStatusInst1,
-        __autoEnumSomeStatusInst2,
-    }
-    __autoSomeStatusAsEnumSlice = []hardcore.Enum{
-        __autoEnumSomeStatusInst0,
-        __autoEnumSomeStatusInst1,
-        __autoEnumSomeStatusInst2,
-    }
-)
 
-func GetSomeStatusMap() map[int]*SomeStatus {
-    return __autoSomeStatusMap
+	code := `func NewSomeStatusById(id int) *SomeStatus {
+    s := new(SomeStatus).ById(id)
+    if s == nil {
+        return nil
+    } else {
+        return s.(*SomeStatus)
+    }
 }
 
-func GetSomeStatusAsEnumMap() map[int]hardcore.Enum {
-    return __autoSomeStatusAsEnumMap
+func (s *SomeStatus) GetId() int {
+    return s.Id
 }
 
-func GetSomeStatusSlice() []*SomeStatus {
-    return __autoSomeStatusSlice
+func (s *SomeStatus) GetName() string {
+    return s.Name
 }
 
-func GetSomeStatusAsEnumSlice() []hardcore.Enum {
-    return __autoSomeStatusAsEnumSlice
-}
-
-func GetSomeStatusById(id int) *SomeStatus {
+func (s *SomeStatus) ById(id int) hardcore.IntIdentifiable {
     switch id {
-    case 1: return __autoEnumSomeStatusInst0
-    case 2: return __autoEnumSomeStatusInst1
-    case 3: return __autoEnumSomeStatusInst2
+    case 1:
+        s.Id = 1
+        s.Name = "one"
+        break
+    case 2:
+        s.Id = 2
+        s.Name = "two"
+        break
+    case 3:
+        s.Id = 3
+        s.Name = "three"
+        break
     default: return nil
     }
+    return s
 }
 
-func GetSomeStatusAsEnumById(id int) hardcore.Enum {
-    switch id {
-    case 1: return __autoEnumSomeStatusInst0
-    case 2: return __autoEnumSomeStatusInst1
-    case 3: return __autoEnumSomeStatusInst2
-    default: return nil
+type SomeStatuses []*SomeStatus
+
+func (s *SomeStatuses) All() {
+    (*s) = append((*s), NewSomeStatusById(1))
+    (*s) = append((*s), NewSomeStatusById(2))
+    (*s) = append((*s), NewSomeStatusById(3))
+}
+
+func (s *SomeStatuses) ByIds(ids []int) {
+    enumMap := NewSomeStatusMap()
+    enumMap.All()
+    for _, id := range ids {
+        if enum, ok := enumMap[id]; ok {
+            (*s) = append((*s), enum)
+        }
+    }
+}
+
+type SomeStatusMap map[int]*SomeStatus
+
+func NewSomeStatusMap() SomeStatusMap {
+    return make(SomeStatusMap)
+}
+
+func (s SomeStatusMap) All() {
+    s[1] = NewSomeStatusById(1)
+    s[2] = NewSomeStatusById(2)
+    s[3] = NewSomeStatusById(3)
+}
+
+func (s SomeStatusMap) ByIds(ids []int) {
+    enumMap := NewSomeStatusMap()
+    enumMap.All()
+    for _, id := range ids {
+        if enum, ok := enumMap[id]; ok {
+            s[id] = enum
+        }
     }
 }
 
