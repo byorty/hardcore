@@ -58,15 +58,24 @@ func ({{$s}} *{{$type}}) ById(id {{.IdType}}) {{.Identifiable}} {
 
 type {{$types}} []*{{$type}}
 
+func New{{$types}}() {{$types}} {
+	return make({{$types}}, 0)
+}
+
 func ({{$s}} *{{$types}}) All() {
 {{range .InitParams}}    (*{{$s}}) = append((*{{$s}}), New{{$type}}ById({{.IdValue}}))
 {{end}}}
 
+func NewAll{{$types}}() {{$types}} {
+    var {{$s}} {{$types}}
+    {{$s}}.All()
+    return {{$s}}
+}
+
 func ({{$s}} *{{$types}}) ByIds(ids []{{.IdType}}) {
-    enumMap := New{{$type}}Map()
-    enumMap.All()
     for _, id := range ids {
-        if enum, ok := enumMap[id]; ok {
+        enum := New{{$type}}ById(id)
+        if enum != nil {
             (*{{$s}}) = append((*{{$s}}), enum)
         }
     }
@@ -83,10 +92,9 @@ func ({{$s}} {{$type}}Map) All() {
 {{end}}}
 
 func ({{$s}} {{$type}}Map) ByIds(ids []{{.IdType}}) {
-    enumMap := New{{$type}}Map()
-    enumMap.All()
     for _, id := range ids {
-        if enum, ok := enumMap[id]; ok {
+        enum := New{{$type}}ById(id)
+        if enum != nil {
             {{$s}}[id] = enum
         }
     }
@@ -114,6 +122,7 @@ func (e *enumBuilder) Build(enums ...interface{}) []*BuildResult {
 				if len(field.Tag.Get("enum")) > 0 {
 					values := strings.Split(field.Tag.Get("enum"), ",")
 					for j, value := range values {
+						value = strings.TrimSpace(value)
 						if field.IsId() {
 							initParam := &enumParams{
 								IdValue: value,
