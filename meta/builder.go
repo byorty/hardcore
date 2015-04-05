@@ -96,11 +96,10 @@ func Build() {
 		}
 		var file *os.File
 		_, err := os.Stat(filename)
-		if os.IsNotExist(err) {
-			file, err = os.Create(filename)
-		} else {
-			file, err = os.OpenFile(filename, os.O_WRONLY, os.ModePerm)
+		if os.IsExist(err) {
+			os.Remove(filename)
 		}
+		file, err = os.Create(filename)
 		if err == nil {
 			writer := bufio.NewWriter(file)
 			writer.WriteString("package ")

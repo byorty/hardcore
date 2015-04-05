@@ -4,4 +4,4 @@ type Controller interface {
 	CallAction(interface{})
 }
 
-type ControllerConstructor func() Controller
+type ControllerFunc func() Controller
