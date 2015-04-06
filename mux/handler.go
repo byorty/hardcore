@@ -6,8 +6,14 @@ import (
 )
 
 type Handler struct {
-	tpl       string
-	urlRegexp regexp.Regexp
-	construct hardcore.ControllerFunc
-	handler   interface{}
+	method    string
+	scheme    *regexp.Regexp
+	host      *regexp.Regexp
+	path      *regexp.Regexp
+	headers   map[string]*regexp.Regexp
+
+	beforeMiddlewares []hardcore.MiddlewareFunc
+	construct         hardcore.ControllerFunc
+	handler           interface{}
+	afterMiddlewares  []hardcore.MiddlewareFunc
 }
