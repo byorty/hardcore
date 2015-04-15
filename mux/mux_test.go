@@ -3,59 +3,73 @@ package mux
 import (
 	"testing"
 	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strings"
+	"io/ioutil"
+	"fmt"
 )
 
-type Test struct {
-	Request *http.Request
-	Route   *Route
-}
-
 func TestRouter(t *testing.T) {
-//	router := NewRouter(
-//		Get("/home", nil),
-//		Post("/{foo|bar}", nil),
-//		Path("/api",
-//			Controller("/maneger", nil).
-//				Get("/", nil),
-//				Get("/{id:[0-9]+}", nil),
-//				Post("/{id:[0-9]+}", nil),
-//		),
-//	)
-//
-//	fmt.Println(router)
+	router := NewRouter()
+	server := httptest.NewUnstartedServer(router)
+	server.Start()
+	serverUrl, _ := url.Parse(server.URL)
+	parts := strings.Split(serverUrl.Host, ":")
+	host := parts[0]
+	port := parts[1]
+
+	router.Add(
+		Path("/",
+			Get("/", func(scope *RequestScope) {
+				scope.Writer.Write([]byte("hello world"))
+			}),
+			Get("/{id:([0-9]+)}", func(scope *RequestScope) {
+				scope.Writer.Write([]byte(fmt.Sprintf("id#%v", scope.PathParams["id"])))
+			}),
+			Get("/{user:([a-z]+)}/{id:([0-9]+)}", func(scope *RequestScope) {
+				scope.Writer.Write([]byte(scope.PathParams["user"] + ":" + scope.PathParams["id"]))
+			}),
+			Path("/api",
+				Get("/{action:([a-z]+)}", func(scope *RequestScope) {
+					scope.Writer.Write([]byte(scope.PathParams["action"]))
+				}),
+				Controller("/user", NewTestController).
+					Get("/view/{name:([a-z]+)}", (*TestController).View),
+			),
+		).
+		Host(host).
+		Port(port),
+	)
+
+	sendGet(t, server, "/", "hello world")
+	sendGet(t, server, "/1", "id#1")
+	sendGet(t, server, "/qwerty/12", "qwerty:12")
+	sendGet(t, server, "/api/call", "call")
+	sendGet(t, server, "/api/user/view/trololo", "view user trololo")
 }
 
-func newRequest(method, url string) *http.Request {
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		panic(err)
+func sendGet(t *testing.T, server *httptest.Server, path, needle string) {
+	resp, _ := http.Get(server.URL + path)
+	body, err := ioutil.ReadAll(resp.Body)
+	bodyStr := string(body)
+	t.Log("need: " + needle)
+	t.Log("receive: " + bodyStr)
+	if bodyStr != needle || err != nil {
+		t.Fail()
 	}
-	return req
 }
 
+type TestController struct {}
 
-func TestActions(t *testing.T) {
-	tests := []Test{
-		Test{
-			newRequest("GET", "http://google.com/search"),
-			Get("/search", nil),
-		},
-//		Test{
-//			Url: url.Parse(""),
-//			Get("", nil),
-//		},
-//		Test{
-//			Url: url.Parse(""),
-//			Get("", nil),
-//		},
+func NewTestController() ActionController {
+	return new(TestController)
+}
 
-	}
+func (t *TestController) CallAction(action interface{}, scope *RequestScope) {
+	action.(func(*TestController, *RequestScope))(t, scope)
+}
 
-	for _, test := range tests {
-		test.Route.prepare()
-		test.Route.build()
-		if !test.Route.Match(test.Request) {
-//			t.Fail()
-		}
-	}
+func (t *TestController) View(scope *RequestScope) {
+	scope.Writer.Write([]byte("view user " + scope.PathParams["name"]))
 }

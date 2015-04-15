@@ -1,10 +1,8 @@
 package mux
 
 import (
-	"github.com/byorty/hardcore"
-	"regexp"
-	"net/http"
 	"strings"
+	"fmt"
 )
 
 const (
@@ -12,6 +10,10 @@ const (
 	methodPost   = "POST"
 	methodPut    = "PUT"
 	methodDelete = "DELETE"
+)
+
+const (
+	defaultScheme = "http"
 )
 
 type kindRoute int
@@ -28,28 +30,24 @@ type Route struct {
 	parent            *Route
 
 	method            string
-	scheme            *regexp.Regexp
-	host              *regexp.Regexp
-	path              *regexp.Regexp
-	headers           map[string]*regexp.Regexp
-
 	schemeTpl         string
 	hostTpl           string
+	portTpl           string
 	tpl               string
 	headerTpls        map[string]string
 
-	beforeMiddlewares []hardcore.MiddlewareFunc
-	construct         hardcore.ControllerFunc
+	beforeMiddlewares []MiddlewareFunc
+	construct         ControllerFunc
 	handler           interface{}
-	afterMiddlewares  []hardcore.MiddlewareFunc
+	afterMiddlewares  []MiddlewareFunc
 	routes            []*Route
 }
 
 func newRoute() *Route {
 	return &Route{
 		headerTpls       : make(map[string]string),
-		beforeMiddlewares: make([]hardcore.MiddlewareFunc, 0),
-		afterMiddlewares : make([]hardcore.MiddlewareFunc, 0),
+		beforeMiddlewares: make([]MiddlewareFunc, 0),
+		afterMiddlewares : make([]MiddlewareFunc, 0),
 	}
 }
 
@@ -90,7 +88,7 @@ func Path(tpl string, subRoutes ...*Route) *Route {
 	return route
 }
 
-func Controller(tpl string, construct hardcore.ControllerFunc) *Route {
+func Controller(tpl string, construct ControllerFunc) *Route {
 	route := newRoute()
 	route.kind = kindController
 	route.tpl = tpl
@@ -99,12 +97,17 @@ func Controller(tpl string, construct hardcore.ControllerFunc) *Route {
 }
 
 func (r *Route) Scheme(tpl string) *Route {
-	r.schemeTpl = tpl
+	r.schemeTpl = fmt.Sprintf("{scheme:(%s)+}", tpl)
 	return r
 }
 
 func (r *Route) Host(tpl string) *Route {
-	r.hostTpl = tpl
+	r.hostTpl = fmt.Sprintf("{host:(%s)+}", tpl)
+	return r
+}
+
+func (r *Route) Port(tpl string) *Route {
+	r.portTpl = fmt.Sprintf("{port:(:%s)+}", tpl)
 	return r
 }
 
@@ -113,32 +116,28 @@ func (r *Route) Header(key, value string) *Route {
 	return r
 }
 
-func (r *Route) Before(middleware hardcore.MiddlewareFunc) *Route {
+func (r *Route) Before(middleware MiddlewareFunc) *Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
 
 func (r *Route) Get(tpl string, handler interface{}) *Route {
-	r.addAction(methodGet, tpl, handler)
-	return r
+	return r.addAction(methodGet, tpl, handler)
 }
 
 func (r *Route) Post(tpl string, handler interface{}) *Route {
-	r.addAction(methodPost, tpl, handler)
-	return r
+	return r.addAction(methodPost, tpl, handler)
 }
 
 func (r *Route) Put(tpl string, handler interface{})*Route {
-	r.addAction(methodPut, tpl, handler)
-	return r
+	return r.addAction(methodPut, tpl, handler)
 }
 
 func (r *Route) Delete(tpl string, handler interface{}) *Route {
-	r.addAction(methodDelete, tpl, handler)
-	return r
+	return r.addAction(methodDelete, tpl, handler)
 }
 
-func (r *Route) After(middleware hardcore.MiddlewareFunc) *Route {
+func (r *Route) After(middleware MiddlewareFunc) *Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }
@@ -154,7 +153,7 @@ func (r *Route) addAction(method, tpl string, handler interface{}) *Route {
 	return r
 }
 
-func (r *Route) prepare() {
+func (r *Route) toMatcher(router *Router) {
 	if r.parent != nil {
 		if len(r.parent.schemeTpl) > 0 && len(r.schemeTpl) == 0 {
 			r.schemeTpl = r.parent.schemeTpl
@@ -162,7 +161,11 @@ func (r *Route) prepare() {
 		if len(r.parent.hostTpl) > 0 && len(r.hostTpl) == 0 {
 			r.hostTpl = r.parent.hostTpl
 		}
-		r.tpl = r.parent.tpl + strings.TrimLeft(r.tpl, "/")
+		if len(r.parent.portTpl) > 0 && len(r.portTpl) == 0 {
+			r.portTpl = r.parent.portTpl
+		}
+		r.tpl = r.parent.tpl + strings.TrimRight(r.tpl, "/")
+		r.tpl = strings.Replace(r.tpl, "//", "/", -1)
 		if len(r.parent.headerTpls) > 0 {
 			for key, value := range r.parent.headerTpls {
 				if _, ok := r.headerTpls[key]; !ok {
@@ -171,27 +174,63 @@ func (r *Route) prepare() {
 			}
 		}
 		if len(r.parent.beforeMiddlewares) > 0 {
-			middlewares := append([]hardcore.MiddlewareFunc{}, r.parent.beforeMiddlewares...)
+			middlewares := append([]MiddlewareFunc{}, r.parent.beforeMiddlewares...)
 			r.beforeMiddlewares = append(middlewares, r.beforeMiddlewares...)
 		}
 		if len(r.parent.afterMiddlewares) > 0 {
-			middlewares := append([]hardcore.MiddlewareFunc{}, r.parent.afterMiddlewares...)
+			middlewares := append([]MiddlewareFunc{}, r.parent.afterMiddlewares...)
 			r.afterMiddlewares = append(middlewares, r.afterMiddlewares...)
+		}
+		if r.kind == kindControllerAction {
+			r.construct = r.parent.construct
 		}
 	}
 
 	switch r.kind {
-	case kindAction:
+	case kindAction, kindControllerAction:
+		matcher := new(Matcher)
 
+		if len(r.schemeTpl) == 0 {
+			r.Scheme("http")
+		}
+
+		if len(r.hostTpl) == 0 {
+			r.Host("localhost")
+		}
+
+		var tpl string
+		if len(r.portTpl) > 0 {
+			tpl = fmt.Sprintf("^%s://%s%s%s$", r.schemeTpl, r.hostTpl, r.portTpl, r.tpl)
+		} else {
+			tpl = fmt.Sprintf("^%s://%s%s$", r.schemeTpl, r.hostTpl, r.tpl)
+		}
+
+		matcher.urlParams = newParamsMatcher(tpl)
+
+		if len(r.headerTpls) > 0 {
+			matcher.headers = make(map[string]*ParamsMatcher)
+			for name, tpl := range r.headerTpls {
+				matcher.headers[name] = newParamsMatcher(tpl)
+			}
+		}
+
+		if len(r.beforeMiddlewares) > 0 {
+			matcher.beforeMiddlewares = r.beforeMiddlewares
+		}
+		if r.construct != nil {
+			matcher.construct = r.construct
+		}
+		matcher.handler = r.handler
+		if len(r.afterMiddlewares) > 0 {
+			matcher.afterMiddlewares = r.afterMiddlewares
+		}
+
+		router.addMatcher(r.method, matcher)
+		break
+	case kindPath, kindController:
+		for _, route := range r.routes {
+			route.toMatcher(router)
+		}
 		break
 	}
-}
-
-func (r *Route) build() {
-
-}
-
-func (r *Route) Match(request *http.Request) bool {
-
-	return true
 }
