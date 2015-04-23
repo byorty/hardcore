@@ -7,17 +7,31 @@ import (
 	"bytes"
 )
 
-type ParamsMatcher struct {
+type ParamMatcher struct {
 	regexp *regexp.Regexp
 	vars   []string
 }
 
-func newParamsMatcher(str string) *ParamsMatcher {
+func newParamMatcher(str string) *ParamMatcher {
 	tpl, vars := parseTpl(str)
-	return &ParamsMatcher{
+	return &ParamMatcher{
 		regexp: regexp.MustCompile(tpl),
 		vars  : vars,
 	}
+}
+
+func (p *ParamMatcher) Match(scope *RequestScope) bool {
+	matches := p.regexp.FindStringSubmatch(scope.UrlStr)
+	match := len(matches) > 0
+	if match {
+		scope.PathParams = make(RequestScopeParams)
+		for i, match := range matches {
+			if i > 0 {
+				scope.PathParams[p.vars[i - 1]] = match
+			}
+		}
+	}
+	return match
 }
 
 func parseTpl(tpl string) (string, []string) {
@@ -62,9 +76,40 @@ func parseTpl(tpl string) (string, []string) {
 	return buf.String(), vars
 }
 
+type HeaderMatcher struct {
+	key    string
+	regexp *regexp.Regexp
+	vars   []string
+}
+
+func newHeaderMatcher(key, value string) *HeaderMatcher {
+	tpl, vars := parseTpl(value)
+	return &HeaderMatcher{
+		key   : key,
+		regexp: regexp.MustCompile(tpl),
+		vars  : vars,
+	}
+}
+
+func (h *HeaderMatcher) Match(scope *RequestScope) bool {
+	matches := h.regexp.FindStringSubmatch(scope.Request.Header.Get(h.key))
+	match := len(matches) > 0
+	if match {
+		if scope.HeaderParams == nil {
+			scope.HeaderParams = make(RequestScopeParams)
+		}
+		for i, match := range matches {
+			if i > 0 {
+				scope.HeaderParams[h.vars[i - 1]] = match
+			}
+		}
+	}
+	return match
+}
+
 type Matcher struct {
-	urlParams *ParamsMatcher
-	headers map[string]*ParamsMatcher
+	urlParams *ParamMatcher
+	headers   []*HeaderMatcher
 
 	beforeMiddlewares []MiddlewareFunc
 	construct         ControllerFunc
@@ -73,17 +118,14 @@ type Matcher struct {
 }
 
 func (m *Matcher) Match(scope *RequestScope) bool {
-	matches := m.urlParams.regexp.FindStringSubmatch(scope.UrlStr)
-	matchUrl := len(matches) > 0
-	if matchUrl {
-		scope.PathParams = make(PathParams)
-		for i, match := range matches {
-			if i > 0 {
-				scope.PathParams[m.urlParams.vars[i - 1]] = match
-			}
+	matchUrl := m.urlParams.Match(scope)
+	matchHeaders := true
+	for _, header := range m.headers {
+		if !header.Match(scope) {
+			matchHeaders = false
 		}
 	}
-	return matchUrl
+	return matchUrl && matchHeaders
 }
 
 type Matchers []*Matcher

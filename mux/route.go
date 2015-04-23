@@ -60,20 +60,29 @@ func newActionRoute(method, tpl string, handler interface{}) *Route {
 	return route
 }
 
+func newRouteByKindAndMethod(kind kindRoute, method, tpl string, handler interface{}) *Route {
+	route := newRoute()
+	route.kind = kind
+	route.method = method
+	route.tpl = tpl
+	route.handler = handler
+	return route
+}
+
 func Get(tpl string, handler interface{}) *Route {
-	return newActionRoute(methodGet, tpl, handler)
+	return newRouteByKindAndMethod(kindAction, methodGet, tpl, handler)
 }
 
 func Post(tpl string, handler interface{}) *Route {
-	return newActionRoute(methodPost, tpl, handler)
+	return newRouteByKindAndMethod(kindAction, methodPost, tpl, handler)
 }
 
 func Put(tpl string, handler interface{}) *Route {
-	return newActionRoute(methodPut, tpl, handler)
+	return newRouteByKindAndMethod(kindAction, methodPut, tpl, handler)
 }
 
 func Delete(tpl string, handler interface{}) *Route {
-	return newActionRoute(methodDelete, tpl, handler)
+	return newRouteByKindAndMethod(kindAction, methodDelete, tpl, handler)
 }
 
 func Path(tpl string, subRoutes ...*Route) *Route {
@@ -116,39 +125,35 @@ func (r *Route) Header(key, value string) *Route {
 	return r
 }
 
-func (r *Route) Before(middleware MiddlewareFunc) *Route {
+func (r *Route) Before(middleware func (*RequestScope)) *Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
 
 func (r *Route) Get(tpl string, handler interface{}) *Route {
-	return r.addAction(methodGet, tpl, handler)
+	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodGet, tpl, handler))
 }
 
 func (r *Route) Post(tpl string, handler interface{}) *Route {
-	return r.addAction(methodPost, tpl, handler)
+	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPost, tpl, handler))
 }
 
 func (r *Route) Put(tpl string, handler interface{})*Route {
-	return r.addAction(methodPut, tpl, handler)
+	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPut, tpl, handler))
 }
 
 func (r *Route) Delete(tpl string, handler interface{}) *Route {
-	return r.addAction(methodDelete, tpl, handler)
+	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodDelete, tpl, handler))
 }
 
-func (r *Route) After(middleware MiddlewareFunc) *Route {
+func (r *Route) After(middleware func (*RequestScope)) *Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }
 
-func (r *Route) addAction(method, tpl string, handler interface{}) *Route {
-	route := newRoute()
+func (r *Route) Add(route *Route) *Route {
 	route.parent = r
 	route.kind = kindControllerAction
-	route.method = method
-	route.tpl = tpl
-	route.handler = handler
 	r.routes = append(r.routes, route)
 	return r
 }
@@ -205,12 +210,12 @@ func (r *Route) toMatcher(router *Router) {
 			tpl = fmt.Sprintf("^%s://%s%s$", r.schemeTpl, r.hostTpl, r.tpl)
 		}
 
-		matcher.urlParams = newParamsMatcher(tpl)
+		matcher.urlParams = newParamMatcher(tpl)
 
 		if len(r.headerTpls) > 0 {
-			matcher.headers = make(map[string]*ParamsMatcher)
+			matcher.headers = make([]*HeaderMatcher, 0)
 			for name, tpl := range r.headerTpls {
-				matcher.headers[name] = newParamsMatcher(tpl)
+				matcher.headers = append(matcher.headers, newHeaderMatcher(name, tpl))
 			}
 		}
 

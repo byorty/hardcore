@@ -12,10 +12,14 @@ type Router struct {
 
 func NewRouter(routes ...*Route) *Router {
 	router := &Router{
-		gets   : make(Matchers, 0),
-		posts  : make(Matchers, 0),
-		puts   : make(Matchers, 0),
-		deletes: make(Matchers, 0),
+		gets        : make(Matchers, 0),
+		posts       : make(Matchers, 0),
+		puts        : make(Matchers, 0),
+		deletes     : make(Matchers, 0),
+		notFoundFunc: func (scope *RequestScope) {
+			scope.Writer.WriteHeader(http.StatusNotFound)
+			scope.Writer.Write([]byte("not found"))
+		},
 	}
 	for _, route := range routes {
 		route.toMatcher(router)
@@ -28,8 +32,8 @@ func (r *Router) Add(route *Route) *Router {
 	return r
 }
 
-func (r *Router) NotFound(handler http.Handler) *Router {
-	r.notFoundHandler = handler
+func (r *Router) NotFound(handler func (*RequestScope)) *Router {
+	r.notFoundFunc = handler
 	return r
 }
 
