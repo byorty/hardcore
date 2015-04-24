@@ -60,8 +60,7 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		req.URL.Host = req.Host
 	}
 	scope := &RequestScope{
-		UrlStr: req.URL.String(),
-		Url: req.URL,
+		urlStr: req.URL.String(),
 		Writer: rw,
 		Request: req,
 	}

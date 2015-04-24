@@ -1,7 +1,6 @@
 package mux
 
 import (
-	"net/url"
 	"net/http"
 	"strconv"
 )
@@ -86,8 +85,7 @@ func (r RequestScopeParams) GetFloat64(key string) (float64, error) {
 }
 
 type RequestScope struct {
-	UrlStr       string
-	Url          *url.URL
+	urlStr       string
 	Writer       http.ResponseWriter
 	Request      *http.Request
 	PathParams   RequestScopeParams

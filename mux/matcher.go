@@ -21,7 +21,7 @@ func newParamMatcher(str string) *ParamMatcher {
 }
 
 func (p *ParamMatcher) Match(scope *RequestScope) bool {
-	matches := p.regexp.FindStringSubmatch(scope.UrlStr)
+	matches := p.regexp.FindStringSubmatch(scope.urlStr)
 	match := len(matches) > 0
 	if match {
 		scope.PathParams = make(RequestScopeParams)
