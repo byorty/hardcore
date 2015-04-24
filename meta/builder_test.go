@@ -9,5 +9,8 @@ func TestBuilder1(t *testing.T) {
 		&SomeStatus{},
 //		&SomeType{},
 	)
+	RegisterControllers(
+		&SomeController{},
+	)
 	Build()
 }

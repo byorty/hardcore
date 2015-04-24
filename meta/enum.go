@@ -59,7 +59,7 @@ func ({{$s}} *{{$type}}) ById(id {{.IdType}}) {{.Identifiable}} {
 type {{$types}} []*{{$type}}
 
 func New{{$types}}() {{$types}} {
-	return make({{$types}}, 0)
+    return make({{$types}}, 0)
 }
 
 func ({{$s}} *{{$types}}) All() {
@@ -151,7 +151,12 @@ func (e *enumBuilder) Build(enums ...interface{}) []*BuildResult {
 				tmpl.Parse(EnumTmpl)
 				tmpl.Execute(buf, tmplParams)
 
-				results = append(results, &BuildResult{Pkg: info.Pkg, PkgPath: info.PkgPath, Bytes: buf.Bytes()})
+				results = append(results, &BuildResult{
+					Pkg: info.Pkg,
+					PkgPath: info.PkgPath,
+					Bytes: buf.Bytes(),
+					Imports: []string{"github.com/byorty/hardcore"},
+				})
 			}
 		}
 	}

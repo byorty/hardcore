@@ -72,17 +72,26 @@ func (s *SomeStatus) ById(id int) hardcore.IntIdentifiable {
 
 type SomeStatuses []*SomeStatus
 
+func NewSomeStatuses() SomeStatuses {
+    return make(SomeStatuses, 0)
+}
+
 func (s *SomeStatuses) All() {
     (*s) = append((*s), NewSomeStatusById(1))
     (*s) = append((*s), NewSomeStatusById(2))
     (*s) = append((*s), NewSomeStatusById(3))
 }
 
+func NewAllSomeStatuses() SomeStatuses {
+    var s SomeStatuses
+    s.All()
+    return s
+}
+
 func (s *SomeStatuses) ByIds(ids []int) {
-    enumMap := NewSomeStatusMap()
-    enumMap.All()
     for _, id := range ids {
-        if enum, ok := enumMap[id]; ok {
+        enum := NewSomeStatusById(id)
+        if enum != nil {
             (*s) = append((*s), enum)
         }
     }
@@ -101,10 +110,9 @@ func (s SomeStatusMap) All() {
 }
 
 func (s SomeStatusMap) ByIds(ids []int) {
-    enumMap := NewSomeStatusMap()
-    enumMap.All()
     for _, id := range ids {
-        if enum, ok := enumMap[id]; ok {
+        enum := NewSomeStatusById(id)
+        if enum != nil {
             s[id] = enum
         }
     }

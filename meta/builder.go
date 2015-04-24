@@ -4,10 +4,10 @@ import (
 	"os"
 	"fmt"
 	"path/filepath"
-	"bufio"
-	"github.com/byorty/hardcore"
 	"regexp"
 	"reflect"
+	"text/template"
+	"bufio"
 )
 
 type Builder interface {
@@ -18,25 +18,28 @@ type BuildResult struct {
 	Pkg     string
 	PkgPath string
 	Bytes   []byte
+	Imports []string
 }
 
 type autoFile struct {
-	Pkg   string
-	Parts [][]byte
+	Pkg     string
+	Parts   []string
+	Imports []string
 }
 
 type builderKind int
 
 const (
-	enumBuilderKind builderKind = iota
+	enumBuilderKind       builderKind = iota
+	controllerBuilderKind
 )
 
 var (
 	builders = map[builderKind]Builder{
-		enumBuilderKind: new(enumBuilder),
+		enumBuilderKind      : new(enumBuilder),
+		controllerBuilderKind: new(controllerBuilder),
 	}
 	itemsByKind = make(map[builderKind][]interface{})
-	imports = make([]string, 0)
 	endYRegex = regexp.MustCompile(`y$`)
 	endSRegex = regexp.MustCompile(`s$`)
 	IdentifiableByType = map[string]string{
@@ -57,30 +60,51 @@ var (
 		reflect.String.String()    : "hardcore.StringIdentifiable",
 		"rune"                     : "hardcore.RuneIdentifiable",
 	}
-)
+	AutoFileTpl = `package {{.Package}}
 
-func AddImport(imp string) {
-	imports = append(imports, imp)
-}
+{{if .HasImports}}import ({{range .Imports}}
+    "{{.}}"{{end}}
+){{end}}
+
+{{range .Parts}}{{.}}{{end}}`
+)
 
 func RegisterEnums(enums ...interface{}) {
 	itemsByKind[enumBuilderKind] = enums
 }
 
+func RegisterControllers(controllers ...interface{}) {
+	itemsByKind[controllerBuilderKind] = controllers
+}
+
 func Build() {
-	AddImport("github.com/byorty/hardcore")
 	results := make([]*BuildResult, 0)
 	for kind, items := range itemsByKind {
 		results = append(results, builders[kind].Build(items...)...)
 	}
 	autoFiles := make(map[string]*autoFile)
 	for _, result := range results {
-		if _, ok := autoFiles[result.PkgPath]; !ok {
+		if aFile, ok := autoFiles[result.PkgPath]; ok {
+			fmt.Println(result.Imports)
+			for _, resultImport := range result.Imports {
+				found := false
+				for _, autoImport := range aFile.Imports {
+					if resultImport == autoImport {
+						found = true
+						break
+					}
+				}
+				if !found {
+					aFile.Imports = append(aFile.Imports, resultImport)
+				}
+			}
+		} else {
 			autoFiles[result.PkgPath] = new(autoFile)
 			autoFiles[result.PkgPath].Pkg = result.Pkg
-			autoFiles[result.PkgPath].Parts = make([][]byte, 0)
+			autoFiles[result.PkgPath].Parts = make([]string, 0)
+			autoFiles[result.PkgPath].Imports = result.Imports
 		}
-		autoFiles[result.PkgPath].Parts = append(autoFiles[result.PkgPath].Parts, result.Bytes)
+		autoFiles[result.PkgPath].Parts = append(autoFiles[result.PkgPath].Parts, string(result.Bytes))
 	}
 
 	projectPath := os.Getenv("GOPATH")
@@ -102,24 +126,15 @@ func Build() {
 		file, err = os.Create(filename)
 		if err == nil {
 			writer := bufio.NewWriter(file)
-			writer.WriteString("package ")
-			writer.WriteString(autoFile.Pkg)
-			writer.WriteRune(hardcore.EOL)
-			writer.WriteRune(hardcore.EOL)
-			if len(imports) > 0 {
-				writer.WriteString("import (")
-				writer.WriteRune(hardcore.EOL)
-				for _, imp := range imports {
-					writer.WriteString(fmt.Sprintf("    \"%s\"", imp))
-				}
-				writer.WriteRune(hardcore.EOL)
-				writer.WriteString(")")
-				writer.WriteRune(hardcore.EOL)
-				writer.WriteRune(hardcore.EOL)
+			tmplParams := map[string]interface{}{
+				"Package": autoFile.Pkg,
+				"HasImports": len(autoFile.Imports) > 0,
+				"Imports": autoFile.Imports,
+				"Parts"  : autoFile.Parts,
 			}
-			for _, part := range autoFile.Parts {
-				writer.Write(part)
-			}
+			tmpl := template.New(filename + "Template")
+			tmpl.Parse(AutoFileTpl)
+			tmpl.Execute(writer, tmplParams)
 			writer.Flush()
 		} else {
 			panic(err)
