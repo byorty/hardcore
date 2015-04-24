@@ -21,63 +21,69 @@ func TestRouter(t *testing.T) {
 
 	router.Add(
 		Path("/",
-			Get("/", func(scope *RequestScope) {
-				scope.Writer.Write([]byte("hello world"))
+			Get("/", func(scope RequestScope) {
+				scope.GetWriter().Write([]byte("hello world"))
 			}),
-			Get("/{id:([0-9]+)}", func(scope *RequestScope) {
-				scope.Writer.Write([]byte(fmt.Sprintf("id#%v", scope.PathParams["id"])))
+			Get("/{id:([0-9]+)}", func(scope RequestScope) {
+				scope.GetWriter().Write([]byte(fmt.Sprintf("id#%v", scope.GetPathParams()["id"])))
 			}),
-			Get("/{user:([a-z]+)}/{id:([0-9]+)}", func(scope *RequestScope) {
-				scope.Writer.Write([]byte(scope.PathParams["user"] + ":" + scope.PathParams["id"]))
+			Get("/{user:([a-z]+)}/{id:([0-9]+)}", func(scope RequestScope) {
+				scope.GetWriter().Write([]byte(scope.GetPathParams()["user"] + ":" + scope.GetPathParams()["id"]))
 			}),
 			Path("/api",
-				Get("/{action:([a-z]+)}", func(scope *RequestScope) {
-					scope.Writer.Write([]byte(scope.PathParams["action"]))
+				Get("/{action:([a-z]+)}", func(scope RequestScope) {
+					scope.GetWriter().Write([]byte(scope.GetPathParams()["action"]))
 				}),
 				Controller("/user", NewTestController).
 					Get("/view/{name:([a-z]+)}", (*TestController).View),
 			),
 			Path("/with/middleware",
-				Get("/func", func(scope *RequestScope) {
-					scope.Writer.Write([]byte("call func, "))
-				}).Before(func (scope *RequestScope) {
-					scope.Writer.Write([]byte("before#1, "))
-				}).Before(func (scope *RequestScope) {
-					scope.Writer.Write([]byte("before#2, "))
-				}).After(func (scope *RequestScope) {
-					scope.Writer.Write([]byte("after#1"))
+				Get("/func", func(scope RequestScope) {
+					scope.GetWriter().Write([]byte("call func, "))
+				}).Before(func (scope RequestScope) {
+					scope.GetWriter().Write([]byte("before#1, "))
+				}).Before(func (scope RequestScope) {
+					scope.GetWriter().Write([]byte("before#2, "))
+				}).After(func (scope RequestScope) {
+					scope.GetWriter().Write([]byte("after#1"))
 				}),
 				Controller("/ctrl", NewTestController).
-					Before(func (scope *RequestScope) {
-						scope.Writer.Write([]byte("before#0, "))
+					Before(func (scope RequestScope) {
+						scope.GetWriter().Write([]byte("before#0, "))
 					}).
 					Add(
 						Get("/view/{name:([a-z]+)}", (*TestController).View).
-							Before(func (scope *RequestScope) {
-								scope.Writer.Write([]byte("before#1, "))
-							}).Before(func (scope *RequestScope) {
-								scope.Writer.Write([]byte("before#2, "))
-							}).After(func (scope *RequestScope) {
-								scope.Writer.Write([]byte(", after#1"))
+							Before(func (scope RequestScope) {
+								scope.GetWriter().Write([]byte("before#1, "))
+							}).Before(func (scope RequestScope) {
+								scope.GetWriter().Write([]byte("before#2, "))
+							}).After(func (scope RequestScope) {
+								scope.GetWriter().Write([]byte(", after#1"))
 							}),
 					).
 					Get("/view2/{name:([a-z0-9]+)}", (*TestController).View).
-					After(func (scope *RequestScope) {
-						scope.Writer.Write([]byte(", after#0"))
+					After(func (scope RequestScope) {
+						scope.GetWriter().Write([]byte(", after#0"))
 					}),
 			),
 			Path("/with/headers",
-				Get("/func", func (scope *RequestScope) {
-					scope.Writer.Write([]byte("foo"))
+				Get("/func", func (scope RequestScope) {
+					scope.GetWriter().Write([]byte("foo"))
 				}).
 				Header("X-SOME-KEY-2", "some#{someId:([0-9]+)}"),
-				Get("/func", func (scope *RequestScope) {
-					someId, _ := scope.HeaderParams.GetInt("someId")
-					otherId, _ := scope.HeaderParams.GetInt("otherId")
-					scope.Writer.Write([]byte(fmt.Sprintf("someId#%d, otherId#%d", someId, otherId)))
+				Get("/func", func (scope RequestScope) {
+					someId, _ := scope.GetHeaderParams().GetInt("someId")
+					otherId, _ := scope.GetHeaderParams().GetInt("otherId")
+					scope.GetWriter().Write([]byte(fmt.Sprintf("someId#%d, otherId#%d", someId, otherId)))
 				}).
 				Header("X-SOME-KEY", "some#{someId:([0-9]+)}").
 				Header("X-OTHER-KEY", "other#{otherId:([0-9]+)}"),
+			),
+			Path("/with/custom/scope",
+				Get("/func", func(scope RequestScope) {
+					scope.GetWriter().Write([]byte(scope.(*TestScope).Message))
+				}).
+				Scope(NewTestScope),
 			),
 		).
 		Host(host).
@@ -99,6 +105,8 @@ func TestRouter(t *testing.T) {
 	req.Header.Add("X-OTHER-KEY", "other#456")
 	resp, _ := client.Do(req)
 	checkResponse(t, resp, "someId#123, otherId#456")
+
+	sendGet(t, server, "/with/custom/scope/func", "hello test scope")
 }
 
 func sendGet(t *testing.T, server *httptest.Server, path, needle string) {
@@ -116,16 +124,27 @@ func checkResponse(t *testing.T, resp *http.Response, needle string) {
 	}
 }
 
+type TestScope struct {
+	BaseRequestScope
+	Message string
+}
+
+func NewTestScope() RequestScope {
+	return &TestScope{
+		Message: "hello test scope",
+	}
+}
+
 type TestController struct {}
 
 func NewTestController() ActionController {
 	return new(TestController)
 }
 
-func (t *TestController) CallAction(action interface{}, scope *RequestScope) {
-	action.(func(*TestController, *RequestScope))(t, scope)
+func (t *TestController) CallAction(action interface{}, scope RequestScope) {
+	action.(func(*TestController, RequestScope))(t, scope)
 }
 
-func (t *TestController) View(scope *RequestScope) {
-	scope.Writer.Write([]byte("view user " + scope.PathParams["name"]))
+func (t *TestController) View(scope RequestScope) {
+	scope.GetWriter().Write([]byte("view user " + scope.GetPathParams()["name"]))
 }

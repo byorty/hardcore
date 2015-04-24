@@ -5,10 +5,10 @@ import (
 	"strconv"
 )
 
-type MiddlewareFunc func(*RequestScope)
+type MiddlewareFunc func(RequestScope)
 
 type ActionController interface {
-	CallAction(interface{}, *RequestScope)
+	CallAction(interface{}, RequestScope)
 }
 
 type ControllerFunc func() ActionController
@@ -84,10 +84,63 @@ func (r RequestScopeParams) GetFloat64(key string) (float64, error) {
 	return strconv.ParseFloat(r.GetString(key), 64)
 }
 
-type RequestScope struct {
-	urlStr       string
-	Writer       http.ResponseWriter
-	Request      *http.Request
-	PathParams   RequestScopeParams
-	HeaderParams RequestScopeParams
+type RequestScopeFunc func() RequestScope
+
+type RequestScope interface {
+	GetWriter() http.ResponseWriter
+	setWriter(http.ResponseWriter)
+	GetRequest() *http.Request
+	setRequest(*http.Request)
+	GetPathParams() RequestScopeParams
+	setPathParams(params RequestScopeParams)
+	GetHeaderParams() RequestScopeParams
+	setHeaderParams(params RequestScopeParams)
+	setHeaderParam(key, value string)
+}
+
+type BaseRequestScope struct {
+	writer       http.ResponseWriter
+	request      *http.Request
+	pathParams   RequestScopeParams
+	headerParams RequestScopeParams
+}
+
+func NewBaseRequestScope() RequestScope {
+	return new(BaseRequestScope)
+}
+
+func (b BaseRequestScope) GetWriter() http.ResponseWriter {
+	return b.writer
+}
+
+func (b *BaseRequestScope) setWriter(writer http.ResponseWriter) {
+	b.writer = writer
+}
+
+func (b BaseRequestScope) GetRequest() *http.Request {
+	return b.request
+}
+
+func (b *BaseRequestScope) setRequest(request *http.Request) {
+	b.request = request
+}
+
+func (b BaseRequestScope) GetPathParams() RequestScopeParams {
+	return b.pathParams
+}
+
+func (b *BaseRequestScope) setPathParams(params RequestScopeParams) {
+	b.pathParams = params
+}
+
+func (b BaseRequestScope) GetHeaderParams() RequestScopeParams {
+	return b.headerParams
+}
+
+func (b *BaseRequestScope) setHeaderParams(params RequestScopeParams) {
+	b.headerParams = params
+}
+
+func (b *BaseRequestScope) setHeaderParam(key, value string) {
+	b.headerParams[key] = value
 }

@@ -36,6 +36,7 @@ type Route struct {
 	tpl               string
 	headerTpls        map[string]string
 
+	scopeConstruct    RequestScopeFunc
 	beforeMiddlewares []MiddlewareFunc
 	construct         ControllerFunc
 	handler           interface{}
@@ -48,6 +49,7 @@ func newRoute() *Route {
 		headerTpls       : make(map[string]string),
 		beforeMiddlewares: make([]MiddlewareFunc, 0),
 		afterMiddlewares : make([]MiddlewareFunc, 0),
+		scopeConstruct   : NewBaseRequestScope,
 	}
 }
 
@@ -105,6 +107,11 @@ func Controller(tpl string, construct ControllerFunc) *Route {
 	return route
 }
 
+func (r *Route) Scope(scopeConstruct RequestScopeFunc) *Route {
+	r.scopeConstruct = scopeConstruct
+	return r
+}
+
 func (r *Route) Scheme(tpl string) *Route {
 	r.schemeTpl = fmt.Sprintf("{scheme:(%s)+}", tpl)
 	return r
@@ -125,7 +132,7 @@ func (r *Route) Header(key, value string) *Route {
 	return r
 }
 
-func (r *Route) Before(middleware func (*RequestScope)) *Route {
+func (r *Route) Before(middleware func (RequestScope)) *Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
@@ -146,7 +153,7 @@ func (r *Route) Delete(tpl string, handler interface{}) *Route {
 	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodDelete, tpl, handler))
 }
 
-func (r *Route) After(middleware func (*RequestScope)) *Route {
+func (r *Route) After(middleware func (RequestScope)) *Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }
@@ -219,6 +226,7 @@ func (r *Route) toMatcher(router *Router) {
 			}
 		}
 
+		matcher.scopeConstruct = r.scopeConstruct
 		if len(r.beforeMiddlewares) > 0 {
 			matcher.beforeMiddlewares = r.beforeMiddlewares
 		}

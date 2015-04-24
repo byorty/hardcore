@@ -16,9 +16,9 @@ func NewRouter(routes ...*Route) *Router {
 		posts       : make(Matchers, 0),
 		puts        : make(Matchers, 0),
 		deletes     : make(Matchers, 0),
-		notFoundFunc: func (scope *RequestScope) {
-			scope.Writer.WriteHeader(http.StatusNotFound)
-			scope.Writer.Write([]byte("not found"))
+		notFoundFunc: func (scope RequestScope) {
+			scope.GetWriter().WriteHeader(http.StatusNotFound)
+			scope.GetWriter().Write([]byte("not found"))
 		},
 	}
 	for _, route := range routes {
@@ -32,7 +32,7 @@ func (r *Router) Add(route *Route) *Router {
 	return r
 }
 
-func (r *Router) NotFound(handler func (*RequestScope)) *Router {
+func (r *Router) NotFound(handler func (RequestScope)) *Router {
 	r.notFoundFunc = handler
 	return r
 }
@@ -59,15 +59,19 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if len(req.URL.Host) == 0 {
 		req.URL.Host = req.Host
 	}
-	scope := &RequestScope{
-		urlStr: req.URL.String(),
-		Writer: rw,
-		Request: req,
-	}
+	urlStr := req.URL.String()
+//	scope := &BaseRequestScope{
+//		urlStr: req.URL.String(),
+//		writer: rw,
+//		request: req,
+//	}
+	var scope RequestScope
+	var match bool
 	var existsMatcher *Matcher
 	matchers := r.getMatchersByMethod(req.Method)
 	for _, matcher := range *matchers {
-		if matcher.Match(scope) {
+		match, scope = matcher.Match(urlStr, req, rw)
+		if match {
 			existsMatcher = matcher
 			break
 		}
@@ -82,17 +86,17 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
 		} else if !hasConstruct && hasHandler {
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, scope)
-			existsMatcher.handler.(func(*RequestScope))(scope)
+			existsMatcher.handler.(func(RequestScope))(scope)
 			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
 		} else {
-			r.notFoundFunc(scope)
+			r.notFoundFunc(NewBaseRequestScope())
 		}
 	} else {
-		r.notFoundFunc(scope)
+		r.notFoundFunc(NewBaseRequestScope())
 	}
 }
 
-func (r *Router) doMiddlewares(middlewares []MiddlewareFunc, scope *RequestScope) {
+func (r *Router) doMiddlewares(middlewares []MiddlewareFunc, scope RequestScope) {
 	for _, middleware := range middlewares {
 		middleware(scope)
 	}
