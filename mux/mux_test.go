@@ -72,8 +72,8 @@ func TestRouter(t *testing.T) {
 				}).
 				Header("X-SOME-KEY-2", "some#{someId:([0-9]+)}"),
 				Get("/func", func (scope RequestScope) {
-					someId, _ := scope.GetHeaderParams().GetInt("someId")
-					otherId, _ := scope.GetHeaderParams().GetInt("otherId")
+					someId := scope.GetHeaderParams().GetInt("someId")
+					otherId := scope.GetHeaderParams().GetInt("otherId")
 					scope.GetWriter().Write([]byte(fmt.Sprintf("someId#%d, otherId#%d", someId, otherId)))
 				}).
 				Header("X-SOME-KEY", "some#{someId:([0-9]+)}").
