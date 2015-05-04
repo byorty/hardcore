@@ -60,11 +60,6 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		req.URL.Host = req.Host
 	}
 	urlStr := req.URL.String()
-//	scope := &BaseRequestScope{
-//		urlStr: req.URL.String(),
-//		writer: rw,
-//		request: req,
-//	}
 	var scope RequestScope
 	var match bool
 	var existsMatcher *Matcher

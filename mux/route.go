@@ -14,6 +14,7 @@ const (
 
 const (
 	defaultScheme = "http"
+	defaultHost   = "localhost"
 )
 
 type kindRoute int
@@ -203,11 +204,11 @@ func (r *Route) toMatcher(router *Router) {
 		matcher := new(Matcher)
 
 		if len(r.schemeTpl) == 0 {
-			r.Scheme("http")
+			r.Scheme(defaultScheme)
 		}
 
 		if len(r.hostTpl) == 0 {
-			r.Host("localhost")
+			r.Host(defaultHost)
 		}
 
 		var tpl string
