@@ -1,8 +1,4 @@
-package hardcore
-
-const (
-	EOL = '\n'
-)
+package types
 
 type Named interface {
 	GetName() string

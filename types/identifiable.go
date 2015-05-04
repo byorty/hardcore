@@ -1,4 +1,4 @@
-package hardcore
+package types
 
 type IntIdentifiable interface {
 	GetId() int

@@ -1,4 +1,4 @@
-package hardcore
+package types
 
 type IntIdentifier interface {
 	ById(int) IntIdentifiable
