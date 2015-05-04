@@ -9,21 +9,21 @@ import (
 )
 
 var EnumTypes = map[string]string{
-	reflect.Int.String()       : "hardcore.IntEnum",
-	reflect.Int8.String()      : "hardcore.Int8Enum",
-	reflect.Int16.String()     : "hardcore.Int16Enum",
-	reflect.Int32.String()     : "hardcore.Int32Enum",
-	reflect.Int64.String()     : "hardcore.Int64Enum",
-	reflect.Uint.String()      : "hardcore.UintEnum",
-	reflect.Uint8.String()     : "hardcore.Uint8Enum",
-	reflect.Uint16.String()    : "hardcore.Uint16Enum",
-	reflect.Uint32.String()    : "hardcore.Uint32Enum",
-	reflect.Uint64.String()    : "hardcore.Uint63Enum",
-	reflect.Float32.String()   : "hardcore.Float32Enum",
-	reflect.Float64.String()   : "hardcore.Float64Enum",
-	reflect.Complex64.String() : "hardcore.Complex64Enum",
-	reflect.Complex128.String(): "hardcore.Complex128Enum",
-	reflect.String.String()    : "hardcore.StringEnum",
+	reflect.Int.String()       : "types.IntEnum",
+	reflect.Int8.String()      : "types.Int8Enum",
+	reflect.Int16.String()     : "types.Int16Enum",
+	reflect.Int32.String()     : "types.Int32Enum",
+	reflect.Int64.String()     : "types.Int64Enum",
+	reflect.Uint.String()      : "types.UintEnum",
+	reflect.Uint8.String()     : "types.Uint8Enum",
+	reflect.Uint16.String()    : "types.Uint16Enum",
+	reflect.Uint32.String()    : "types.Uint32Enum",
+	reflect.Uint64.String()    : "types.Uint63Enum",
+	reflect.Float32.String()   : "types.Float32Enum",
+	reflect.Float64.String()   : "types.Float64Enum",
+	reflect.Complex64.String() : "types.Complex64Enum",
+	reflect.Complex128.String(): "types.Complex128Enum",
+	reflect.String.String()    : "types.StringEnum",
 }
 
 var EnumTmpl = `{{$s := .ShortStructName}}` +
@@ -155,7 +155,7 @@ func (e *enumBuilder) Build(enums ...interface{}) []*BuildResult {
 					Pkg: info.Pkg,
 					PkgPath: info.PkgPath,
 					Bytes: buf.Bytes(),
-					Imports: []string{"github.com/byorty/hardcore"},
+					Imports: []string{"github.com/byorty/hardcore/types"},
 				})
 			}
 		}

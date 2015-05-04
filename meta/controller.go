@@ -10,8 +10,8 @@ var ControllerTmpl = `func New{{.Type}}() mux.ActionController {
     return new({{.Type}})
 }
 
-func (t *{{.Type}}) CallAction(action interface{}, scope *mux.RequestScope) {
-    action.(func(*{{.Type}}, *mux.RequestScope))(t, scope)
+func (t *{{.Type}}) CallAction(action interface{}, scope mux.RequestScope) {
+    action.(func(*{{.Type}}, mux.RequestScope))(t, scope)
 }
 `
 

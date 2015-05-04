@@ -43,22 +43,22 @@ var (
 	endYRegex = regexp.MustCompile(`y$`)
 	endSRegex = regexp.MustCompile(`s$`)
 	IdentifiableByType = map[string]string{
-		reflect.Int.String()       : "hardcore.IntIdentifiable",
-		reflect.Int8.String()      : "hardcore.Int8Identifiable",
-		reflect.Int16.String()     : "hardcore.Int16Identifiable",
-		reflect.Int32.String()     : "hardcore.Int32Identifiable",
-		reflect.Int64.String()     : "hardcore.Int64Identifiable",
-		reflect.Uint.String()      : "hardcore.UintIdentifiable",
-		reflect.Uint8.String()     : "hardcore.Uint8Identifiable",
-		reflect.Uint16.String()    : "hardcore.Uint16Identifiable",
-		reflect.Uint32.String()    : "hardcore.Uint32Identifiable",
-		reflect.Uint64.String()    : "hardcore.Uint64Identifiable",
-		reflect.Float32.String()   : "hardcore.Float32Identifiable",
-		reflect.Float64.String()   : "hardcore.Float64Identifiable",
-		reflect.Complex64.String() : "hardcore.Complex64Identifiable",
-		reflect.Complex128.String(): "hardcore.Complex128Identifiable",
-		reflect.String.String()    : "hardcore.StringIdentifiable",
-		"rune"                     : "hardcore.RuneIdentifiable",
+		reflect.Int.String()       : "types.IntIdentifiable",
+		reflect.Int8.String()      : "types.Int8Identifiable",
+		reflect.Int16.String()     : "types.Int16Identifiable",
+		reflect.Int32.String()     : "types.Int32Identifiable",
+		reflect.Int64.String()     : "types.Int64Identifiable",
+		reflect.Uint.String()      : "types.UintIdentifiable",
+		reflect.Uint8.String()     : "types.Uint8Identifiable",
+		reflect.Uint16.String()    : "types.Uint16Identifiable",
+		reflect.Uint32.String()    : "types.Uint32Identifiable",
+		reflect.Uint64.String()    : "types.Uint64Identifiable",
+		reflect.Float32.String()   : "types.Float32Identifiable",
+		reflect.Float64.String()   : "types.Float64Identifiable",
+		reflect.Complex64.String() : "types.Complex64Identifiable",
+		reflect.Complex128.String(): "types.Complex128Identifiable",
+		reflect.String.String()    : "types.StringIdentifiable",
+		"rune"                     : "types.RuneIdentifiable",
 	}
 	AutoFileTpl = `package {{.Package}}
 
@@ -85,7 +85,6 @@ func Build() {
 	autoFiles := make(map[string]*autoFile)
 	for _, result := range results {
 		if aFile, ok := autoFiles[result.PkgPath]; ok {
-			fmt.Println(result.Imports)
 			for _, resultImport := range result.Imports {
 				found := false
 				for _, autoImport := range aFile.Imports {

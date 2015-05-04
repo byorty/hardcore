@@ -51,7 +51,7 @@ func (s *SomeStatus) GetName() string {
     return s.Name
 }
 
-func (s *SomeStatus) ById(id int) hardcore.IntIdentifiable {
+func (s *SomeStatus) ById(id int) types.IntIdentifiable {
     switch id {
     case 1:
         s.Id = 1

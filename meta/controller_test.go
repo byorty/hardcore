@@ -11,8 +11,8 @@ func TestController(t *testing.T) {
     return new(SomeController)
 }
 
-func (t *SomeController) CallAction(action interface{}, scope *mux.RequestScope) {
-    action.(func(*SomeController, *mux.RequestScope))(t, scope)
+func (t *SomeController) CallAction(action interface{}, scope mux.RequestScope) {
+    action.(func(*SomeController, mux.RequestScope))(t, scope)
 }
 `
 	builder := new(controllerBuilder)
