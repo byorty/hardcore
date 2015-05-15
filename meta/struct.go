@@ -22,11 +22,11 @@ type Struct struct {
 type StructMap map[string]*Struct
 
 type Field struct {
-	Name  string
-	Kind  reflect.Kind
-//	Value reflect.Value
-//	Type  reflect.Type
-	Tag   reflect.StructTag
+	Name    string
+	Kind    reflect.Kind
+	Tag     reflect.StructTag
+	Pkg     string
+	PkgPath string
 }
 
 func (f *Field) IsId() bool {
@@ -100,6 +100,11 @@ func AnalyzeStruct(data interface{}) *Struct {
 					Name: fieldType.Name,
 					Kind: fieldType.Type.Kind(),
 					Tag: fieldType.Tag,
+				}
+				if field.Kind == reflect.Struct {
+					parts := strings.Split(fieldType.PkgPath(), "/")
+					field.Pkg = parts[len(parts)-1]
+					field.PkgPath = fieldType.PkgPath()
 				}
 				if field.IsId() {
 					metaStruct.IdField = field

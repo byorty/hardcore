@@ -11,8 +11,16 @@ type QueryExecuter interface {
 	QueryRow(QueryBuilder, DAO, interface{})
 }
 
+type DBKind int
+
+const (
+	SqlDB   DBKind = iota
+	NoSqlDB
+)
+
 type DB interface {
 	QueryExecuter
+	GetKind() DBKind
 	Close()
 }
 

@@ -65,4 +65,8 @@ func (s *sqlDB) Close() {
 	}
 }
 
+func (s sqlDB) GetKind() types.DBKind {
+	return types.SqlDB
+}
+
 

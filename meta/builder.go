@@ -32,14 +32,20 @@ type builderKind int
 const (
 	enumBuilderKind       builderKind = iota
 	controllerBuilderKind
+	modelBuilderKind
 )
 
 var (
 	builders = map[builderKind]Builder{
 		enumBuilderKind      : new(enumBuilder),
 		controllerBuilderKind: new(controllerBuilder),
+		modelBuilderKind:      new(modelBuilder),
 	}
-	itemsByKind = make(map[builderKind][]interface{})
+	itemsByKind = map[builderKind][]interface{}{
+		enumBuilderKind      : make([]interface{}, 0),
+		controllerBuilderKind: make([]interface{}, 0),
+		modelBuilderKind     : make([]interface{}, 0),
+	}
 	endYRegex = regexp.MustCompile(`y$`)
 	endSRegex = regexp.MustCompile(`s$`)
 	IdentifiableByType = map[string]string{
@@ -70,11 +76,22 @@ var (
 )
 
 func RegisterEnums(enums ...interface{}) {
-	itemsByKind[enumBuilderKind] = enums
+	addItems(enumBuilderKind, enums)
 }
 
 func RegisterControllers(controllers ...interface{}) {
-	itemsByKind[controllerBuilderKind] = controllers
+	addItems(controllerBuilderKind, controllers)
+}
+
+func addItems(kind builderKind, items []interface{}) {
+	itemsByKind[kind] = append(itemsByKind[kind], items...)
+}
+
+func RegisterModels(dbName string, models ...interface{}) {
+	itemsByKind[modelBuilderKind] = append(itemsByKind[modelBuilderKind], ModelByDb{
+		dbName: dbName,
+		models: models,
+	})
 }
 
 func Build() {

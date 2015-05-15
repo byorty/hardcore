@@ -6,3 +6,7 @@ type DAO interface {
 	Scan(data interface{}, model interface{})
 }
 
+type SqlDAO struct {
+
+}
+
