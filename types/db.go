@@ -1,14 +1,14 @@
 package types
 
-type QueryBuilder interface {
-	GetQuery() interface{}
+type Query interface {
+	ToNative() interface{}
 	GetArgs() []interface{}
 }
 
 type QueryExecuter interface {
-	Exec(QueryBuilder, DAO, interface{})
-	Query(QueryBuilder, DAO, interface{})
-	QueryRow(QueryBuilder, DAO, interface{})
+	Exec(Query, DAO, interface{})
+	Query(Query, DAO, interface{})
+	QueryRow(Query, DAO, interface{})
 }
 
 type DBKind int

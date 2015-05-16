@@ -21,12 +21,21 @@ type Struct struct {
 
 type StructMap map[string]*Struct
 
+type FieldSign int
+
+const (
+	NoneSign      FieldSign = iota
+	PtrStructSign
+)
+
 type Field struct {
-	Name    string
-	Kind    reflect.Kind
-	Tag     reflect.StructTag
-	Pkg     string
-	PkgPath string
+	Name     string
+	Kind     reflect.Kind
+	TypeName string
+	Tag      reflect.StructTag
+	Pkg      string
+	PkgPath  string
+	Sign     FieldSign
 }
 
 func (f *Field) IsId() bool {
@@ -95,21 +104,31 @@ func AnalyzeStruct(data interface{}) *Struct {
 			metaStruct.FieldMap = make(FieldMap)
 			metaStruct.Fields = make(Fields, 0)
 			for i := 0;i < valType.NumField();i++ {
-				fieldType := valType.Field(i)
+				structField := valType.Field(i)
 				field := &Field{
-					Name: fieldType.Name,
-					Kind: fieldType.Type.Kind(),
-					Tag: fieldType.Tag,
+					Name: structField.Name,
+					Tag: structField.Tag,
 				}
+
+				fieldType := structField.Type
+				if fieldType.Kind() == reflect.Ptr {
+					if structField.Type.Elem().Kind() == reflect.Struct {
+						fieldType = structField.Type.Elem()
+						field.Sign = PtrStructSign
+					}
+				}
+				field.Kind = fieldType.Kind()
+
 				if field.Kind == reflect.Struct {
 					parts := strings.Split(fieldType.PkgPath(), "/")
 					field.Pkg = parts[len(parts)-1]
 					field.PkgPath = fieldType.PkgPath()
+					field.TypeName = fieldType.Name()
 				}
 				if field.IsId() {
 					metaStruct.IdField = field
 				}
-				metaStruct.FieldMap[fieldType.Name] = field
+				metaStruct.FieldMap[structField.Name] = field
 				metaStruct.Fields = append(metaStruct.Fields, field)
 			}
 			structMap[fullname] = metaStruct

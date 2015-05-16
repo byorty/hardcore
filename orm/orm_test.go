@@ -17,7 +17,7 @@ type TestStatus struct {
 
 type Test struct {
 	Id     int        `orm:"pk"`
-	Name   string     // `orm:"-;name:some_name;default:someValue;required;pk;index;unique;relation:oneToOne;fetch:lazy"`
+	Name   string     // `orm:"-;default:someValue;required;pk;index;unique;relation:oneToOne"`
 	Status TestStatus `orm:"relation:oneToOne;fetch:lazy"`
 }
 

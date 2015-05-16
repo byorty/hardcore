@@ -123,6 +123,9 @@ func (this *Logger) writeMessage(id int, message *LogMessage) {
 				fmt.Sprintf(message.Message, message.Args...),
 			),
 		)
+		if message.Level == ErrorLevel {
+			os.Exit(1)
+		}
 	}
 }
 
