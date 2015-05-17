@@ -6,8 +6,8 @@ type Proto interface {
 	GetByName(string) ProtoProperty
 	GetByNum(int) ProtoProperty
 	Set(string, ProtoProperty) Proto
-	ToMap() ProtoMap
-	ToSlice() ProtoSlice
+	GetMap() map[string]ProtoProperty
+	GetSlice() []ProtoProperty
 }
 
 type ProtoMap interface {

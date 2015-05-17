@@ -36,10 +36,10 @@ func (p *protoStruct) Set(name string, property types.ProtoProperty) types.Proto
 	return p
 }
 
-func (p *protoStruct) ToMap() types.ProtoMap {
+func (p *protoStruct) GetMap() map[string]types.ProtoProperty {
 	return p.propMap
 }
 
-func (p *protoStruct) ToSlice() types.ProtoSlice {
+func (p *protoStruct) GetSlice() []types.ProtoProperty {
 	return p.props
 }
