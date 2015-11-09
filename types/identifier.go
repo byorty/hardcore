@@ -1,7 +1,7 @@
 package types
 
 type IntIdentifier interface {
-	ById(int) IntIdentifiable
+	ById(int)
 }
 
 type IntIdentifiers interface {
@@ -9,7 +9,7 @@ type IntIdentifiers interface {
 }
 
 type Int8Identifier interface {
-	ById(int8) Int8Identifiable
+	ById(int8)
 }
 
 type Int8Identifiers interface {
@@ -17,7 +17,7 @@ type Int8Identifiers interface {
 }
 
 type Int16Identifier interface {
-	ById(int16) Int16Identifiable
+	ById(int16)
 }
 
 type Int16Identifiers interface {
@@ -25,7 +25,7 @@ type Int16Identifiers interface {
 }
 
 type Int32Identifier interface {
-	ById(int32) Int32Identifiable
+	ById(int32)
 }
 
 type Int32Identifiers interface {
@@ -33,7 +33,7 @@ type Int32Identifiers interface {
 }
 
 type Int64Identifier interface {
-	ById(int64) Int64Identifiable
+	ById(int64)
 }
 
 type Int64Identifiers interface {
@@ -41,7 +41,7 @@ type Int64Identifiers interface {
 }
 
 type UintIdentifier interface {
-	ById(uint) UintIdentifiable
+	ById(uint)
 }
 
 type UintIdentifiers interface {
@@ -49,7 +49,7 @@ type UintIdentifiers interface {
 }
 
 type Uint8Identifier interface {
-	ById(uint8) Uint8Identifiable
+	ById(uint8)
 }
 
 type Uint8Identifiers interface {
@@ -57,7 +57,7 @@ type Uint8Identifiers interface {
 }
 
 type Uint16Identifier interface {
-	ById(uint16) Uint16Identifiable
+	ById(uint16)
 }
 
 type Uint16Identifiers interface {
@@ -65,7 +65,7 @@ type Uint16Identifiers interface {
 }
 
 type Uint32Identifier interface {
-	ById(uint32) Uint32Identifiable
+	ById(uint32)
 }
 
 type Uint32Identifiers interface {
@@ -73,7 +73,7 @@ type Uint32Identifiers interface {
 }
 
 type Uint64Identifier interface {
-	ById(uint64) Uint64Identifiable
+	ById(uint64)
 }
 
 type Uint64Identifiers interface {
@@ -81,7 +81,7 @@ type Uint64Identifiers interface {
 }
 
 type Float32Identifier interface {
-	ById(float32) Float32Identifiable
+	ById(float32)
 }
 
 type Float32Identifiers interface {
@@ -89,7 +89,7 @@ type Float32Identifiers interface {
 }
 
 type Float64Identifier interface {
-	ById(float64) Float64Identifiable
+	ById(float64)
 }
 
 type Float64Identifiers interface {
@@ -97,7 +97,7 @@ type Float64Identifiers interface {
 }
 
 type Complex64Identifier interface {
-	ById(complex64) Complex64Identifiable
+	ById(complex64)
 }
 
 type Complex64Identifiers interface {
@@ -105,7 +105,7 @@ type Complex64Identifiers interface {
 }
 
 type Complex128Identifier interface {
-	ById(complex128) Complex128Identifiable
+	ById(complex128)
 }
 
 type Complex128Identifiers interface {
@@ -113,7 +113,7 @@ type Complex128Identifiers interface {
 }
 
 type StringIdentifier interface {
-	ById(string) StringIdentifiable
+	ById(string)
 }
 
 type StringIdentifiers interface {
@@ -121,7 +121,7 @@ type StringIdentifiers interface {
 }
 
 type RuneIdentifier interface {
-	ById(rune) RuneIdentifiable
+	ById(rune)
 }
 
 type RuneIdentifiers interface {

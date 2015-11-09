@@ -61,7 +61,7 @@ func TestRouter(t *testing.T) {
 								scope.GetWriter().Write([]byte(", after#1"))
 							}),
 					).
-					Get("/view2/{name:([a-z0-9]+)}", (*TestController).View).
+					Get("/view2/{name:([a-z0-9]+)}", testControllerActionView).
 					After(func (scope RequestScope) {
 						scope.GetWriter().Write([]byte(", after#0"))
 					}),
@@ -142,9 +142,24 @@ func NewTestController() ActionController {
 }
 
 func (t *TestController) CallAction(action interface{}, scope RequestScope) {
-	action.(func(*TestController, RequestScope))(t, scope)
+	typeAction, ok := action.(TestControllerActionView)
+	if ok {
+		typeAction(t, scope)
+	} else {
+		action.(func(*TestController, RequestScope))(t, scope)
+	}
 }
 
 func (t *TestController) View(scope RequestScope) {
 	scope.GetWriter().Write([]byte("view user " + scope.GetPathParams()["name"]))
+}
+
+var (
+	testControllerActionView TestControllerActionView = (*TestController).View
+)
+
+type TestControllerActionView func(*TestController, RequestScope)
+
+func (a *TestControllerActionView) Form() {
+
 }

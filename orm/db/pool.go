@@ -5,31 +5,31 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
-type dbs map[string]types.DB
+type PoolImpl map[string]types.DB
 
 var (
-	pool = make(dbs)
+	pool = make(PoolImpl)
 )
 
 func Pool() types.Pool {
 	return pool
 }
 
-func (d dbs) Add(name string, db types.DB) types.Pool {
+func (p PoolImpl) Add(name string, db types.DB) types.Pool {
 	if db == nil {
 		logger.Err(`pool - can't add disconnected db`)
 	} else {
-		d[name] = db
+		p[name] = db
 	}
-	return d
+	return p
 }
 
-func (d dbs) ByDAO(impl types.DAO) types.DB {
-	return d.ByName(impl.GetDB())
+func (p PoolImpl) ByDAO(impl types.DAO) types.DB {
+	return p.ByName(impl.GetDB())
 }
 
-func (d dbs) ByName(name string) types.DB {
-	if db, ok := d[name]; ok {
+func (p PoolImpl) ByName(name string) types.DB {
+	if db, ok := p[name]; ok {
 		return db
 	} else {
 		return nil

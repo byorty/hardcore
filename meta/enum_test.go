@@ -2,6 +2,7 @@ package meta
 
 import (
 	"testing"
+	"fmt"
 )
 
 type SomeStatus struct {
@@ -124,4 +125,16 @@ func (s SomeStatusMap) ByIds(ids []int) {
 	if string(results[0].Bytes) != code {
 		t.Fail()
 	}
+
+	fmt.Println(getValue(SomeEnum1).Kind())
+	var se SomeEnum
+	fmt.Println(getValue(&se).Kind())
 }
+
+type SomeEnum int
+
+const (
+	SomeEnum1 SomeEnum = iota
+	SomeEnum2
+	SomeEnum3
+)

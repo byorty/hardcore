@@ -1,5 +1,9 @@
 package types
 
+type Prototyped interface {
+	Proto() Proto
+}
+
 type Proto interface {
 	HasKey(string) bool
 	HasNum(int) bool

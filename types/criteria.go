@@ -7,7 +7,8 @@ type Logic interface {
 }
 
 type Criteria interface {
-	Add(...Logic) Criteria
-	One(interface{})
+	Query
+	Add(Logic) Criteria
+	One(StraightMappingModel)
 	All(interface{})
 }

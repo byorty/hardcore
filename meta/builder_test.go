@@ -15,7 +15,7 @@ func TestBuilder1(t *testing.T) {
 
 	RegisterEnums(
 		&SomeStatus{},
-//		&SomeType{},
+		&UserRole{},
 	)
 	RegisterControllers(
 		&SomeController{},

@@ -7,7 +7,6 @@ import (
 	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/types"
 	"reflect"
-	"github.com/byorty/hardcore/proto"
 	"regexp"
 	"github.com/byorty/hardcore/logger"
 	"fmt"
@@ -16,6 +15,38 @@ import (
 type ModelByDb struct {
 	dbName string
 	models []interface{}
+}
+
+type ormTag map[string]string
+
+func (o ormTag) Required() bool {
+	if o["required"] == "true" {
+		return true
+	} else {
+		return false
+	}
+}
+
+const (
+	ProtoBasicKind = "types.ProtoBasicKind"
+	ProtoEnumKind  = "types.ProtoEnumKind"
+	ProtoModelKind = "types.ProtoModelKind"
+)
+
+const (
+	ProtoNoneRelation       = "types.ProtoNoneRelation"
+	ProtoOneToOneRelation   = "types.ProtoOneToOneRelation"
+	ProtoOneToManyRelation  = "types.ProtoOneToManyRelation"
+	ProtoManyToManyRelation = "types.ProtoManyToManyRelation"
+)
+
+type protoProperty struct {
+	Name string
+	FieldName string
+	Kind string
+	Relation string
+	Required string
+	Proto string
 }
 
 var (
@@ -48,6 +79,8 @@ func({{$s}} {{.PluralType}}) DAO() {{.DaoType}} {
 
 var (
     {{$lowerType}}DAO {{.DaoType}}
+    {{$lowerType}}Proto = proto.New(){{range .ProtoProps}}.
+        Set({{.}}){{end}}
 )
 
 type {{.DaoType}} struct {
@@ -67,6 +100,7 @@ func ({{$s}} {{.DaoType}}) Scan(rawData interface{}, rawModel interface{}) {
     model := rawModel.(*{{.Type}})
     {{range .PointerFields}}model.{{.Name}} = new({{.TypeName}})
     {{end}}data.Scan({{.ScanFields}})
+    {{range .EnumFields}}{{.}}.ById({{.}}.Id){{end}}
 }
 `
 )
@@ -110,9 +144,11 @@ func (m *modelBuilder) Build(modelsByDbs ...interface{}) []*BuildResult {
 			if metaModel == nil {
 				logger.Err("model should be a struct, '%v' given", model)
 			} else {
+				enumFields := make([]string, 0)
 				scanFields := make([]string, 0)
+				protoProps := make([]string, 0)
 				pointerFields := make([]*Field, 0)
-				protoStruct := proto.New()
+//				protoStruct := proto.New()
 				for _, field := range metaModel.Fields {
 
 					tag := field.Tag.Get("orm")
@@ -120,49 +156,62 @@ func (m *modelBuilder) Build(modelsByDbs ...interface{}) []*BuildResult {
 						continue
 					}
 
-					required := false
+//					modelTag := ormTag{
+//						"default": "",
+//						"required": "false",
+//						"": "",
+//						"": "",
+//						"": "",
+//						"": "",
+//					}
+
 					fieldName := m.toSqlName(field.Name)
 
-					var kind types.ProtoKind
-					var relation types.ProtoRelation
+					var kind, relation, required, relationProto string
+					required = "true"
+					propConstruct := "proto.NewProperty"
 
 					switch field.Kind {
 					case reflect.Struct:
 						isEnum := m.isEnum(field.PkgPath, field.TypeName)
 						if isEnum || m.isModel(field.PkgPath, field.TypeName) {
 							fieldName =	fmt.Sprintf("%s_id", fieldName)
-							relation = types.ProtoOneToOneRelation
+							relation = ProtoOneToOneRelation
 							if isEnum {
-								kind = types.ProtoEnumKind
+								kind = ProtoEnumKind
+								enumFields = append(enumFields, fmt.Sprintf("model.%s", field.Name))
 							} else {
-								kind = types.ProtoModelKind
-								if field.Sign == PtrStructSign {
-									pointerFields = append(pointerFields, field)
-								}
+								propConstruct = "proto.NewRelationProperty"
+								relationProto = fmt.Sprintf("%sProto", m.toFirstLower(field.TypeName))
+								kind = ProtoModelKind
+							}
+							if field.Sign == PtrStructSign {
+								pointerFields = append(pointerFields, field)
 							}
 							scanFields = append(scanFields, fmt.Sprintf("&(model.%s).Id", field.Name))
 						} else {
-							kind = types.ProtoBasicKind
-							relation = types.ProtoNoneRelation
+							kind = ProtoBasicKind
+							relation = ProtoNoneRelation
 							scanFields = append(scanFields, fmt.Sprintf("&model.%s", field.Name))
 						}
 					case reflect.Slice:
 
 					default:
-						kind = types.ProtoBasicKind
-						relation = types.ProtoNoneRelation
+						kind = ProtoBasicKind
+						relation = ProtoNoneRelation
 						scanFields = append(scanFields, fmt.Sprintf("&model.%s", field.Name))
 					}
 
-					protoStruct.Set(
+					params := []string{fmt.Sprintf(`"%s"`, fieldName), kind, relation, required}
+					if len (relationProto) > 0 {
+						params = append(params, relationProto)
+					}
+					protoProps = append(protoProps, fmt.Sprintf(
+						`"%s", %s(%s)`,
 						field.Name,
-						proto.NewProperty(
-							fieldName,
-							kind,
-							relation,
-							required,
-						),
-					)
+						propConstruct,
+						strings.Join(params, ", "),
+					))
 				}
 
 				buf := new(bytes.Buffer)
@@ -171,23 +220,28 @@ func (m *modelBuilder) Build(modelsByDbs ...interface{}) []*BuildResult {
 					"Type"           : metaModel.Name,
 					"DaoType"        : metaModel.Name + "DAO",
 					"PluralType"     : metaModel.PluralName,
-					"LowerType"      : strings.ToLower(metaModel.Name[0:1]) + metaModel.Name[1:],
+					"LowerType"      : m.toFirstLower(metaModel.Name),
 					"ParentDAO"      : ParentDAOByDBKind[currentDb.GetKind()],
 					"DataType"       : RawDataTypeByDBKind[currentDb.GetKind()],
 					"PointerFields"  : pointerFields,
 					"ScanFields"     : strings.Join(scanFields, ", "),
+					"EnumFields"     : enumFields,
 					"DB"             : modelsByDb.dbName,
 					"Table"          : m.toSqlName(metaModel.Name),
+					"ProtoProps"     : protoProps,
 				}
 				tmpl := template.New(metaModel.Name + "Template")
 				tmpl.Parse(ModelTmpl)
 				tmpl.Execute(buf, tmplParams)
+//				fmt.Println(buf.String())
+				fmt.Println()
 				results = append(results, &BuildResult{
 					Pkg: metaModel.Pkg,
 					PkgPath: metaModel.PkgPath,
 					Bytes: buf.Bytes(),
 					Imports: []string{
 						ImportByDBKind[currentDb.GetKind()],
+						"github.com/byorty/hardcore/proto",
 						"github.com/byorty/hardcore/orm/dao",
 					},
 				})
@@ -221,4 +275,8 @@ func (m *modelBuilder) toSqlName(name string) string {
 	name = strings.TrimLeft(name, "_")
 	name = strings.ToLower(name)
 	return name
+}
+
+func (m *modelBuilder) toFirstLower(str string) string {
+	return strings.ToLower(str[0:1]) + str[1:]
 }
