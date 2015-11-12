@@ -1,16 +1,16 @@
-package orm
+package hardcore
 
 import (
 	"testing"
-	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"github.com/byorty/hardcore/orm/db"
+	"github.com/byorty/hardcore/db"
 	"github.com/byorty/hardcore/proto"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/orm/criteria"
-	"github.com/byorty/hardcore/orm/criteria/cond"
+	"github.com/byorty/hardcore/query"
+	"github.com/byorty/hardcore/expr"
 	"time"
+	"github.com/byorty/hardcore/dao"
 )
 
 type UserRole int
@@ -54,16 +54,23 @@ type AutoUser struct {
 	RegisterDate time.Time
 }
 
-func(u *User) CommonDAO() types.DAO {
+func(u *AutoUser) CommonDAO() types.DAO {
 	return userDAO
 }
 
-//func (a *AutoUser) GetStatus() *UserStatus {
-//	if a.Status == nil {
-//		a.Status = new(UserStatus).ById(a.statusId).(*UserStatus)
-//	}
-//	return a.Status;
-//}
+func (u *AutoUser) GetRole() UserRole {
+	return u.Role
+}
+
+type Users []*User
+
+func(u *Users) CommonDAO() types.DAO {
+	return userDAO
+}
+
+func (u *Users) Proto() types.Proto {
+	return userProto
+}
 
 type User struct {
 	AutoUser
@@ -78,7 +85,7 @@ func (u *User) Proto() types.Proto {
 }
 
 type UserDAO struct {
-
+	dao.Sql
 }
 
 func (u UserDAO) GetProto() types.Proto {
@@ -93,17 +100,20 @@ func (t UserDAO) GetTable() string {
 	return "user"
 }
 
+func (u UserDAO) ScanAll(rows interface{}, model interface{}) {
+	users := model.(*Users)
+	user := new(User)
+	u.Scan(rows, user)
+	(*users) = append((*users), user)
+}
+
 func (t UserDAO) Scan(row interface{}, model interface{}) {
 	user := model.(*User)
-	err := row.(*sql.Row).Scan(&user.Id, &user.Email, &user.Password, &user.Role, &user.RegisterDate)
+	err := row.(types.SqlModelScanner).Scan(&user.Id, &user.Email, &user.Password, &user.Role, &user.RegisterDate)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
-
-//const (
-//	selectUserById = `SELECT "id", "email", "status_id", "role_id" FROM "user" WHERE "id" = $1`
-//)
 
 var (
 	userDAO UserDAO
@@ -124,14 +134,7 @@ func TestDB(t *testing.T) {
 		Add("default", sqlDb)
 
 	user := new(User)
-	currentDb := db.Pool().ByDAO(user.DAO())
-	fmt.Println(currentDb)
-	fmt.Println(sqlDb)
-
-//	currentDb.QueryRow(db.RawQuery{selectUserById, 1}, user.DAO(), user)
-	criteria.New(user.DAO()).Add(cond.Eq("Id", 1)).One(user)
-
-//	t.Log(criteria.New(user.DAO()).Add(cond.Eq("Id", 1)).ToNative())
+	query.Criteria().Add(expr.Eq("Id", 1)).One(user)
 	t.Log(user)
 	if user.Id != 1 {
 		t.Fail()
@@ -142,6 +145,14 @@ func TestDB(t *testing.T) {
 
 	t.Log(role)
 	if role != LoggedUserRole {
+		t.Fail()
+	}
+
+	existsUsers := Users{user}
+	var users Users
+	query.Criteria().Add(expr.Eq("Id", 1)).All(&users)
+	t.Log(users)
+	if existsUsers[0].Id != users[0].Id {
 		t.Fail()
 	}
 }

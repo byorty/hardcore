@@ -8,11 +8,10 @@ type DAO interface {
 	GetProto() Proto
 	GetDB() string
 	GetTable() string
-	Scan(data interface{}, model interface{})
+	ScanAll(interface{}, interface{})
+	Scan(interface{}, interface{})
 }
 
 type IdentityMap interface {
 	Get(string, interface{}) bool
-
 }
-
