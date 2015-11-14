@@ -1,27 +1,44 @@
 package types
 
-type LogicChainType int
+type LogicChainKind int
 
 const (
-	AndLogicChainType = iota
-	OrLogicChainType
+	AndLogicChainKind = iota
+	OrLogicChainKind
 )
+
+type Projection interface {
+	SqlPartWriter
+	IsWriteSqlPart() bool
+//	SetTable(string)
+//	GetTable() string
+}
 
 type LogicChain interface {
 	SqlPartWriter
-	GetType() LogicChainType
+	Add(Logic)
 }
 
 type Logic interface {
 	SqlPartWriter
-	GetLeft() string
-	GetRight() interface{}
-	GetLogic() string
+	GetArg() interface{}
 }
 
 type Criteria interface {
 	Query
-	Add(Logic) Criteria
 	One(StraightMappingModel)
 	All(StraightMappingModel)
+}
+
+type CustomCriteria interface {
+	Custom(...interface{})
+	Customs(...[]interface{})
+}
+
+type SelectCriteria interface {
+	Criteria
+	CustomCriteria
+	Add(Projection) SelectCriteria
+	And(Logic) SelectCriteria
+	Or(Logic) SelectCriteria
 }

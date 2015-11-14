@@ -1,7 +1,7 @@
 package types
 
 type DAOConnected interface {
-	CommonDAO() DAO
+	DAO() DAO
 }
 
 type DAO interface {
@@ -10,6 +10,12 @@ type DAO interface {
 	GetTable() string
 	ScanAll(interface{}, interface{})
 	Scan(interface{}, interface{})
+	All(Query, StraightMappingModel)
+	One(Query, StraightMappingModel)
+	Custom(DAO, Query, ...interface{})
+	Customs(DAO, Query, ...[]interface{})
+	Save(StraightMappingModel)
+	Add(StraightMappingModel)
 }
 
 type IdentityMap interface {

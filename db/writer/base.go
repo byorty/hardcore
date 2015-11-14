@@ -5,7 +5,8 @@ import "github.com/byorty/hardcore/types"
 type BaseImpl struct {
 	proto types.Proto
 	table string
-	conditions []types.Logic
+	chains []types.LogicChain
+	projections []types.Projection
 }
 
 func (b *BaseImpl) SetProto(proto types.Proto) {
@@ -16,6 +17,10 @@ func (b *BaseImpl) SetTable(table string) {
 	b.table = table
 }
 
-func (b *BaseImpl) SetConditions(conditions []types.Logic) {
-	b.conditions = conditions
+func (b *BaseImpl) SetLogicChain(chains []types.LogicChain) {
+	b.chains = chains
+}
+
+func (b *BaseImpl) SetProjections(projections []types.Projection) {
+	b.projections = projections
 }

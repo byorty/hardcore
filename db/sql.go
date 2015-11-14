@@ -59,6 +59,13 @@ func (s sqlDB) QueryRow(query types.Query, d types.DAO, model interface{}) {
 	}
 }
 
+func (s sqlDB) Custom(query types.Query, items ...interface{}) {
+	row := s.db.QueryRow(query.ToNative().(string), query.GetArgs()...)
+	if row != nil {
+		row.Scan(items...)
+	}
+}
+
 func (s *sqlDB) Close() {
 	err := s.db.Close()
 	if err != nil {

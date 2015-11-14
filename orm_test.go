@@ -7,10 +7,11 @@ import (
 	"github.com/byorty/hardcore/db"
 	"github.com/byorty/hardcore/proto"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/query"
+	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/expr"
 	"time"
 	"github.com/byorty/hardcore/dao"
+	"github.com/byorty/hardcore/proj"
 )
 
 type UserRole int
@@ -54,7 +55,7 @@ type AutoUser struct {
 	RegisterDate time.Time
 }
 
-func(u *AutoUser) CommonDAO() types.DAO {
+func(u *AutoUser) DAO() types.DAO {
 	return userDAO
 }
 
@@ -64,7 +65,7 @@ func (u *AutoUser) GetRole() UserRole {
 
 type Users []*User
 
-func(u *Users) CommonDAO() types.DAO {
+func(u *Users) DAO() types.DAO {
 	return userDAO
 }
 
@@ -74,10 +75,6 @@ func (u *Users) Proto() types.Proto {
 
 type User struct {
 	AutoUser
-}
-
-func(u *User) DAO() UserDAO {
-	return userDAO
 }
 
 func (u *User) Proto() types.Proto {
@@ -92,11 +89,11 @@ func (u UserDAO) GetProto() types.Proto {
 	return userProto
 }
 
-func (t UserDAO) GetDB() string {
+func (u UserDAO) GetDB() string {
 	return "default"
 }
 
-func (t UserDAO) GetTable() string {
+func (u UserDAO) GetTable() string {
 	return "user"
 }
 
@@ -134,7 +131,7 @@ func TestDB(t *testing.T) {
 		Add("default", sqlDb)
 
 	user := new(User)
-	query.Criteria().Add(expr.Eq("Id", 1)).One(user)
+	criteria.Select().And(expr.Eq("Id", 1)).One(user)
 	t.Log(user)
 	if user.Id != 1 {
 		t.Fail()
@@ -150,9 +147,19 @@ func TestDB(t *testing.T) {
 
 	existsUsers := Users{user}
 	var users Users
-	query.Criteria().Add(expr.Eq("Id", 1)).All(&users)
+	criteria.Select().And(expr.Eq("Id", 1)).All(&users)
 	t.Log(users)
 	if existsUsers[0].Id != users[0].Id {
 		t.Fail()
 	}
+
+	var count int
+	criteria.SelectByDAO(user.DAO()).Add(proj.Count("Id")).Custom(&count)
+	t.Log(count)
+	if count != 1 {
+		t.Fail()
+	}
+
+//	currentDb := db.Pool().ByDAO(user.DAO())
+//	currentDb.Query()
 }

@@ -9,6 +9,7 @@ type QueryExecuter interface {
 	Exec(Query, DAO, interface{})
 	Query(Query, DAO, interface{})
 	QueryRow(Query, DAO, interface{})
+	Custom(Query, ...interface{})
 }
 
 type DBKind int
@@ -34,8 +35,10 @@ type Pool interface {
 type QueryWriter interface {
 	SetProto(Proto)
 	SetTable(string)
-	SetConditions([]Logic)
+	SetLogicChain([]LogicChain)
+	SetProjections([]Projection)
 	WriteSelect() interface{}
+//	WriteInsert() interface{}
 }
 
 type SqlQueryWriter interface {

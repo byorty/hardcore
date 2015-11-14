@@ -6,33 +6,25 @@ import (
 )
 
 type Binary struct {
-	left  string
-	right interface{}
+	name string
+	arg interface{}
 	logic string
 }
 
-func (b Binary) GetLeft() string {
-	return b.left
-}
-
-func (b Binary) GetRight() interface{} {
-	return b.right
-}
-
-func (b Binary) GetLogic() string {
-	return b.logic
+func (b Binary) GetArg() interface{} {
+	return b.arg
 }
 
 func (b Binary) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, table string, i int) string {
-	property := proto.GetByName(b.GetLeft())
+	property := proto.GetByName(b.name)
 	return fmt.Sprintf(
 		"(%s %s %s)",
 		writer.WriteField(table, property.GetField()),
-		b.GetLogic(),
+		b.logic,
 		writer.WriteArg(i, property),
 	)
 }
 
-func Eq(left string, right interface{}) types.Logic {
-	return &Binary{left, right, "="}
+func Eq(name string, arg interface{}) types.Logic {
+	return &Binary{name, arg, "="}
 }
