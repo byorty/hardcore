@@ -15,7 +15,7 @@ func Count(name string) *ProjCount {
 	return count
 }
 
-func (p *ProjCount) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, table string, i int) string {
+func (p *ProjCount) UpdateSqlQueryWriter(writer types.SqlQueryWriter, proto types.Proto, table string) {
 	property := proto.GetByName(p.name)
-	return fmt.Sprintf("COUNT(%s)", writer.WriteField(table, property.GetField()))
+	writer.AddField(fmt.Sprintf("COUNT(%s)", writer.WriteField(table, property.GetField())))
 }

@@ -43,6 +43,9 @@ type QueryWriter interface {
 
 type SqlQueryWriter interface {
 	QueryWriter
+	AddField(string)
+	SetFields([]string)
+	GetFields() []string
 	WriteField(string, string) string
 	WriteTable(string) string
 	WriteArg(int, ProtoProperty) string

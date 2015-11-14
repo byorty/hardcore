@@ -2,9 +2,9 @@ package proj
 
 type BaseImpl struct {
 	name string
-	table string
+	alias string
 }
 
-func (b *BaseImpl) IsWriteSqlPart() bool {
-	return true
+func (b *BaseImpl) Alias(alias string) {
+	b.alias = alias
 }

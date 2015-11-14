@@ -9,25 +9,36 @@ import (
 
 type SqlImpl struct {
 	BaseImpl
+	fields []string
+}
+
+func (s *SqlImpl) AddField(field string) {
+	s.fields = append(s.fields, field)
+}
+
+func (s *SqlImpl) SetFields(fields []string) {
+	s.fields = fields
+}
+
+func (s *SqlImpl) GetFields() []string {
+	return s.fields
 }
 
 func (s SqlImpl) writeSelect(writer types.SqlQueryWriter) interface{} {
 	buf := new(bytes.Buffer)
 	buf.WriteString("SELECT ")
 
-	properties := make([]string, 0)
+	writer.SetFields(make([]string, 0))
 	if len(s.projections) > 0 {
-		for i, projection := range s.projections {
-			if projection.IsWriteSqlPart() {
-				properties = append(properties, projection.WriteSqlPart(writer, s.proto, s.table, i))
-			}
+		for _, projection := range s.projections {
+			projection.UpdateSqlQueryWriter(writer, s.proto, s.table)
 		}
 	} else {
 		for _, property := range s.proto.GetSlice() {
-			properties = append(properties, writer.WriteField(s.table, property.GetField()))
+			writer.AddField(writer.WriteField(s.table, property.GetField()))
 		}
 	}
-	buf.WriteString(strings.Join(properties, ", "))
+	buf.WriteString(strings.Join(writer.GetFields(), ", "))
 	buf.WriteString(fmt.Sprintf(" FROM %s", writer.WriteTable(s.table)))
 
 	chainsLen := len(s.chains)

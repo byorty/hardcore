@@ -8,10 +8,8 @@ const (
 )
 
 type Projection interface {
-	SqlPartWriter
-	IsWriteSqlPart() bool
-//	SetTable(string)
-//	GetTable() string
+	Alias(string)
+	UpdateSqlQueryWriter(SqlQueryWriter, Proto, string)
 }
 
 type LogicChain interface {
