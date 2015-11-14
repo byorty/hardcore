@@ -35,8 +35,13 @@ func NewSqlDB(uri string) types.DB {
 
 func (s sqlDB) Exec(query types.Query, d types.DAO, model interface{}) {
 	sql := query.ToNative().(string)
-	_, err := s.db.Exec(sql, query.GetArgs()...)
-	if err != nil {
+	result, err := s.db.Exec(sql, query.GetArgs()...)
+	if err == nil {
+		_, err := result.LastInsertId()
+		if err == nil {
+//			model.(types.StraightMappingModel).SetId(int(id))
+		}
+	} else {
 		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)
 	}
 }

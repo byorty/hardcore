@@ -4,9 +4,9 @@ type Named interface {
 	GetName() string
 }
 
-type IntEnum interface {
+type Enum interface {
 	Named
-	IntIdentifiable
+	Identifiable
 }
 
 type Int8Enum interface {

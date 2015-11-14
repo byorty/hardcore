@@ -5,6 +5,7 @@ import (
 	"github.com/byorty/hardcore/db"
 	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/expr"
+	"github.com/byorty/hardcore/query"
 )
 
 type Sql struct {}
@@ -21,8 +22,12 @@ func (s Sql) getWriter(model types.StraightMappingModel) types.QueryWriter {
 	return writer
 }
 
-func (s Sql) Add(model types.StraightMappingModel) {
+func (s Sql) Insert(model types.StraightMappingModel, args ...interface{}) {
+	writer := s.getWriter(model)
+	writer.SetArgs(args)
 
+	currentDb := db.Pool().ByDAO(model.DAO())
+	currentDb.Exec(query.Sql{writer.WriteInsert(), args}, model.DAO(), model)
 }
 
 func (s Sql) All(query types.Query, models types.StraightMappingModel) {
@@ -43,11 +48,11 @@ func (s Sql) Custom(dao types.DAO, query types.Query, items ...interface{}) {
 }
 
 func (s Sql) ById(id int) types.SelectCriteria {
-	return criteria.Select().And(expr.Eq("Id", id))
+	return criteria.Select().And(expr.Eq("id", id))
 }
 
 func (s Sql) ByIds(ids []int) types.SelectCriteria {
-	return criteria.Select().And(expr.In("Id", ids))
+	return criteria.Select().And(expr.In("id", ids))
 }
 
 //func (s Sql) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {

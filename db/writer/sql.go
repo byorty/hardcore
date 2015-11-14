@@ -58,3 +58,26 @@ func (s SqlImpl) writeSelect(writer types.SqlQueryWriter) interface{} {
 
 	return fmt.Sprintf(buf.String(), args...)
 }
+
+func (s SqlImpl) writeInsert(writer types.SqlQueryWriter) interface{} {
+	buf := new(bytes.Buffer)
+	buf.WriteString("INSERT INTO ")
+	buf.WriteString(writer.WriteTable(s.table))
+	buf.WriteString(" (")
+
+	writer.SetFields(make([]string, 0))
+	for _, property := range s.proto.GetSlice() {
+		writer.AddField(writer.WriteField(s.table, property.GetField()))
+	}
+	buf.WriteString(strings.Join(writer.GetFields(), ", "))
+	buf.WriteString(") VALUES (")
+
+	args := make([]string, len(s.args))
+	for i, arg := range s.args {
+		args[i] = fmt.Sprintf(writer.GetArgTpl(), writer.WriteArg(i, arg))
+	}
+
+	buf.WriteString(strings.Join(args, ", "))
+	buf.WriteString(")")
+	return buf.String()
+}

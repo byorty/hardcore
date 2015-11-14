@@ -14,8 +14,9 @@ type DAO interface {
 	One(Query, StraightMappingModel)
 	Custom(DAO, Query, ...interface{})
 //	Customs(DAO, Query, ...[]interface{})
-	Save(StraightMappingModel)
-	Add(StraightMappingModel)
+//	Save(StraightMappingModel)
+//	Add(StraightMappingModel)
+	Insert(StraightMappingModel, ...interface{})
 	ById(int) SelectCriteria
 	ByIds([]int) SelectCriteria
 //	ByIds([]interface{}) SelectCriteria

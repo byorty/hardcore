@@ -33,6 +33,10 @@ func (p *PostgresImpl) GetArgTpl() string {
 	return "$%v"
 }
 
+func (p *PostgresImpl) WriteInsert() interface{} {
+	return p.writeInsert(p)
+}
+
 
 
 

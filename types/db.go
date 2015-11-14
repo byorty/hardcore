@@ -39,7 +39,7 @@ type QueryWriter interface {
 	SetProjections([]Projection)
 	SetArgs([]interface{})
 	WriteSelect() interface{}
-//	WriteInsert() interface{}
+	WriteInsert() interface{}
 }
 
 type SqlQueryWriter interface {

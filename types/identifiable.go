@@ -1,6 +1,6 @@
 package types
 
-type IntIdentifiable interface {
+type Identifiable interface {
 	GetId() int
 }
 

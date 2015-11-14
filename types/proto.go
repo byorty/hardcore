@@ -47,4 +47,14 @@ type ProtoProperty interface {
 	GetRelation() ProtoRelation
 	GetProto() Proto
 	IsRequired() bool
+	GetSetter() Setter
+	GetGetter() Getter
+}
+
+type Setter interface {
+	Call(interface{}, interface{})
+}
+
+type Getter interface {
+	Call(interface{}) interface{}
 }
