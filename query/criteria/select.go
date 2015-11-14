@@ -29,7 +29,7 @@ func newSelect() *SelectCriteriaImpl {
 func SelectByDAO(dao types.DAO) types.SelectCriteria {
 	selectCriteria := newSelect()
 	selectCriteria.dao = dao
-	selectCriteria.proto = dao.GetProto()
+	selectCriteria.proto = dao.Proto()
 	return selectCriteria
 }
 
@@ -81,9 +81,9 @@ func (s *SelectCriteriaImpl) Custom(items ...interface{}) {
 	s.dao.Custom(s.dao, s, items...)
 }
 
-func (s *SelectCriteriaImpl) Customs(items ...[]interface{}) {
-
-}
+//func (s *SelectCriteriaImpl) Customs(items ...[]interface{}) {
+//
+//}
 
 func (s *SelectCriteriaImpl) Add(projection types.Projection) types.SelectCriteria {
 	s.projections = append(s.projections, projection)

@@ -40,6 +40,6 @@ func (s Sql) Custom(dao types.DAO, query types.Query, items ...interface{}) {
 	currentDb.Custom(query, items...)
 }
 
-func (s Sql) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
-
-}
+//func (s Sql) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
+//
+//}

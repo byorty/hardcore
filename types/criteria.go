@@ -32,7 +32,7 @@ type Criteria interface {
 
 type CustomCriteria interface {
 	Custom(...interface{})
-	Customs(...[]interface{})
+//	Customs(...[]interface{})
 }
 
 type SelectCriteria interface {

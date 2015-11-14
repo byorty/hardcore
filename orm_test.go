@@ -85,7 +85,7 @@ type UserDAO struct {
 	dao.Sql
 }
 
-func (u UserDAO) GetProto() types.Proto {
+func (u UserDAO) Proto() types.Proto {
 	return userProto
 }
 
@@ -159,7 +159,4 @@ func TestDB(t *testing.T) {
 	if count != 1 {
 		t.Fail()
 	}
-
-//	currentDb := db.Pool().ByDAO(user.DAO())
-//	currentDb.Query()
 }

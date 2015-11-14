@@ -5,7 +5,7 @@ type DAOConnected interface {
 }
 
 type DAO interface {
-	GetProto() Proto
+	Proto() Proto
 	GetDB() string
 	GetTable() string
 	ScanAll(interface{}, interface{})
@@ -13,7 +13,7 @@ type DAO interface {
 	All(Query, StraightMappingModel)
 	One(Query, StraightMappingModel)
 	Custom(DAO, Query, ...interface{})
-	Customs(DAO, Query, ...[]interface{})
+//	Customs(DAO, Query, ...[]interface{})
 	Save(StraightMappingModel)
 	Add(StraightMappingModel)
 }
