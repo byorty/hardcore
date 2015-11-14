@@ -7,6 +7,7 @@ type BaseImpl struct {
 	table string
 	chains []types.LogicChain
 	projections []types.Projection
+	args []interface{}
 }
 
 func (b *BaseImpl) SetProto(proto types.Proto) {
@@ -23,4 +24,8 @@ func (b *BaseImpl) SetLogicChain(chains []types.LogicChain) {
 
 func (b *BaseImpl) SetProjections(projections []types.Projection) {
 	b.projections = projections
+}
+
+func (b *BaseImpl) SetArgs(args []interface{}) {
+	b.args = args
 }

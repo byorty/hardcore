@@ -38,14 +38,15 @@ func (s *SelectCriteriaImpl) And(logic types.Logic) types.SelectCriteria {
 }
 
 func (s *SelectCriteriaImpl) addLogic(kind types.LogicChainKind, logic types.Logic) types.SelectCriteria {
+	logic.AddArg(s)
 	chain := expr.NewLogicChain(kind)
 	chain.Add(logic)
 	s.chains = append(s.chains, chain)
-
-	if logic.GetArg() != nil {
-		s.args = append(s.args, logic.GetArg())
-	}
 	return s
+}
+
+func (s *SelectCriteriaImpl) AddArg(arg interface{}) {
+	s.args = append(s.args, arg)
 }
 
 func (s *SelectCriteriaImpl) Or(logic types.Logic) types.SelectCriteria {
@@ -70,6 +71,7 @@ func (s *SelectCriteriaImpl) ToNative() interface{} {
 	writer.SetTable(s.dao.GetTable())
 	writer.SetLogicChain(s.chains)
 	writer.SetProjections(s.projections)
+	writer.SetArgs(s.args)
 	return writer.WriteSelect()
 }
 

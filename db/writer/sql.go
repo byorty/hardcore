@@ -51,5 +51,10 @@ func (s SqlImpl) writeSelect(writer types.SqlQueryWriter) interface{} {
 		buf.WriteString(strings.Join(parts, " "))
 	}
 
-	return buf.String()
+	args := make([]interface{}, len(s.args))
+	for i, arg := range s.args {
+		args[i] = writer.WriteArg(i, arg)
+	}
+
+	return fmt.Sprintf(buf.String(), args...)
 }

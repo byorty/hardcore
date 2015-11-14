@@ -8,7 +8,6 @@ import (
 	"github.com/byorty/hardcore/proto"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/query/criteria"
-	"github.com/byorty/hardcore/expr"
 	"time"
 	"github.com/byorty/hardcore/dao"
 	"github.com/byorty/hardcore/proj"
@@ -131,7 +130,7 @@ func TestDB(t *testing.T) {
 		Add("default", sqlDb)
 
 	user := new(User)
-	criteria.Select().And(expr.Eq("Id", 1)).One(user)
+	user.DAO().ById(1).One(user)
 	t.Log(user)
 	if user.Id != 1 {
 		t.Fail()
@@ -147,9 +146,9 @@ func TestDB(t *testing.T) {
 
 	existsUsers := Users{user}
 	var users Users
-	criteria.Select().And(expr.Eq("Id", 1)).All(&users)
+	users.DAO().ByIds([]int{1, 2, 3}).All(&users)
 	t.Log(users)
-	if existsUsers[0].Id != users[0].Id {
+	if len(users) > 0 && existsUsers[0].Id != users[0].Id {
 		t.Fail()
 	}
 

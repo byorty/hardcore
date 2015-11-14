@@ -34,21 +34,23 @@ func NewSqlDB(uri string) types.DB {
 }
 
 func (s sqlDB) Exec(query types.Query, d types.DAO, model interface{}) {
-	_, err := s.db.Exec(query.ToNative().(string), query.GetArgs()...)
+	sql := query.ToNative().(string)
+	_, err := s.db.Exec(sql, query.GetArgs()...)
 	if err != nil {
-		logger.Warn(`db - can't exec "%s", detail - %v`, query, err)
+		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)
 	}
 }
 
 func (s sqlDB) Query(query types.Query, d types.DAO, models interface{}) {
-	rows, err := s.db.Query(query.ToNative().(string), query.GetArgs()...)
+	sql := query.ToNative().(string)
+	rows, err := s.db.Query(sql, query.GetArgs()...)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
 			d.ScanAll(rows, models)
 		}
 	} else {
-		logger.Warn(`db - can't exec query "%s", detail - %v`, query, err)
+		logger.Warn(`db - can't exec query "%s", detail - %v`, sql, err)
 	}
 }
 

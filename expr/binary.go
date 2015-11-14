@@ -21,8 +21,12 @@ func (b Binary) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, tab
 		"(%s %s %s)",
 		writer.WriteField(table, property.GetField()),
 		b.logic,
-		writer.WriteArg(i, property),
+		writer.GetArgTpl(),
 	)
+}
+
+func (b Binary) AddArg(criteria types.SelectCriteria) {
+	criteria.AddArg(b.arg)
 }
 
 func Eq(name string, arg interface{}) types.Logic {

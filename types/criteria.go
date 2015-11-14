@@ -19,11 +19,13 @@ type LogicChain interface {
 
 type Logic interface {
 	SqlPartWriter
+	AddArg(SelectCriteria)
 	GetArg() interface{}
 }
 
 type Criteria interface {
 	Query
+	AddArg(interface{})
 	One(StraightMappingModel)
 	All(StraightMappingModel)
 }

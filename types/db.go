@@ -37,6 +37,7 @@ type QueryWriter interface {
 	SetTable(string)
 	SetLogicChain([]LogicChain)
 	SetProjections([]Projection)
+	SetArgs([]interface{})
 	WriteSelect() interface{}
 //	WriteInsert() interface{}
 }
@@ -48,7 +49,8 @@ type SqlQueryWriter interface {
 	GetFields() []string
 	WriteField(string, string) string
 	WriteTable(string) string
-	WriteArg(int, ProtoProperty) string
+	WriteArg(int, interface{}) interface{}
+	GetArgTpl() string
 }
 
 type SqlPartWriter interface {

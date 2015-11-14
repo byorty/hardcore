@@ -25,8 +25,12 @@ func (p *PostgresImpl) WriteTable(table string) string {
 	return fmt.Sprintf("\"%s\"", table)
 }
 
-func (p *PostgresImpl) WriteArg(i int, property types.ProtoProperty) string {
-	return fmt.Sprintf("$%d", i + 1)
+func (p *PostgresImpl) WriteArg(i int, value interface{}) interface{} {
+	return i + 1
+}
+
+func (p *PostgresImpl) GetArgTpl() string {
+	return "$%v"
 }
 
 

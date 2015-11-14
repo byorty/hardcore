@@ -3,6 +3,8 @@ package dao
 import (
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/db"
+	"github.com/byorty/hardcore/query/criteria"
+	"github.com/byorty/hardcore/expr"
 )
 
 type Sql struct {}
@@ -38,6 +40,14 @@ func (s Sql) One(query types.Query, model types.StraightMappingModel) {
 func (s Sql) Custom(dao types.DAO, query types.Query, items ...interface{}) {
 	currentDb := db.Pool().ByDAO(dao)
 	currentDb.Custom(query, items...)
+}
+
+func (s Sql) ById(id int) types.SelectCriteria {
+	return criteria.Select().And(expr.Eq("Id", id))
+}
+
+func (s Sql) ByIds(ids []int) types.SelectCriteria {
+	return criteria.Select().And(expr.In("Id", ids))
 }
 
 //func (s Sql) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
