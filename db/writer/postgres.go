@@ -34,7 +34,11 @@ func (p *PostgresImpl) GetArgTpl() string {
 }
 
 func (p *PostgresImpl) WriteInsert() interface{} {
-	return p.writeInsert(p)
+	return fmt.Sprintf(`%s RETURNING "id"`, p.writeInsert(p))
+}
+
+func (p *PostgresImpl) WriteUpdate() interface{} {
+	return p.writeUpdate(p)
 }
 
 

@@ -29,3 +29,11 @@ func (b *BaseImpl) SetProjections(projections []types.Projection) {
 func (b *BaseImpl) SetArgs(args []interface{}) {
 	b.args = args
 }
+
+func (b *BaseImpl) AddArg(arg interface{}) {
+	b.args = append(b.args, arg)
+}
+
+func (b *BaseImpl) GetArgs() []interface{} {
+	return b.args
+}

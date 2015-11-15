@@ -15,6 +15,10 @@ func (b Binary) GetArg() interface{} {
 	return b.arg
 }
 
+func (b Binary) GetName() string {
+	return b.name
+}
+
 func (b Binary) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, table string, i int) string {
 	property := proto.GetByName(b.name)
 	return fmt.Sprintf(
@@ -25,7 +29,7 @@ func (b Binary) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, tab
 	)
 }
 
-func (b Binary) AddArg(criteria types.SelectCriteria) {
+func (b Binary) AddArg(criteria types.Criteria) {
 	criteria.AddArg(b.arg)
 }
 

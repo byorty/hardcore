@@ -5,29 +5,35 @@ import (
 	"github.com/byorty/hardcore/db"
 	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/expr"
-	"github.com/byorty/hardcore/query"
 )
 
 type Sql struct {}
 
 func (s Sql) Save(model types.StraightMappingModel) {
-
+	idProperty := model.Proto().GetByName("id")
+	getter := idProperty.GetGetter()
+	criteria.Update().And(expr.Eq("id", getter.Call(model))).One(model)
 }
 
-func (s Sql) getWriter(model types.StraightMappingModel) types.QueryWriter {
-	dao := model.DAO()
-	writer := db.Pool().ByDAO(dao).GetQueryWriter()
-	writer.SetProto(model.Proto())
-	writer.SetTable(dao.GetTable())
-	return writer
-}
-
-func (s Sql) Insert(model types.StraightMappingModel, args ...interface{}) {
-	writer := s.getWriter(model)
-	writer.SetArgs(args)
-
+func (s Sql) Update(query types.Query, model types.StraightMappingModel) {
 	currentDb := db.Pool().ByDAO(model.DAO())
-	currentDb.Exec(query.Sql{writer.WriteInsert(), args}, model.DAO(), model)
+	currentDb.Exec(query, model.DAO(), model)
+}
+
+func (s Sql) Add(model types.StraightMappingModel) {
+	criteria.Insert().One(model)
+}
+
+func (s Sql) Insert(query types.Query, model types.StraightMappingModel) {
+	currentDb := db.Pool().ByDAO(model.DAO())
+	if currentDb.SupportLastInsertId() {
+		currentDb.Exec(query, model.DAO(), model)
+	} else if currentDb.SupportReturningId() {
+		var id int
+		currentDb.Custom(query, &id)
+		setter := model.Proto().GetByName("id").GetSetter()
+		setter.Call(model, id)
+	}
 }
 
 func (s Sql) All(query types.Query, models types.StraightMappingModel) {

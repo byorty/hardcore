@@ -147,10 +147,6 @@ func (t UserDAO) Scan(row interface{}, model interface{}) {
 	}
 }
 
-func (u UserDAO) Add(user *User) {
-//	u.Insert(user, &user.Id, &user.Email, &user.Password, &user.Role, &user.RegisterDate)
-}
-
 var (
 	userIdSetter UserIdSetter = (*User).SetId
 	userIdGetter UserIdGetter = (*User).GetId
@@ -209,29 +205,33 @@ func TestDB(t *testing.T) {
 	var count int
 	criteria.SelectByDAO(user.DAO()).Add(proj.Count("id")).Custom(&count)
 	t.Log(count)
-	if count != 1 {
+	if count == 0 {
 		t.Fail()
 	}
 
-//	newUser := new(User)
-//	user.Email = "qwerty@qwerty.com"
-//	user.Password = "12345"
-//	user.Role = LoggedUserRole
-//	user.RegisterDate = time.Now()
-//	userDAO.Add(newUser)
-//	t.Log(newUser)
-//	if newUser.Id == 0 {
-//		t.Fail()
-//	}
-//
-//	var setter UserIdSetter
-//	setter = (*User).SetId
-//	t.Log(setter)
+	newUser := new(User)
+	newUser.SetEmail(fmt.Sprintf("%v@qwerty.com", time.Now().UnixNano()))
+	newUser.SetPassword("12345")
+	newUser.SetRole(LoggedUserRole)
+	newUser.SetRegisterDate(time.Now())
 
-	criteria.Insert().One(user)
-	t.Log(userProto.GetByName("email").GetGetter().Call(user))
+	user.DAO().Add(newUser)
+	oldPassword := newUser.GetPassword()
+	t.Log(newUser)
+	t.Log(oldPassword)
+	if newUser.GetId() == 0 {
+		t.Fail()
+	}
 
-	t.Fail()
+	newUser.SetPassword("0987654321")
+	newUser.DAO().Save(newUser)
+
+	t.Log(newUser)
+	t.Log(newUser.GetPassword())
+
+	if oldPassword == newUser.GetPassword() {
+		t.Fail()
+	}
 }
 
 type UserIdSetter func(*User, int)

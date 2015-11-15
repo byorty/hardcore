@@ -30,6 +30,10 @@ func (e *ExprIn) convertArgs(args ...interface{}) {
 	fmt.Println(args)
 }
 
+func (e ExprIn) GetName() string {
+	return e.name
+}
+
 func (e ExprIn) GetArg() interface{} {
 	return e.args
 }
@@ -47,7 +51,7 @@ func (e ExprIn) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, tab
 	)
 }
 
-func (e ExprIn) AddArg(criteria types.SelectCriteria) {
+func (e ExprIn) AddArg(criteria types.Criteria) {
 	for _, arg := range e.args {
 		criteria.AddArg(arg)
 	}

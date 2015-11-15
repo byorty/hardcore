@@ -30,16 +30,18 @@ func (i *InserCriteriaImpl) One(model types.StraightMappingModel) {
 	i.proto = model.Proto()
 
 	for _, property := range i.proto.GetSlice() {
-		getter := property.GetGetter()
-		i.AddArg(getter.Call(model))
+		if property.GetField() != "id" {
+			getter := property.GetGetter()
+			i.AddArg(getter.Call(model))
+		}
 	}
 
-//	i.dao.One(i, model)
+	i.dao.Insert(i, model)
 }
 
 func (i *InserCriteriaImpl) All(models types.StraightMappingModel) {
-	i.dao = models.DAO()
-	i.proto = models.Proto()
+//	i.dao = models.DAO()
+//	i.proto = models.Proto()
 //	i.dao.All(i, models)
 }
 

@@ -19,8 +19,9 @@ type LogicChain interface {
 
 type Logic interface {
 	SqlPartWriter
-	AddArg(SelectCriteria)
+	AddArg(Criteria)
 	GetArg() interface{}
+	GetName() string
 }
 
 type Criteria interface {
@@ -41,4 +42,11 @@ type SelectCriteria interface {
 	Add(Projection) SelectCriteria
 	And(Logic) SelectCriteria
 	Or(Logic) SelectCriteria
+}
+
+type UpdateCriteria interface {
+	Criteria
+	Add(Projection) UpdateCriteria
+	And(Logic) UpdateCriteria
+	Or(Logic) UpdateCriteria
 }

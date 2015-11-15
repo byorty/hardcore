@@ -14,13 +14,12 @@ type DAO interface {
 	One(Query, StraightMappingModel)
 	Custom(DAO, Query, ...interface{})
 //	Customs(DAO, Query, ...[]interface{})
-//	Save(StraightMappingModel)
-//	Add(StraightMappingModel)
-	Insert(StraightMappingModel, ...interface{})
+	Save(StraightMappingModel)
+	Add(StraightMappingModel)
+	Insert(Query, StraightMappingModel)
+	Update(Query, StraightMappingModel)
 	ById(int) SelectCriteria
 	ByIds([]int) SelectCriteria
-//	ByIds([]interface{}) SelectCriteria
-//	ByIds(...int) SelectCriteria
 }
 
 type IdentityMap interface {

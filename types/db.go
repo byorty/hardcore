@@ -6,9 +6,9 @@ type Query interface {
 }
 
 type QueryExecuter interface {
-	Exec(Query, DAO, interface{})
-	Query(Query, DAO, interface{})
-	QueryRow(Query, DAO, interface{})
+	Exec(Query, DAO, StraightMappingModel)
+	Query(Query, DAO, StraightMappingModel)
+	QueryRow(Query, DAO, StraightMappingModel)
 	Custom(Query, ...interface{})
 }
 
@@ -24,6 +24,8 @@ type DB interface {
 	GetKind() DBKind
 	Close()
 	GetQueryWriter() QueryWriter
+	SupportLastInsertId() bool
+	SupportReturningId() bool
 }
 
 type Pool interface {
@@ -37,9 +39,12 @@ type QueryWriter interface {
 	SetTable(string)
 	SetLogicChain([]LogicChain)
 	SetProjections([]Projection)
+	GetArgs() []interface{}
 	SetArgs([]interface{})
+	AddArg(interface{})
 	WriteSelect() interface{}
 	WriteInsert() interface{}
+	WriteUpdate() interface{}
 }
 
 type SqlQueryWriter interface {

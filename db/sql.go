@@ -12,11 +12,19 @@ var (
 	writers = map[string]func() types.QueryWriter {
 		"postgres": writer.NewPostgres,
 	}
+	supportsLastInsertId = map[string]bool {
+		"postgres": false,
+	}
+	supportsReturningId = map[string]bool {
+		"postgres": true,
+	}
 )
 
 type sqlDB struct {
 	db *sql.DB
 	writer func() types.QueryWriter
+	supportLastInsertId bool
+	supportReturningId bool
 }
 
 func NewSqlDB(uri string) types.DB {
@@ -30,23 +38,29 @@ func NewSqlDB(uri string) types.DB {
 		logger.Err(`db - can't connect to "%s", detail - %v`, uri, err)
 		return nil
 	}
-	return &sqlDB{db, writers[configUrl.Scheme]}
+	return &sqlDB{
+		db,
+		writers[configUrl.Scheme],
+		supportsLastInsertId[configUrl.Scheme],
+		supportsReturningId[configUrl.Scheme],
+	}
 }
 
-func (s sqlDB) Exec(query types.Query, d types.DAO, model interface{}) {
+func (s sqlDB) Exec(query types.Query, d types.DAO, model types.StraightMappingModel) {
 	sql := query.ToNative().(string)
 	result, err := s.db.Exec(sql, query.GetArgs()...)
 	if err == nil {
-		_, err := result.LastInsertId()
+		id, err := result.LastInsertId()
 		if err == nil {
-//			model.(types.StraightMappingModel).SetId(int(id))
+			setter := model.Proto().GetByName("id").GetSetter()
+			setter.Call(model, int(id))
 		}
 	} else {
 		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)
 	}
 }
 
-func (s sqlDB) Query(query types.Query, d types.DAO, models interface{}) {
+func (s sqlDB) Query(query types.Query, d types.DAO, models types.StraightMappingModel) {
 	sql := query.ToNative().(string)
 	rows, err := s.db.Query(sql, query.GetArgs()...)
 	if err == nil {
@@ -59,7 +73,7 @@ func (s sqlDB) Query(query types.Query, d types.DAO, models interface{}) {
 	}
 }
 
-func (s sqlDB) QueryRow(query types.Query, d types.DAO, model interface{}) {
+func (s sqlDB) QueryRow(query types.Query, d types.DAO, model types.StraightMappingModel) {
 	row := s.db.QueryRow(query.ToNative().(string), query.GetArgs()...)
 	if row != nil {
 		d.Scan(row, model)
@@ -86,4 +100,12 @@ func (s sqlDB) GetKind() types.DBKind {
 
 func (s sqlDB) GetQueryWriter() types.QueryWriter {
 	return s.writer()
+}
+
+func (s sqlDB) SupportLastInsertId() bool {
+	return s.supportLastInsertId
+}
+
+func (s sqlDB) SupportReturningId() bool {
+	return s.supportReturningId
 }
