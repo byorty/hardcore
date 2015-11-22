@@ -1,4 +1,4 @@
-package mux
+package hardcore
 
 import (
 	"testing"
@@ -7,11 +7,13 @@ import (
 	"net/url"
 	"strings"
 	"io/ioutil"
+	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/mux"
 	"fmt"
 )
 
 func TestRouter(t *testing.T) {
-	router := NewRouter()
+	router := mux.NewRouter()
 	server := httptest.NewUnstartedServer(router)
 	server.Start()
 	serverUrl, _ := url.Parse(server.URL)
@@ -20,58 +22,58 @@ func TestRouter(t *testing.T) {
 	port := parts[1]
 
 	router.Add(
-		Path("/",
-			Get("/", func(scope RequestScope) {
+		mux.Path("/",
+			mux.Get("/", func(scope types.RequestScope) {
 				scope.GetWriter().Write([]byte("hello world"))
 			}),
-			Get("/{id:([0-9]+)}", func(scope RequestScope) {
-				scope.GetWriter().Write([]byte(fmt.Sprintf("id#%v", scope.GetPathParams()["id"])))
+			mux.Get("/{id:([0-9]+)}", func(scope types.RequestScope) {
+				scope.GetWriter().Write([]byte(fmt.Sprintf("id#%v", scope.GetPathParams().GetInt("id"))))
 			}),
-			Get("/{user:([a-z]+)}/{id:([0-9]+)}", func(scope RequestScope) {
-				scope.GetWriter().Write([]byte(scope.GetPathParams()["user"] + ":" + scope.GetPathParams()["id"]))
+			mux.Get("/{user:([a-z]+)}/{id:([0-9]+)}", func(scope types.RequestScope) {
+				scope.GetWriter().Write([]byte(scope.GetPathParams().GetString("user") + ":" + scope.GetPathParams().GetString("id")))
 			}),
-			Path("/api",
-				Get("/{action:([a-z]+)}", func(scope RequestScope) {
-					scope.GetWriter().Write([]byte(scope.GetPathParams()["action"]))
+			mux.Path("/api",
+				mux.Get("/{action:([a-z]+)}", func(scope types.RequestScope) {
+					scope.GetWriter().Write([]byte(scope.GetPathParams().GetString("action")))
 				}),
-				Controller("/user", NewTestController).
+				mux.Controller("/user", NewTestController).
 					Get("/view/{name:([a-z]+)}", (*TestController).View),
 			),
-			Path("/with/middleware",
-				Get("/func", func(scope RequestScope) {
+			mux.Path("/with/middleware",
+				mux.Get("/func", func(scope types.RequestScope) {
 					scope.GetWriter().Write([]byte("call func, "))
-				}).Before(func (scope RequestScope) {
+				}).Before(func (scope types.RequestScope) {
 					scope.GetWriter().Write([]byte("before#1, "))
-				}).Before(func (scope RequestScope) {
+				}).Before(func (scope types.RequestScope) {
 					scope.GetWriter().Write([]byte("before#2, "))
-				}).After(func (scope RequestScope) {
+				}).After(func (scope types.RequestScope) {
 					scope.GetWriter().Write([]byte("after#1"))
 				}),
-				Controller("/ctrl", NewTestController).
-					Before(func (scope RequestScope) {
+				mux.Controller("/ctrl", NewTestController).
+				    Before(func (scope types.RequestScope) {
 						scope.GetWriter().Write([]byte("before#0, "))
 					}).
 					Add(
-						Get("/view/{name:([a-z]+)}", (*TestController).View).
-							Before(func (scope RequestScope) {
+						mux.Get("/view/{name:([a-z]+)}", (*TestController).View).
+							Before(func (scope types.RequestScope) {
 								scope.GetWriter().Write([]byte("before#1, "))
-							}).Before(func (scope RequestScope) {
+							}).Before(func (scope types.RequestScope) {
 								scope.GetWriter().Write([]byte("before#2, "))
-							}).After(func (scope RequestScope) {
+							}).After(func (scope types.RequestScope) {
 								scope.GetWriter().Write([]byte(", after#1"))
 							}),
 					).
 					Get("/view2/{name:([a-z0-9]+)}", testControllerActionView).
-					After(func (scope RequestScope) {
+					After(func (scope types.RequestScope) {
 						scope.GetWriter().Write([]byte(", after#0"))
 					}),
 			),
-			Path("/with/headers",
-				Get("/func", func (scope RequestScope) {
+			mux.Path("/with/headers",
+				mux.Get("/func", func (scope types.RequestScope) {
 					scope.GetWriter().Write([]byte("foo"))
 				}).
 				Header("X-SOME-KEY-2", "some#{someId:([0-9]+)}"),
-				Get("/func", func (scope RequestScope) {
+				mux.Get("/func", func (scope types.RequestScope) {
 					someId := scope.GetHeaderParams().GetInt("someId")
 					otherId := scope.GetHeaderParams().GetInt("otherId")
 					scope.GetWriter().Write([]byte(fmt.Sprintf("someId#%d, otherId#%d", someId, otherId)))
@@ -79,8 +81,8 @@ func TestRouter(t *testing.T) {
 				Header("X-SOME-KEY", "some#{someId:([0-9]+)}").
 				Header("X-OTHER-KEY", "other#{otherId:([0-9]+)}"),
 			),
-			Path("/with/custom/scope",
-				Get("/func", func(scope RequestScope) {
+			mux.Path("/with/custom/scope",
+				mux.Get("/func", func(scope types.RequestScope) {
 					scope.GetWriter().Write([]byte(scope.(*TestScope).Message))
 				}).
 				Scope(NewTestScope),
@@ -125,11 +127,11 @@ func checkResponse(t *testing.T, resp *http.Response, needle string) {
 }
 
 type TestScope struct {
-	BaseRequestScope
+	mux.RequestScopeImpl
 	Message string
 }
 
-func NewTestScope() RequestScope {
+func NewTestScope() types.RequestScope {
 	return &TestScope{
 		Message: "hello test scope",
 	}
@@ -137,28 +139,28 @@ func NewTestScope() RequestScope {
 
 type TestController struct {}
 
-func NewTestController() ActionController {
+func NewTestController() types.ActionController {
 	return new(TestController)
 }
 
-func (t *TestController) CallAction(action interface{}, scope RequestScope) {
+func (t *TestController) CallAction(action interface{}, scope types.RequestScope) {
 	typeAction, ok := action.(TestControllerActionView)
 	if ok {
 		typeAction(t, scope)
 	} else {
-		action.(func(*TestController, RequestScope))(t, scope)
+		action.(func(*TestController, types.RequestScope))(t, scope)
 	}
 }
 
-func (t *TestController) View(scope RequestScope) {
-	scope.GetWriter().Write([]byte("view user " + scope.GetPathParams()["name"]))
+func (t *TestController) View(scope types.RequestScope) {
+	scope.GetWriter().Write([]byte("view user " + scope.GetPathParams().GetString("name")))
 }
 
 var (
 	testControllerActionView TestControllerActionView = (*TestController).View
 )
 
-type TestControllerActionView func(*TestController, RequestScope)
+type TestControllerActionView func(*TestController, types.RequestScope)
 
 func (a *TestControllerActionView) Form() {
 

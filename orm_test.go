@@ -117,7 +117,7 @@ func (u *User) Proto() types.Proto {
 }
 
 type UserDAO struct {
-	dao.Sql
+	dao.Base
 }
 
 func (u UserDAO) Proto() types.Proto {
@@ -152,16 +152,12 @@ var (
 	userIdGetter UserIdGetter = (*User).GetId
 	userEmailSetter UserEmailSetter = (*User).SetEmail
 	userEmailGetter UserEmailGetter =(*User).GetEmail
-
 	userPasswordSetter UserPasswordSetter = (*User).SetPassword
 	userPasswordGetter UserPasswordGetter =(*User).GetPassword
-
 	userUserRoleSetter UserRoleSetter = (*User).SetRole
 	userUserRoleGetter UserRoleGetter =(*User).GetRole
-
 	userRegisterDateSetter UserRegisterDateSetter = (*User).SetRegisterDate
 	userRegisterDateGetter UserRegisterDateGetter =(*User).GetRegisterDate
-
 	userDAO UserDAO
 	userProto = proto.New().
 		Set("id", proto.NewProperty("id", types.ProtoBasicKind, types.ProtoNoneRelation, true, userIdSetter, userIdGetter)).
@@ -214,8 +210,8 @@ func TestDB(t *testing.T) {
 	newUser.SetPassword("12345")
 	newUser.SetRole(LoggedUserRole)
 	newUser.SetRegisterDate(time.Now())
+	newUser.DAO().Add(newUser)
 
-	user.DAO().Add(newUser)
 	oldPassword := newUser.GetPassword()
 	t.Log(newUser)
 	t.Log(oldPassword)
@@ -228,7 +224,6 @@ func TestDB(t *testing.T) {
 
 	t.Log(newUser)
 	t.Log(newUser.GetPassword())
-
 	if oldPassword == newUser.GetPassword() {
 		t.Fail()
 	}

@@ -3,6 +3,7 @@ package mux
 import (
 	"strings"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 )
 
 const (
@@ -37,20 +38,20 @@ type Route struct {
 	tpl               string
 	headerTpls        map[string]string
 
-	scopeConstruct    RequestScopeFunc
-	beforeMiddlewares []MiddlewareFunc
-	construct         ControllerFunc
+	scopeConstruct    types.RequestScopeConstructor
+	beforeMiddlewares []types.MiddlewareFunc
+	construct         types.ControllerConstructor
 	handler           interface{}
-	afterMiddlewares  []MiddlewareFunc
+	afterMiddlewares  []types.MiddlewareFunc
 	routes            []*Route
 }
 
 func newRoute() *Route {
 	return &Route{
 		headerTpls       : make(map[string]string),
-		beforeMiddlewares: make([]MiddlewareFunc, 0),
-		afterMiddlewares : make([]MiddlewareFunc, 0),
-		scopeConstruct   : NewBaseRequestScope,
+		beforeMiddlewares: make([]types.MiddlewareFunc, 0),
+		afterMiddlewares : make([]types.MiddlewareFunc, 0),
+		scopeConstruct   : NewRequestScope,
 	}
 }
 
@@ -100,7 +101,7 @@ func Path(tpl string, subRoutes ...*Route) *Route {
 	return route
 }
 
-func Controller(tpl string, construct ControllerFunc) *Route {
+func Controller(tpl string, construct types.ControllerConstructor) *Route {
 	route := newRoute()
 	route.kind = kindController
 	route.tpl = tpl
@@ -108,7 +109,7 @@ func Controller(tpl string, construct ControllerFunc) *Route {
 	return route
 }
 
-func (r *Route) Scope(scopeConstruct RequestScopeFunc) *Route {
+func (r *Route) Scope(scopeConstruct types.RequestScopeConstructor) *Route {
 	r.scopeConstruct = scopeConstruct
 	return r
 }
@@ -133,7 +134,7 @@ func (r *Route) Header(key, value string) *Route {
 	return r
 }
 
-func (r *Route) Before(middleware func (RequestScope)) *Route {
+func (r *Route) Before(middleware func (types.RequestScope)) *Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
@@ -154,7 +155,7 @@ func (r *Route) Delete(tpl string, handler interface{}) *Route {
 	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodDelete, tpl, handler))
 }
 
-func (r *Route) After(middleware func (RequestScope)) *Route {
+func (r *Route) After(middleware func (types.RequestScope)) *Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }
@@ -187,11 +188,11 @@ func (r *Route) toMatcher(router *Router) {
 			}
 		}
 		if len(r.parent.beforeMiddlewares) > 0 {
-			middlewares := append([]MiddlewareFunc{}, r.parent.beforeMiddlewares...)
+			middlewares := append([]types.MiddlewareFunc{}, r.parent.beforeMiddlewares...)
 			r.beforeMiddlewares = append(middlewares, r.beforeMiddlewares...)
 		}
 		if len(r.parent.afterMiddlewares) > 0 {
-			middlewares := append([]MiddlewareFunc{}, r.parent.afterMiddlewares...)
+			middlewares := append([]types.MiddlewareFunc{}, r.parent.afterMiddlewares...)
 			r.afterMiddlewares = append(middlewares, r.afterMiddlewares...)
 		}
 		if r.kind == kindControllerAction {

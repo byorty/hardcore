@@ -7,24 +7,24 @@ import (
 	"github.com/byorty/hardcore/expr"
 )
 
-type Sql struct {}
+type Base struct {}
 
-func (s Sql) Save(model types.StraightMappingModel) {
+func (b Base) Save(model types.StraightMappingModel) {
 	idProperty := model.Proto().GetByName("id")
 	getter := idProperty.GetGetter()
 	criteria.Update().And(expr.Eq("id", getter.Call(model))).One(model)
 }
 
-func (s Sql) Update(query types.Query, model types.StraightMappingModel) {
+func (b Base) Update(query types.Query, model types.StraightMappingModel) {
 	currentDb := db.Pool().ByDAO(model.DAO())
 	currentDb.Exec(query, model.DAO(), model)
 }
 
-func (s Sql) Add(model types.StraightMappingModel) {
+func (b Base) Add(model types.StraightMappingModel) {
 	criteria.Insert().One(model)
 }
 
-func (s Sql) Insert(query types.Query, model types.StraightMappingModel) {
+func (b Base) Insert(query types.Query, model types.StraightMappingModel) {
 	currentDb := db.Pool().ByDAO(model.DAO())
 	if currentDb.SupportLastInsertId() {
 		currentDb.Exec(query, model.DAO(), model)
@@ -36,31 +36,31 @@ func (s Sql) Insert(query types.Query, model types.StraightMappingModel) {
 	}
 }
 
-func (s Sql) All(query types.Query, models types.StraightMappingModel) {
+func (b Base) All(query types.Query, models types.StraightMappingModel) {
 	dao := models.DAO()
 	currentDb := db.Pool().ByDAO(dao)
 	currentDb.Query(query, dao, models)
 }
 
-func (s Sql) One(query types.Query, model types.StraightMappingModel) {
+func (b Base) One(query types.Query, model types.StraightMappingModel) {
 	dao := model.DAO()
 	currentDb := db.Pool().ByDAO(dao)
 	currentDb.QueryRow(query, dao, model)
 }
 
-func (s Sql) Custom(dao types.DAO, query types.Query, items ...interface{}) {
+func (b Base) Custom(dao types.DAO, query types.Query, items ...interface{}) {
 	currentDb := db.Pool().ByDAO(dao)
 	currentDb.Custom(query, items...)
 }
 
-func (s Sql) ById(id int) types.SelectCriteria {
+func (b Base) ById(id int) types.SelectCriteria {
 	return criteria.Select().And(expr.Eq("id", id))
 }
 
-func (s Sql) ByIds(ids []int) types.SelectCriteria {
+func (b Base) ByIds(ids []int) types.SelectCriteria {
 	return criteria.Select().And(expr.In("id", ids))
 }
 
-//func (s Sql) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
+//func (b Base) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
 //
 //}

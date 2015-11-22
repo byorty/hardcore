@@ -1,13 +1,16 @@
 package mux
 
-import "net/http"
+import (
+	"net/http"
+	"github.com/byorty/hardcore/types"
+)
 
 type Router struct {
 	gets         Matchers
 	posts        Matchers
 	puts         Matchers
 	deletes      Matchers
-	notFoundFunc MiddlewareFunc
+	notFoundFunc types.MiddlewareFunc
 }
 
 func NewRouter(routes ...*Route) *Router {
@@ -16,7 +19,7 @@ func NewRouter(routes ...*Route) *Router {
 		posts       : make(Matchers, 0),
 		puts        : make(Matchers, 0),
 		deletes     : make(Matchers, 0),
-		notFoundFunc: func (scope RequestScope) {
+		notFoundFunc: func (scope types.RequestScope) {
 			scope.GetWriter().WriteHeader(http.StatusNotFound)
 			scope.GetWriter().Write([]byte("not found"))
 		},
@@ -32,7 +35,7 @@ func (r *Router) Add(route *Route) *Router {
 	return r
 }
 
-func (r *Router) NotFound(handler func (RequestScope)) *Router {
+func (r *Router) NotFound(handler func (types.RequestScope)) *Router {
 	r.notFoundFunc = handler
 	return r
 }
@@ -60,7 +63,7 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		req.URL.Host = req.Host
 	}
 	urlStr := req.URL.String()
-	var scope RequestScope
+	var scope types.RequestScope
 	var match bool
 	var existsMatcher *Matcher
 	matchers := r.getMatchersByMethod(req.Method)
@@ -81,17 +84,17 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
 		} else if !hasConstruct && hasHandler {
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, scope)
-			existsMatcher.handler.(func(RequestScope))(scope)
+			existsMatcher.handler.(func(types.RequestScope))(scope)
 			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
 		} else {
-			r.notFoundFunc(NewBaseRequestScope())
+			r.notFoundFunc(NewRequestScope())
 		}
 	} else {
-		r.notFoundFunc(NewBaseRequestScope())
+		r.notFoundFunc(NewRequestScope())
 	}
 }
 
-func (r *Router) doMiddlewares(middlewares []MiddlewareFunc, scope RequestScope) {
+func (r *Router) doMiddlewares(middlewares []types.MiddlewareFunc, scope types.RequestScope) {
 	for _, middleware := range middlewares {
 		middleware(scope)
 	}

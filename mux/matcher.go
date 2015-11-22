@@ -6,6 +6,7 @@ import (
 	"strings"
 	"bytes"
 	"net/http"
+	"github.com/byorty/hardcore/types"
 )
 
 type ParamMatcher struct {
@@ -21,15 +22,15 @@ func newParamMatcher(str string) *ParamMatcher {
 	}
 }
 
-func (p *ParamMatcher) Match(url string) (bool, RequestScopeParams) {
-	var params RequestScopeParams
+func (p *ParamMatcher) Match(url string) (bool, types.RequestScopeParams) {
+	var params types.RequestScopeParams
 	matches := p.regexp.FindStringSubmatch(url)
 	match := len(matches) > 0
 	if match {
-		params = make(RequestScopeParams)
+		params = make(RequestScopeParamsImpl)
 		for i, match := range matches {
 			if i > 0 {
-				params[p.vars[i - 1]] = match
+				params.Set(p.vars[i - 1], match)
 			}
 		}
 	}
@@ -93,16 +94,17 @@ func newHeaderMatcher(key, value string) *HeaderMatcher {
 	}
 }
 
-func (h *HeaderMatcher) Match(scope RequestScope) bool {
+func (h *HeaderMatcher) Match(scope types.RequestScope) bool {
 	matches := h.regexp.FindStringSubmatch(scope.GetRequest().Header.Get(h.key))
 	match := len(matches) > 0
 	if match {
 		if scope.GetHeaderParams() == nil {
-			scope.setHeaderParams(make(RequestScopeParams))
+			var params types.RequestScopeParams = make(RequestScopeParamsImpl)
+			scope.SetHeaderParams(params)
 		}
 		for i, match := range matches {
 			if i > 0 {
-				scope.setHeaderParam(h.vars[i - 1], match)
+				scope.SetHeaderParam(h.vars[i - 1], match)
 			}
 		}
 	}
@@ -113,22 +115,22 @@ type Matcher struct {
 	urlParams *ParamMatcher
 	headers   []*HeaderMatcher
 
-	scopeConstruct    RequestScopeFunc
-	beforeMiddlewares []MiddlewareFunc
-	construct         ControllerFunc
+	scopeConstruct    types.RequestScopeConstructor
+	beforeMiddlewares []types.MiddlewareFunc
+	construct         types.ControllerConstructor
 	handler           interface{}
-	afterMiddlewares  []MiddlewareFunc
+	afterMiddlewares  []types.MiddlewareFunc
 }
 
-func (m *Matcher) Match(url string, req *http.Request, rw http.ResponseWriter) (bool, RequestScope) {
-	var scope RequestScope
+func (m *Matcher) Match(url string, req *http.Request, rw http.ResponseWriter) (bool, types.RequestScope) {
+	var scope types.RequestScope
 	matchHeaders := true
 	matchUrl, pathParams := m.urlParams.Match(url)
 	if matchUrl {
 		scope = m.scopeConstruct()
-		scope.setRequest(req)
-		scope.setWriter(rw)
-		scope.setPathParams(pathParams)
+		scope.SetRequest(req)
+		scope.SetWriter(rw)
+		scope.SetPathParams(pathParams)
 
 		for _, header := range m.headers {
 			if !header.Match(scope) {
