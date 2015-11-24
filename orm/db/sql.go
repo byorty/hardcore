@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"github.com/byorty/hardcore/logger"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/db/writer"
+	"github.com/byorty/hardcore/orm/db/writer"
 )
 
 var (

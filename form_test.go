@@ -58,6 +58,7 @@ func TestForm(t *testing.T) {
 
 	sendGet(t, server, "/john?id=123", "hello john#123")
 	sendGet(t, server, "/john", "id should be defined")
+	sendGet(t, server, "/john?id=", "id should be defined")
 	sendGet(t, server, "/john?id=qwert", "id is wrong")
 }
 

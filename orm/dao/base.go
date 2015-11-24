@@ -2,9 +2,9 @@ package dao
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/db"
+	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/query/criteria"
-	"github.com/byorty/hardcore/expr"
+	"github.com/byorty/hardcore/query/expr"
 )
 
 type Base struct {}
@@ -60,7 +60,3 @@ func (b Base) ById(id int) types.SelectCriteria {
 func (b Base) ByIds(ids []int) types.SelectCriteria {
 	return criteria.Select().And(expr.In("id", ids))
 }
-
-//func (b Base) Customs(dao types.DAO, query types.Query, items ...[]interface{}) {
-//
-//}

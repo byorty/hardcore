@@ -2,7 +2,7 @@ package criteria
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/db"
+	"github.com/byorty/hardcore/orm/db"
 )
 
 type InserCriteriaImpl struct {

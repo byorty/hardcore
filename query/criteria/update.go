@@ -2,9 +2,9 @@ package criteria
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/db"
-	"github.com/byorty/hardcore/expr"
-	"github.com/byorty/hardcore/proj"
+	"github.com/byorty/hardcore/orm/db"
+	"github.com/byorty/hardcore/query/expr"
+	"github.com/byorty/hardcore/query/proj"
 )
 
 type UpdateCriteriaImpl struct {

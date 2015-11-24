@@ -4,13 +4,13 @@ import (
 	"testing"
 	"fmt"
 	_ "github.com/lib/pq"
-	"github.com/byorty/hardcore/db"
+	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/proto"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/query/criteria"
 	"time"
-	"github.com/byorty/hardcore/dao"
-	"github.com/byorty/hardcore/proj"
+	"github.com/byorty/hardcore/orm/dao"
+	"github.com/byorty/hardcore/query/proj"
 )
 
 type UserRole int
