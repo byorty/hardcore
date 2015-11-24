@@ -3,6 +3,7 @@ package mux
 import (
 	"net/http"
 	"github.com/byorty/hardcore/types"
+	"strings"
 )
 
 type Router struct {
@@ -62,7 +63,8 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if len(req.URL.Host) == 0 {
 		req.URL.Host = req.Host
 	}
-	urlStr := req.URL.String()
+	urlParts := strings.Split(req.URL.String(), "?")
+	urlStr := urlParts[0]
 	var scope types.RequestScope
 	var match bool
 	var existsMatcher *Matcher
