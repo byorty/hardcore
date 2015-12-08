@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"flag"
 	"io/ioutil"
 	"github.com/byorty/hardcore/meta"
@@ -29,25 +28,33 @@ func main() {
 
 	filename = filepath.Join(utils.Pwd(), filename)
 	if utils.FileExists(filename) {
+		log.Debug("file %s is exists", filename)
 		data, err := ioutil.ReadFile(filename)
 		if err == nil {
+			log.Debug("success read file %s", filename)
 			var config meta.Configuration
 			err = xml.Unmarshal(data, &config)
 			if err == nil {
-				config.MetaPath = filepath.Dir(filename)
-				config.AbsPath, _ = filepath.Abs(filepath.Join(config.MetaPath, ".."))
+				log.Debug("success unmarshal file %s", filename)
+				env := new(meta.Environment)
+				env.MetaPath = filepath.Dir(filename)
+				env.AbsPath, _ = filepath.Abs(filepath.Join(env.MetaPath, ".."))
+				env.Configuration = &config
+				env.Logger = log
 				for _, pl := range plugins {
-					pl.Do(&config)
+					pl.Do(env)
 				}
-				log.Info(config)
-				fmt.Println(config)
+				log.Debug(config)
 			} else {
-				fmt.Println(err)
+				log.Critical("can't unmarshal xml file %s", filename)
 				os.Exit(1)
 			}
 		} else {
-			fmt.Println(err)
+			log.Critical("can't read file %s", filename)
 			os.Exit(1)
 		}
+	} else {
+		log.Critical("file %s not found", filename)
+		os.Exit(1)
 	}
 }

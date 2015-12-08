@@ -1,5 +1,21 @@
 <?xml version="1.0"?>
 <configuration>
+    <models package="models.response">
+        <model name="Response">
+            <properties>
+                <property name="item"/>
+                <property name="items"/>
+                <property name="error" type="response.Error"/>
+                <property name="errors" type="response.Errors"/>
+            </properties>
+        </model>
+        <model name="Error">
+            <properties>
+                <property name="code" type="int"/>
+                <property name="message" type="string"/>
+            </properties>
+        </model>
+    </models>
     <models package="models.some">
         <model name="User">
             <properties>

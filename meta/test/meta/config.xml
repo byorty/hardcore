@@ -4,7 +4,7 @@
         <include file="controllers/test.xml"/>
         <include file="models/test.xml"/>
     </includes>
-    <controllers package="controllers.some1" route="/some">
+    <controllers package="controllers.some1" route="/some1">
         <controller name="TestCtrl1" route="/test">
             <extends>
                 <extend>some.TestCtrl</extend>
@@ -15,6 +15,7 @@
                         <param name="page" type="int" required="false" from="query"/>
                         <param name="search" type="string" required="false" from="query"/>
                     </params>
+                    <return type="response.Response"/>
                 </action>
             </actions>
         </controller>

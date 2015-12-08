@@ -19,11 +19,13 @@
                         <param name="page" type="int" required="false" from="query"/>
                         <param name="search" type="string" required="false" from="query"/>
                     </params>
+                    <return type="response.Response"/>
                 </action>
                 <action name="View" route="/{id:([0-9]+)}" method="GET">
                     <params>
                         <param name="id" type="identifier" of="models.Post" required="true" from="route"/>
                     </params>
+                    <return type="response.Response"/>
                 </action>
                 <action name="Edit" route="/{id:([0-9]+)}" method="POST">
                     <allows>
@@ -34,6 +36,7 @@
                         <param name="name" type="string" required="true" from="form"/>
                         <param name="description" type="string" required="true" from="form"/>
                     </params>
+                    <return type="response.Response"/>
                 </action>
             </actions>
         </controller>
