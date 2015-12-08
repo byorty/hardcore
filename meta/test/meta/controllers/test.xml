@@ -1,39 +1,41 @@
 <?xml version="1.0"?>
-<controllers package="controllers.some" route="/some">
-    <controller name="TestCtrl" route="/test">
-        <!--<extends>-->
+<configuration>
+    <controllers package="controllers.some" route="/some">
+        <controller name="TestCtrl" route="/test">
+            <!--<extends>-->
             <!--<extend>some1.TestCtrl1</extend>-->
             <!--<extend>*some2.TestCtrl2</extend>-->
-        <!--</extends>-->
-        <actions>
-            <allows>
-                <allow>models.LoggedUserRole</allow>
-                <allow>models.LoggedAdminRole</allow>
-            </allows>
-            <action name="List" method="GET">
+            <!--</extends>-->
+            <actions>
                 <allows>
                     <allow>models.LoggedUserRole</allow>
-                </allows>
-                <params>
-                    <param name="page" type="int" required="false" from="query"/>
-                    <param name="search" type="string" required="false" from="query"/>
-                </params>
-            </action>
-            <action name="View" route="/{id:([0-9]+)}" method="GET">
-                <params>
-                    <param name="id" type="identifier" of="models.Post" required="true" from="route"/>
-                </params>
-            </action>
-            <action name="Edit" route="/{id:([0-9]+)}" method="POST">
-                <allows>
                     <allow>models.LoggedAdminRole</allow>
                 </allows>
-                <params>
-                    <param name="id" type="identifier" of="models.Post" required="true" from="route"/>
-                    <param name="name" type="string" required="true" from="form"/>
-                    <param name="description" type="string" required="true" from="form"/>
-                </params>
-            </action>
-        </actions>
-    </controller>
-</controllers>
+                <action name="List" method="GET">
+                    <allows>
+                        <allow>models.LoggedUserRole</allow>
+                    </allows>
+                    <params>
+                        <param name="page" type="int" required="false" from="query"/>
+                        <param name="search" type="string" required="false" from="query"/>
+                    </params>
+                </action>
+                <action name="View" route="/{id:([0-9]+)}" method="GET">
+                    <params>
+                        <param name="id" type="identifier" of="models.Post" required="true" from="route"/>
+                    </params>
+                </action>
+                <action name="Edit" route="/{id:([0-9]+)}" method="POST">
+                    <allows>
+                        <allow>models.LoggedAdminRole</allow>
+                    </allows>
+                    <params>
+                        <param name="id" type="identifier" of="models.Post" required="true" from="route"/>
+                        <param name="name" type="string" required="true" from="form"/>
+                        <param name="description" type="string" required="true" from="form"/>
+                    </params>
+                </action>
+            </actions>
+        </controller>
+    </controllers>
+</configuration>

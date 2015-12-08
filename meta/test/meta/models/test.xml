@@ -1,36 +1,38 @@
 <?xml version="1.0"?>
-<models package="models.some">
-    <model name="User">
-        <properties>
-            <identifier/>
-            <property name="email" type="string" size="64" required="true"/>
-            <property name="password" type="string" size="32" required="true"/>
-            <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
-            <property name="registerDate" type="time.Time" required="false"/>
-        </properties>
-        <pattern name="StraightMapping"/>
-    </model>
-    <model name="SomeUser">
-        <extends>
-            <extend>some.User</extend>
-        </extends>
-        <properties>
-            <identifier type="int64"/>
-            <property name="test" type="string" required="true"/>
-            <property name="enum" type="some.SomeEnum" required="true" relation="OneToMany"/>
-        </properties>
-        <pattern name="StraightMapping"/>
-    </model>
-    <enum name="UserRole">
-        <constants>
-            <constant name="LoggedUserRole">Пользователь</constant>
-            <constant name="LoggedAdminRole">Администратор</constant>
-        </constants>
-    </enum>
-    <enum name="SomeEnum" type="int64">
-        <constants>
-            <constant name="SomeEnum1" value="99">SomeEnum1</constant>
-            <constant name="SomeEnum2">SomeEnum2</constant>
-        </constants>
-    </enum>
-</models>
+<configuration>
+    <models package="models.some">
+        <model name="User">
+            <properties>
+                <identifier/>
+                <property name="email" type="string" size="64" required="true"/>
+                <property name="password" type="string" size="32" required="true"/>
+                <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
+                <property name="registerDate" type="time.Time" required="false"/>
+            </properties>
+            <pattern name="StraightMapping"/>
+        </model>
+        <model name="SomeUser">
+            <extends>
+                <extend>some.User</extend>
+            </extends>
+            <properties>
+                <identifier type="int64"/>
+                <property name="test" type="string" required="true"/>
+                <property name="enum" type="some.SomeEnum" required="true" relation="OneToMany"/>
+            </properties>
+            <pattern name="StraightMapping"/>
+        </model>
+        <enum name="UserRole">
+            <constants>
+                <constant name="LoggedUserRole">Пользователь</constant>
+                <constant name="LoggedAdminRole">Администратор</constant>
+            </constants>
+        </enum>
+        <enum name="SomeEnum" type="int64">
+            <constants>
+                <constant name="SomeEnum1" value="99">SomeEnum1</constant>
+                <constant name="SomeEnum2">SomeEnum2</constant>
+            </constants>
+        </enum>
+    </models>
+</configuration>
