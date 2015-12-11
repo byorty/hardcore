@@ -7,9 +7,5 @@ import (
 
 type Configuration struct {
 	Includes []common.Include `xml:"includes>include"`
-	ControllerContainers []controller.Container `xml:"controllers"`
+	ControllerContainers []*controller.Container `xml:"controllers"`
 }
-
-//func (c *Configuration) SetControllerContainers(containers []controller.Container) {
-//	c.ControllerContainers = containers
-//}

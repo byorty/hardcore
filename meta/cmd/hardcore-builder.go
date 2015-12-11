@@ -1,20 +1,24 @@
 package main
 
 import (
-	"os"
-	"flag"
-	"io/ioutil"
-	"github.com/byorty/hardcore/meta"
 	"encoding/xml"
-	"path/filepath"
-	"github.com/byorty/hardcore/utils"
+	"flag"
+	"github.com/byorty/hardcore/meta"
 	"github.com/byorty/hardcore/meta/plugin"
+	"github.com/byorty/hardcore/utils"
 	"github.com/byorty/log4go"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+    "strings"
+    "sort"
 )
 
 var (
 	plugins = []plugin.Plugin{
-		plugin.NewIncludePlugin(),
+		new(plugin.Include),
+		new(plugin.Init),
+		new(plugin.Controller),
 	}
 )
 
@@ -41,10 +45,21 @@ func main() {
 				env.AbsPath, _ = filepath.Abs(filepath.Join(env.MetaPath, ".."))
 				env.Configuration = &config
 				env.Logger = log
+
+                parts := strings.Split(env.AbsPath, string(filepath.Separator))
+                i := sort.Search(len(parts), func(x int) bool {
+                    return parts[x] == "src"
+                })
+                if i < len(parts) && parts[i] == "src" {
+                    env.ImportPart = filepath.Join(parts[i+1:]...)
+                } else {
+                    log.Critical("can't find directory src")
+                    os.Exit(1)
+                }
+
 				for _, pl := range plugins {
 					pl.Do(env)
 				}
-				log.Debug(config)
 			} else {
 				log.Critical("can't unmarshal xml file %s", filename)
 				os.Exit(1)

@@ -1,11 +1,13 @@
 package controller
 
+import "github.com/byorty/hardcore/meta/common"
+
 type Container struct {
-	Package string `xml:"package,attr"`
+	common.Container
 	Route string `xml:"route,attr"`
-	Controllers []Controller `xml:"controller"`
+	Controllers []*Controller `xml:"controller"`
 }
 
-func (c Container) Eq(container Container) bool {
+func (c Container) Eq(container *Container) bool {
 	return c.Package == container.Package
 }

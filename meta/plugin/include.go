@@ -10,13 +10,9 @@ import (
 	"sort"
 )
 
-type IncludePlugin struct {}
+type Include struct {}
 
-func NewIncludePlugin() Plugin {
-	return new(IncludePlugin)
-}
-
-func (i *IncludePlugin) Do(env *meta.Environment) {
+func (i *Include) Do(env *meta.Environment) {
 	config := env.Configuration
 	for _, include := range config.Includes {
 		env.Logger.Debug("find include %s", include.File)
@@ -43,15 +39,15 @@ func (i *IncludePlugin) Do(env *meta.Environment) {
 	}
 }
 
-func (i *IncludePlugin) merge(src *meta.Configuration, env *meta.Environment) {
+func (i *Include) merge(src *meta.Configuration, env *meta.Environment) {
 	i.mergeControllerContainer(src.ControllerContainers, env)
 }
 
-func (i *IncludePlugin) mergeControllerContainer(containers []controller.Container, env *meta.Environment) {
+func (i *Include) mergeControllerContainer(containers []*controller.Container, env *meta.Environment) {
 	if containers != nil && len(containers) > 0 {
 		dest := env.Configuration
 		if dest.ControllerContainers == nil {
-			dest.ControllerContainers = make([]controller.Container, 0)
+			dest.ControllerContainers = make([]*controller.Container, 0)
 		}
 		for _, newContainer := range containers {
 			env.Logger.Debug("check controller container %s", newContainer.Package)
