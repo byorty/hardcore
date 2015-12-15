@@ -8,6 +8,8 @@ type Controller struct {
 	Extends []*common.Extend `xml:"extends>extend"`
 	Actions []Action `xml:"actions>action"`
     Imports []string
+    Filename string
+    AutoFilename string
 }
 
 func (c Controller) HasParents() bool {

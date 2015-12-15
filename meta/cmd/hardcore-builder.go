@@ -18,6 +18,7 @@ var (
 	plugins = []plugin.Plugin{
 		new(plugin.Include),
 		new(plugin.Init),
+		new(plugin.Directory),
 		new(plugin.Controller),
 	}
 )
