@@ -8,6 +8,7 @@ import (
 	"encoding/xml"
 	"github.com/byorty/hardcore/meta/controller"
 	"sort"
+    "github.com/byorty/hardcore/meta/model"
 )
 
 type Include struct {}
@@ -40,7 +41,29 @@ func (i *Include) Do(env *meta.Environment) {
 }
 
 func (i *Include) merge(src *meta.Configuration, env *meta.Environment) {
+    i.mergeModelContainer(src.ModelContainers, env)
 	i.mergeControllerContainer(src.ControllerContainers, env)
+}
+
+func (i *Include) mergeModelContainer(containers []*model.Container, env *meta.Environment) {
+    if containers != nil && len(containers) > 0 {
+        dest := env.Configuration
+        if dest.ModelContainers == nil {
+            dest.ModelContainers = make([]*model.Container, 0)
+        }
+        for _, newContainer := range containers {
+            env.Logger.Debug("check model container %s", newContainer.Package)
+            i := sort.Search(len(dest.ModelContainers), func(i int) bool {
+                return dest.ModelContainers[i].Eq(newContainer)
+            })
+            if i < len(dest.ModelContainers) && dest.ModelContainers[i].Eq(newContainer) {
+                env.Logger.Error("model container %s is duplicate", newContainer.Package)
+            } else {
+                env.Logger.Debug("insert model container %s in config", newContainer.Package)
+                dest.ModelContainers = append(dest.ModelContainers, newContainer)
+            }
+        }
+    }
 }
 
 func (i *Include) mergeControllerContainer(containers []*controller.Container, env *meta.Environment) {

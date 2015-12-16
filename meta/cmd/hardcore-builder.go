@@ -19,6 +19,7 @@ var (
 		new(plugin.Include),
 		new(plugin.Init),
 		new(plugin.Directory),
+		new(plugin.Enum),
 		new(plugin.Controller),
 	}
 )
