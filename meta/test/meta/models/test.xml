@@ -17,7 +17,7 @@
         </model>
     </models>
     <models package="models.some">
-        <model name="User">
+        <model name="User" source="main">
             <properties>
                 <identifier/>
                 <property name="email" type="string" size="64" required="true"/>
@@ -48,6 +48,12 @@
             <constants>
                 <constant name="SomeEnum1" value="99">SomeEnum1</constant>
                 <constant name="SomeEnum2">SomeEnum2</constant>
+            </constants>
+        </enum>
+        <enum name="SomeEnum2" type="string">
+            <constants>
+                <constant name="SomeEnum21" value="some-value">SomeEnum1</constant>
+                <constant name="SomeEnum22">SomeEnum2</constant>
             </constants>
         </enum>
     </models>

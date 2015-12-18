@@ -4,6 +4,7 @@ import (
     "github.com/byorty/hardcore/meta"
     "strings"
     "fmt"
+    "github.com/byorty/hardcore/meta/model"
 )
 
 var (
@@ -79,11 +80,14 @@ var (
 type Enum struct {}
 
 func (e *Enum) Do(env *meta.Environment) {
-    env.Logger.Info(env.Configuration.ModelContainers)
     for _, container := range env.Configuration.ModelContainers {
         for _, enum := range container.Enums {
             if len(enum.Kind) == 0 {
-                enum.Kind = "int"
+                enum.Kind = model.IntEnumKind
+            } else {
+                if !model.HasEnumKind(enum.Kind) {
+                    env.Logger.Error("unknown enum type %v", enum.Kind)
+                }
             }
 
             hasIota := false
@@ -91,6 +95,7 @@ func (e *Enum) Do(env *meta.Environment) {
                 if strings.Contains(constant.Value, "iota") && !hasIota {
                     hasIota = true
                 }
+                constant.Value = enum.GetValue(constant)
             }
             if !hasIota {
                 for _, constant := range enum.Constants {

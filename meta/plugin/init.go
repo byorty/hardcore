@@ -23,6 +23,24 @@ func (i *Init) initModels(env *meta.Environment) {
         for _, enum := range container.Enums {
             enum.Filename, enum.AutoFilename = i.createFilenameAndAutoFilename(container.Path, enum.Name)
         }
+        for _, model := range container.Models {
+            model.Filename, model.AutoFilename = i.createFilenameAndAutoFilename(container.Path, model.Name)
+        }
+    }
+    for _, container := range env.Configuration.ModelContainers {
+        for _, model := range container.Models {
+            if len(model.Extends) > 0 {
+                for _, extend := range model.Extends {
+                    hasModel, modelImport := i.hasModel(env.Configuration, extend.Name)
+                    if hasModel {
+                        extend.Import = modelImport
+                    } else {
+                        env.Logger.Error("parent model %s not found", extend.Name)
+                        os.Exit(1)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -47,6 +65,25 @@ func (i *Init) initControlles(env *meta.Environment) {
             }
         }
     }
+}
+
+func (i *Init) hasModel(conf *meta.Configuration, mdl string) (bool, string)  {
+    mdl = i.clearName(mdl)
+    var modelImport string
+    hasModel := false
+    for _, container := range conf.ModelContainers {
+        for _, model := range container.Models {
+            if mdl == fmt.Sprintf("%s.%s", container.ShortPackage, model.Name) {
+                hasModel = true
+                break
+            }
+        }
+        if hasModel {
+            modelImport = container.Import
+            break
+        }
+    }
+    return hasModel, modelImport
 }
 
 func (i *Init) hasController(conf *meta.Configuration, ctrl string) (bool, string)  {
