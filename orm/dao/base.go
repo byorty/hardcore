@@ -53,10 +53,10 @@ func (b Base) Custom(dao types.DAO, query types.Query, items ...interface{}) {
 	currentDb.Custom(query, items...)
 }
 
-func (b Base) ById(id int) types.SelectCriteria {
+func (b Base) ById(id int) types.StraightMappingModelScanner {
 	return criteria.Select().And(expr.Eq("id", id))
 }
 
-func (b Base) ByIds(ids []int) types.SelectCriteria {
+func (b Base) ByIds(ids []int) types.StraightMappingModelScanner {
 	return criteria.Select().And(expr.In("id", ids))
 }

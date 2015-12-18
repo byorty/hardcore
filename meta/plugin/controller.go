@@ -4,8 +4,6 @@ import (
 	"github.com/byorty/hardcore/meta"
 	"strings"
 	"regexp"
-	"bytes"
-	"text/template"
 )
 
 var (
@@ -55,26 +53,15 @@ func (c *Controller) Do(env *meta.Environment) {
 			tmplParams := map[string]interface{}{
 				"ShortName": strings.ToLower(controller.Name[0:1]),
 				"Name": controller.Name,
-				"Package": container.Package,
+				"Package": container.ShortPackage,
 				"HasImports": len(imports) > 0,
 				"Imports": imports,
                 "Extends": controller.Extends,
 				"AutoImports": autoImports,
 			}
-			buf := new(bytes.Buffer)
-			tmpl := template.New(controller.Filename  + "_tpl")
-			tmpl.Parse(controllerTpl)
-			tmpl.Execute(buf, tmplParams)
-//			env.Logger.Info(buf.String())
 
-
-			buf = new(bytes.Buffer)
-			tmpl = template.New(controller.AutoFilename  + "_tpl")
-			tmpl.Parse(autoControllerTpl)
-			tmpl.Execute(buf, tmplParams)
-//			env.Logger.Info(buf.String())
-
-
+            env.Configuration.AddFile(controller.Filename, controllerTpl, tmplParams)
+            env.Configuration.AddFile(controller.AutoFilename, autoControllerTpl, tmplParams)
 		}
 	}
 }

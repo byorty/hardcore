@@ -22,6 +22,10 @@ func (u *UserRole) ById(id int) {
 	}
 }
 
+func (u UserRole) GetRawId() interface{} {
+    return u
+}
+
 func (u UserRole) GetId() int {
 	return int(u)
 }
@@ -36,7 +40,7 @@ const (
 )
 
 var (
-	userRoles = []types.Enum{
+	userRoles = []types.Named{
 		GuestUserRole,
 		LoggedUserRole,
 	}

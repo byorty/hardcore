@@ -26,14 +26,12 @@ type Logic interface {
 
 type Criteria interface {
 	Query
+	StraightMappingModelScanner
 	AddArg(interface{})
-	One(StraightMappingModel)
-	All(StraightMappingModel)
 }
 
 type CustomCriteria interface {
 	Custom(...interface{})
-//	Customs(...[]interface{})
 }
 
 type SelectCriteria interface {

@@ -10,4 +10,9 @@ type Configuration struct {
 	Includes []common.Include `xml:"includes>include"`
 	ControllerContainers []*controller.Container `xml:"controllers"`
 	ModelContainers []*model.Container `xml:"models"`
+	Files []common.File
+}
+
+func (c *Configuration) AddFile(name, tpl string, params map[string]interface{})  {
+    c.Files = append(c.Files, common.File{name, tpl, params})
 }

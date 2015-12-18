@@ -1,6 +1,7 @@
 package types
 
 type Named interface {
+	GetRawId() interface{}
 	GetName() string
 }
 

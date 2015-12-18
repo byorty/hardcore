@@ -12,6 +12,7 @@ import (
 	"path/filepath"
     "strings"
     "sort"
+    "github.com/byorty/hardcore/meta/common"
 )
 
 var (
@@ -21,6 +22,7 @@ var (
 		new(plugin.Directory),
 		new(plugin.Enum),
 		new(plugin.Controller),
+		new(plugin.File),
 	}
 )
 
@@ -46,6 +48,7 @@ func main() {
 				env.MetaPath = filepath.Dir(filename)
 				env.AbsPath, _ = filepath.Abs(filepath.Join(env.MetaPath, ".."))
 				env.Configuration = &config
+				env.Configuration.Files = make([]common.File, 0)
 				env.Logger = log
 
                 parts := strings.Split(env.AbsPath, string(filepath.Separator))

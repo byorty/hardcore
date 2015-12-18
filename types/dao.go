@@ -13,15 +13,24 @@ type DAO interface {
 	All(Query, StraightMappingModel)
 	One(Query, StraightMappingModel)
 	Custom(DAO, Query, ...interface{})
-//	Customs(DAO, Query, ...[]interface{})
 	Save(StraightMappingModel)
 	Add(StraightMappingModel)
 	Insert(Query, StraightMappingModel)
 	Update(Query, StraightMappingModel)
-	ById(int) SelectCriteria
-	ByIds([]int) SelectCriteria
+	ById(int) StraightMappingModelScanner
+	ByIds([]int) StraightMappingModelScanner
 }
 
-type IdentityMap interface {
-	Get(string, interface{}) bool
+type EnumDAO interface {
+    EnumScanner
+    GetList() []Named
+    Eq(Named, interface{}) bool
+    Scan(src, dest Named)
 }
+
+type IntEnumDAO interface {
+    ById(int) EnumScanner
+//    ByIds([]int) EnumScanner
+}
+
+
