@@ -12,6 +12,9 @@ func (d *Directory) Do(env *meta.Environment) {
     for _, container := range conf.ControllerContainers {
         d.createDirectory(env, container.Path)
     }
+    for _, container := range conf.ModelContainers {
+        d.createDirectory(env, container.Path)
+    }
 }
 
 func (d *Directory) createDirectory(env *meta.Environment, path string) {

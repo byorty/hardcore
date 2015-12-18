@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"net/url"
-	"github.com/byorty/hardcore/logger"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/orm/db/writer"
 )
@@ -30,12 +29,12 @@ type sqlDB struct {
 func NewSqlDB(uri string) types.DB {
 	configUrl, err := url.Parse(uri)
 	if err != nil {
-		logger.Err(`db - can't parse "%s", detail - %v`, uri, err)
+//		logger.Err(`db - can't parse "%s", detail - %v`, uri, err)
 		return nil
 	}
 	db, err := sql.Open(configUrl.Scheme, configUrl.String())
 	if err != nil {
-		logger.Err(`db - can't connect to "%s", detail - %v`, uri, err)
+//		logger.Err(`db - can't connect to "%s", detail - %v`, uri, err)
 		return nil
 	}
 	return &sqlDB{
@@ -56,7 +55,7 @@ func (s sqlDB) Exec(query types.Query, d types.DAO, model types.StraightMappingM
 			setter.Call(model, int(id))
 		}
 	} else {
-		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)
+//		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)
 	}
 }
 
@@ -69,7 +68,7 @@ func (s sqlDB) Query(query types.Query, d types.DAO, models types.StraightMappin
 			d.ScanAll(rows, models)
 		}
 	} else {
-		logger.Warn(`db - can't exec query "%s", detail - %v`, sql, err)
+//		logger.Warn(`db - can't exec query "%s", detail - %v`, sql, err)
 	}
 }
 
@@ -90,7 +89,7 @@ func (s sqlDB) Custom(query types.Query, items ...interface{}) {
 func (s *sqlDB) Close() {
 	err := s.db.Close()
 	if err != nil {
-		logger.Err(`db - can't close connection, detail - %v`, err)
+//		logger.Err(`db - can't close connection, detail - %v`, err)
 	}
 }
 

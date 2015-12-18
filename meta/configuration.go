@@ -14,5 +14,9 @@ type Configuration struct {
 }
 
 func (c *Configuration) AddFile(name, tpl string, params map[string]interface{})  {
-    c.Files = append(c.Files, common.File{name, tpl, params})
+    c.Files = append(c.Files, common.File{name + common.FileExt, tpl, params, common.NormalFileKind})
+}
+
+func (c *Configuration) AddAutoFile(name, tpl string, params map[string]interface{})  {
+    c.Files = append(c.Files, common.File{name + common.FileExt, tpl, params, common.AutoFileKind})
 }

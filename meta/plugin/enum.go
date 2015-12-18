@@ -45,7 +45,7 @@ func ({{.ShortName}} {{.Name}}DAO) GetList() []types.Named {
 }
 
 func ({{.ShortName}} {{.Name}}DAO) ById(id {{.Kind}}) types.EnumScanner {
-    u.SetId(id)
+    {{.ShortName}}.SetId(id)
     return {{.ShortName}}
 }
 
@@ -86,7 +86,7 @@ func (e *Enum) Do(env *meta.Environment) {
                 enum.Kind = model.IntEnumKind
             } else {
                 if !model.HasEnumKind(enum.Kind) {
-                    env.Logger.Error("unknown enum type %v", enum.Kind)
+                    env.Logger.Error("unknown enum type %v for %s", enum.Kind, enum.Name)
                 }
             }
 
@@ -122,8 +122,8 @@ func (e *Enum) Do(env *meta.Environment) {
                 "AutoImports": autoImports,
             }
 
+            env.Configuration.AddAutoFile(enum.AutoFilename, autoEnumTpl, tmplParams)
             env.Configuration.AddFile(enum.Filename, enumTpl, tmplParams)
-            env.Configuration.AddFile(enum.AutoFilename, autoEnumTpl, tmplParams)
         }
     }
 }

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/byorty/hardcore/logger"
 	"github.com/byorty/hardcore/types"
 )
 
@@ -17,7 +16,7 @@ func Pool() types.Pool {
 
 func (p PoolImpl) Add(name string, db types.DB) types.Pool {
 	if db == nil {
-		logger.Err(`pool - can't add disconnected db`)
+//		logger.Err(`pool - can't add disconnected db`)
 	} else {
 		p[name] = db
 	}

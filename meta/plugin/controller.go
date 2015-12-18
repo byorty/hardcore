@@ -3,11 +3,9 @@ package plugin
 import (
 	"github.com/byorty/hardcore/meta"
 	"strings"
-	"regexp"
 )
 
 var (
-	controllerRenameRegex = regexp.MustCompile(`([A-Z])`)
 	controllerTpl = `package {{.Package}}{{if .HasImports}}
 
 import ({{range .Imports}}
@@ -60,8 +58,8 @@ func (c *Controller) Do(env *meta.Environment) {
 				"AutoImports": autoImports,
 			}
 
+            env.Configuration.AddAutoFile(controller.AutoFilename, autoControllerTpl, tmplParams)
             env.Configuration.AddFile(controller.Filename, controllerTpl, tmplParams)
-            env.Configuration.AddFile(controller.AutoFilename, autoControllerTpl, tmplParams)
 		}
 	}
 }

@@ -1,11 +1,13 @@
 package meta
 
-import "github.com/byorty/log4go"
+import (
+	"github.com/byorty/hardcore/log"
+)
 
 type Environment struct {
 	AbsPath string
 	MetaPath string
     ImportPart string
-	Logger log4go.Logger
+	Logger log.Logger
 	Configuration *Configuration
 }

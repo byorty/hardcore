@@ -6,13 +6,13 @@ import (
 	"github.com/byorty/hardcore/meta"
 	"github.com/byorty/hardcore/meta/plugin"
 	"github.com/byorty/hardcore/utils"
-	"github.com/byorty/log4go"
 	"io/ioutil"
 	"os"
 	"path/filepath"
     "strings"
     "sort"
     "github.com/byorty/hardcore/meta/common"
+    "github.com/byorty/hardcore/log"
 )
 
 var (
@@ -32,25 +32,25 @@ func main() {
 	flag.StringVar(&filename, "f", "", "configuration xml file")
 	flag.Parse()
 
-	log := log4go.NewDefaultLogger(log4go.DEBUG)
-	defer log.Close()
+    logger := log.NewDefaultLogger(log.FINEST)
+	defer logger.Close()
 
 	filename = filepath.Join(utils.Pwd(), filename)
 	if utils.FileExists(filename) {
-		log.Debug("file %s is exists", filename)
+        logger.Debug("file %s is exists", filename)
 		data, err := ioutil.ReadFile(filename)
 		if err == nil {
-			log.Debug("success read file %s", filename)
+            logger.Debug("success read file %s", filename)
 			var config meta.Configuration
 			err = xml.Unmarshal(data, &config)
 			if err == nil {
-				log.Debug("success unmarshal file %s", filename)
+                logger.Debug("success unmarshal file %s", filename)
 				env := new(meta.Environment)
 				env.MetaPath = filepath.Dir(filename)
 				env.AbsPath, _ = filepath.Abs(filepath.Join(env.MetaPath, ".."))
 				env.Configuration = &config
 				env.Configuration.Files = make([]common.File, 0)
-				env.Logger = log
+				env.Logger = logger
 
                 parts := strings.Split(env.AbsPath, string(filepath.Separator))
                 i := sort.Search(len(parts), func(x int) bool {
@@ -59,7 +59,7 @@ func main() {
                 if i < len(parts) && parts[i] == "src" {
                     env.ImportPart = filepath.Join(parts[i+1:]...)
                 } else {
-                    log.Critical("can't find directory src")
+                    logger.Critical("can't find directory src")
                     os.Exit(1)
                 }
 
@@ -67,15 +67,15 @@ func main() {
 					pl.Do(env)
 				}
 			} else {
-				log.Critical("can't unmarshal xml file %s", filename)
+                logger.Critical("can't unmarshal xml file %s", filename)
 				os.Exit(1)
 			}
 		} else {
-			log.Critical("can't read file %s", filename)
+            logger.Critical("can't read file %s", filename)
 			os.Exit(1)
 		}
 	} else {
-		log.Critical("file %s not found", filename)
+        logger.Critical("file %s not found", filename)
 		os.Exit(1)
 	}
 }

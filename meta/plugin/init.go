@@ -6,6 +6,11 @@ import (
     "strings"
     "path/filepath"
     "os"
+    "regexp"
+)
+
+var (
+    renameRegex = regexp.MustCompile(`([A-Z0-9])`)
 )
 
 type Init struct {}
@@ -124,7 +129,7 @@ func (i *Init) createPathAndImportAndShortPackage(env *meta.Environment, pkg str
 }
 
 func (i *Init) createFilename(name string) string {
-    name = strings.ToLower(controllerRenameRegex.ReplaceAllString(name, "_$1"))
+    name = strings.ToLower(renameRegex.ReplaceAllString(name, "_$1"))
     if name[0] == '_' {
         name = name[1:]
     }
@@ -132,7 +137,7 @@ func (i *Init) createFilename(name string) string {
 }
 
 func (i *Init) createFilenameAndAutoFilename(path, name string) (string, string) {
-    filename := filepath.Join(path, i.clearName(name))
+    filename := filepath.Join(path, i.createFilename(name))
     autoFilename := fmt.Sprintf("%s_auto", filename)
     return filename, autoFilename
 }
