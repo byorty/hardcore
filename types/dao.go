@@ -21,16 +21,4 @@ type DAO interface {
 	ByIds([]int) StraightMappingModelScanner
 }
 
-type EnumDAO interface {
-    EnumScanner
-    GetList() []Named
-    Eq(Named, interface{}) bool
-    Scan(src, dest Named)
-}
-
-type IntEnumDAO interface {
-    ById(int) EnumScanner
-//    ByIds([]int) EnumScanner
-}
-
 

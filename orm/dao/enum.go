@@ -1,4 +1,5 @@
 package dao
+
 import "github.com/byorty/hardcore/types"
 
 type Enum struct {

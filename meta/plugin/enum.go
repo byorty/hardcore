@@ -43,7 +43,7 @@ func ({{.ShortName}} {{.Name}}DAO) GetList() []types.Named {
     return {{.SliceName}}
 }
 
-func ({{.ShortName}} {{.Name}}DAO) ById(id int) types.EnumScanner {
+func ({{.ShortName}} {{.Name}}DAO) ById(id {{.Kind}}) types.EnumScanner {
     u.SetId(id)
     return {{.ShortName}}
 }
