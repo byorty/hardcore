@@ -20,25 +20,18 @@ func (u UserRole1) GetName() string {
     return userRoleMap1[u]
 }
 
-func (s UserRole1) DAO() *UserRoleDAO1 {
-    return new(UserRoleDAO1)
+func (s UserRole1) DAO() types.IntEnumDAO {
+    return userRoleDAO1
 }
 
-type UserRoleDAO1 struct {
-    dao.Enum
-}
+type UserRoleDAO1 struct {}
 
 func (u UserRoleDAO1) GetList() []types.Named {
     return userRoleList1
 }
 
 func (u UserRoleDAO1) ById(id int) types.EnumScanner {
-    u.SetId(id)
-    return u
-}
-
-func (u UserRoleDAO1) One(enum types.Named) {
-    u.FindOne(u, enum)
+    return dao.NewEnumScanner(id, u)
 }
 
 func (u UserRoleDAO1) Eq(named types.Named, id interface{}) bool {
@@ -56,6 +49,7 @@ const (
 )
 
 var (
+    userRoleDAO1 UserRoleDAO1
     userRoleList1 = []types.Named{
         LoggedUserRole1,
         LoggedAdminRole1,

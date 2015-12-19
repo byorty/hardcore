@@ -5,6 +5,7 @@ import (
     "strings"
     "fmt"
     "github.com/byorty/hardcore/meta/model"
+    "github.com/byorty/hardcore/utils"
 )
 
 var (
@@ -32,32 +33,25 @@ func ({{.ShortName}} {{.Name}}) GetName() string {
     return {{.MapName}}[{{.ShortName}}]
 }
 
-func ({{.ShortName}} {{.Name}}) DAO() *{{.Name}}DAO {
-    return new({{.Name}}DAO)
+func ({{.ShortName}} {{.Name}}) DAO() types.{{.Kind.DAO}} {
+    return {{.VarDaoName}}
 }
 
-type {{.Name}}DAO struct {
-    dao.Enum
-}
+type {{.DaoName}} struct {}
 
-func ({{.ShortName}} {{.Name}}DAO) GetList() []types.Named {
+func ({{.ShortName}} {{.DaoName}}) GetList() []types.Named {
     return {{.SliceName}}
 }
 
-func ({{.ShortName}} {{.Name}}DAO) ById(id {{.Kind}}) types.EnumScanner {
-    {{.ShortName}}.SetId(id)
-    return {{.ShortName}}
+func ({{.ShortName}} {{.DaoName}}) ById(id {{.Kind}}) types.EnumScanner {
+    return dao.NewEnumScanner(id, {{.ShortName}})
 }
 
-func ({{.ShortName}} {{.Name}}DAO) One(enum types.Named) {
-    {{.ShortName}}.FindOne({{.ShortName}}, enum)
-}
-
-func ({{.ShortName}} {{.Name}}DAO) Eq(named types.Named, id interface{}) bool {
+func ({{.ShortName}} {{.DaoName}}) Eq(named types.Named, id interface{}) bool {
     return named.({{.Name}}).GetId() == id
 }
 
-func ({{.ShortName}} {{.Name}}DAO) Scan(src, dest types.Named) {
+func ({{.ShortName}} {{.DaoName}}) Scan(src, dest types.Named) {
     enum := dest.(*{{.Name}})
     (*enum) = src.({{.Name}})
 }
@@ -67,6 +61,7 @@ const ({{range $k, $v := .Constants}}
 )
 
 var (
+    {{.VarDaoName}} {{.DaoName}}
     {{.SliceName}} = []types.Named{ {{range .Constants}}
         {{.Name}},{{end}}
     }
@@ -85,7 +80,7 @@ func (e *Enum) Do(env *meta.Environment) {
             if len(enum.Kind) == 0 {
                 enum.Kind = model.IntEnumKind
             } else {
-                if !model.HasEnumKind(enum.Kind) {
+                if !enum.Kind.IsValid() {
                     env.Logger.Error("unknown enum type %v for %s", enum.Kind, enum.Name)
                 }
             }
@@ -110,16 +105,18 @@ func (e *Enum) Do(env *meta.Environment) {
             autoImports = append(autoImports, "github.com/byorty/hardcore/types")
             autoImports = append(autoImports, "github.com/byorty/hardcore/orm/dao")
 
-            varName := fmt.Sprintf("%s%s", strings.ToLower(enum.Name[0:1]), enum.Name[1:])
+            varName := utils.LowerFirst(enum.Name)
             tmplParams := map[string]interface{}{
                 "ShortName": strings.ToLower(enum.Name[0:1]),
                 "Name": enum.Name,
+                "DaoName": fmt.Sprintf("%sDao", enum.Name),
                 "Package": container.ShortPackage,
                 "SliceName": fmt.Sprintf("%sList", varName),
                 "MapName": fmt.Sprintf("%sMap", varName),
                 "Constants": enum.Constants,
                 "Kind": enum.Kind,
                 "AutoImports": autoImports,
+                "VarDaoName": fmt.Sprintf("%sDao", varName),
             }
 
             env.Configuration.AddAutoFile(enum.AutoFilename, autoEnumTpl, tmplParams)

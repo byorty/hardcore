@@ -6,13 +6,28 @@ import (
 
 type EnumKind string
 
+func (e EnumKind) IsValid() bool {
+    isValid := false
+    for _, kind := range enumKinds {
+        if kind == e {
+            isValid = true
+            break
+        }
+    }
+    return isValid
+}
+
+func (e EnumKind) DAO() string {
+    return daoByKinds[e]
+}
+
 const (
     IntEnumKind EnumKind = "int"
     Int8EnumKind = "in8"
     Int16EnumKind = "int16"
     Int32EnumKind = "int32"
     Int64EnumKind = "int64"
-    UintntEnumKind = "uint"
+    UintEnumKind = "uint"
     Uint8EnumKind = "uin8"
     Uint16EnumKind = "uint16"
     Uint32EnumKind = "uint32"
@@ -32,7 +47,7 @@ var (
         Int16EnumKind,
         Int32EnumKind,
         Int64EnumKind,
-        UintntEnumKind,
+        UintEnumKind,
         Uint8EnumKind,
         Uint16EnumKind,
         Uint32EnumKind,
@@ -43,6 +58,24 @@ var (
         Complex128EnumKind,
         StringEnumKind,
         RuneEnumKind,
+    }
+    daoByKinds = map[EnumKind]string {
+        IntEnumKind: "IntEnumDAO",
+        Int8EnumKind: "Int8EnumDAO",
+        Int16EnumKind: "Int16EnumDAO",
+        Int32EnumKind: "Int32EnumDAO",
+        Int64EnumKind: "Int64EnumDAO",
+        UintEnumKind: "UintEnumDAO",
+        Uint8EnumKind: "Uint8EnumDAO",
+        Uint16EnumKind: "Uint16EnumDAO",
+        Uint32EnumKind: "Uint32EnumDAO",
+        Uint64EnumKind: "Uint64EnumDAO",
+        Float32EnumKind: "Float32EnumDAO",
+        Float64EnumKind: "Float64EnumDAO",
+        Complex64EnumKind: "Complex64EnumDAO",
+        Complex128EnumKind: "Complex128EnumDAO",
+        StringEnumKind: "StringEnumDAO",
+        RuneEnumKind: "RuneEnumDAO",
     }
 )
 

@@ -2,18 +2,19 @@ package dao
 
 import "github.com/byorty/hardcore/types"
 
-type Enum struct {
+type EnumScannerImpl struct {
     id interface{}
+    dao types.EnumDAO
 }
 
-func (e *Enum) SetId(id interface{})  {
-    e.id = id
+func NewEnumScanner(id interface{}, dao types.EnumDAO) types.EnumScanner {
+    return &EnumScannerImpl{id, dao}
 }
 
-func (e Enum) FindOne(dao types.EnumDAO, enum types.Named) {
-    for _, named := range dao.GetList()  {
-        if dao.Eq(named, e.id) {
-            dao.Scan(named, enum)
+func (e EnumScannerImpl) One(enum types.Named) {
+    for _, named := range e.dao.GetList()  {
+        if e.dao.Eq(named, e.id) {
+            e.dao.Scan(named, enum)
         }
     }
 }

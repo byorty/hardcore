@@ -1,6 +1,8 @@
 package plugin
 
-import "github.com/byorty/hardcore/meta"
+import (
+    "github.com/byorty/hardcore/meta"
+)
 
 var (
     modelTpl = `package {{.Package}}
@@ -48,19 +50,31 @@ func (a {{.AutoName}}) Set({{.RelationName}} {{.RelationKind}}) {
 }
 {{end}}
 
-func (a {{.AutoName}}) Get() {{.Kind}} { {{if .HasRelation}}
-{{if .Relation.IsNone}}
-    return a.{{.Name}}
-{{else if .Relation.IsOneToOne}}
+func (a {{.AutoName}}) Get() {{.Kind}} {
+{{if .HasRelation}}
+    {{if .Relation.IsOneToOne}}
     if a.{{.Name}} == nil {
         a.{{.Name}} = new({{.Kind}})
-        {{.Name}}.DAO().ById({{.RelationName}}).One(a.{{.Name}})
+        a.{{.Name}}.DAO().ById(a.{{.RelationName}}).One(a.{{.Name}})
     }
-    return a.{{.Name}}
-{{else if .Relation.IsOneToMany}}
-{{else}}
+    {{else if .Relation.IsOneToMany}}
+        {{if .IsEnum}}
+    if a.{{.Name}} == nil {
+        var {{.Name}} {{.Kind}}
+        {{.Name}}.DAO().ByIds(a.{{.RelationName}}).All({{.Name}})
+        a.{{.Name}} = &{{.Name}}
+    }
+        {{else}}
+    if a.{{.Name}} == nil {
+        a.{{.Name}} = make({{.Kind}}, 0)
+        a.{{.Name}}.O2MDAO().
+    }
+        {{end}}
+    {{else if .Relation.ManyOneToMany}}
+    {{end}}
 {{end}}
-{{end}}}
+    return a.{{.Name}}
+}
 
 {{end}}
 
@@ -111,7 +125,9 @@ func (e *Model) Do(env *meta.Environment) {
     for _, container := range env.Configuration.ModelContainers {
         for _, model := range container.Models {
 
-            env.Logger.Info(model.Pattern == "")
+            for _, prop := range model.Properties {
+                env.Logger.Info(prop)
+            }
         }
     }
 }

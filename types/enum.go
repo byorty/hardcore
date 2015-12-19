@@ -86,7 +86,6 @@ type RuneEnum interface {
 }
 
 type EnumDAO interface {
-    EnumScanner
     GetList() []Named
     Eq(Named, interface{}) bool
     Scan(src, dest Named)
