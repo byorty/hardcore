@@ -6,4 +6,10 @@ type Property struct {
     Size int `xml:"size,attr"`
     Required bool `xml:"required,attr"`
     Relation Relation `xml:"relation,attr"`
+    RelationName string
+    RelationKind string
+}
+
+func (p Property) HasRelation() bool {
+    return p.Relation != NoneRelation
 }

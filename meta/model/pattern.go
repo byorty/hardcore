@@ -3,6 +3,7 @@ package model
 type Pattern string
 
 const (
-    ValueObject Pattern = "ValueObject"
-    StraightMapping = "StraightMapping"
+    NilPattern Pattern = ""
+    ValueObjectPattern = "ValueObject"
+    StraightMappingPattern = "StraightMapping"
 )
