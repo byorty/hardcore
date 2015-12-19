@@ -25,7 +25,7 @@
                 <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
                 <property name="registerDate" type="time.Time" required="false"/>
             </properties>
-            <pattern name="StraightMapping"/>
+            <pattern>StraightMapping</pattern>
         </model>
         <model name="SomeUser">
             <extends>
@@ -36,7 +36,7 @@
                 <property name="test" type="string" required="true"/>
                 <property name="enum" type="some.SomeEnum" required="true" relation="OneToMany"/>
             </properties>
-            <pattern name="StraightMapping"/>
+            <pattern>StraightMapping</pattern>
         </model>
         <enum name="UserRole">
             <constants>
