@@ -34,6 +34,7 @@ func (i *Init) initModels(env *meta.Environment) {
     }
     for _, container := range env.Configuration.ModelContainers {
         for _, model := range container.Models {
+            model.Imports = make([]string, 0)
             if len(model.Extends) > 0 {
                 for _, extend := range model.Extends {
                     hasModel, modelImport := i.hasModel(env.Configuration, extend.Name)
@@ -42,6 +43,25 @@ func (i *Init) initModels(env *meta.Environment) {
                     } else {
                         env.Logger.Error("parent model %s not found", extend.Name)
                         os.Exit(1)
+                    }
+                }
+            }
+            for _, prop := range model.Properties {
+                if prop.HasRelation() {
+                    var hasImport bool
+                    var newImport string
+                    hasImport, newImport = i.hasModel(env.Configuration, prop.Kind)
+                    if !hasImport {
+                        hasImport, newImport = i.hasEnum(env.Configuration, prop.Kind)
+                    }
+                    if hasImport {
+                        prop.Kind = i.clearName(prop.Kind)
+                        if container.Import == newImport {
+                            parts := strings.Split(prop.Kind, ".")
+                            prop.Kind = parts[len(parts) - 1]
+                        } else {
+                            model.AddImport(newImport)
+                        }
                     }
                 }
             }
@@ -89,6 +109,25 @@ func (i *Init) hasModel(conf *meta.Configuration, mdl string) (bool, string)  {
         }
     }
     return hasModel, modelImport
+}
+
+func (i *Init) hasEnum(conf *meta.Configuration, e string) (bool, string)  {
+    e = i.clearName(e)
+    var enumImport string
+    hasEnum := false
+    for _, container := range conf.ModelContainers {
+        for _, enum := range container.Enums {
+            if e == fmt.Sprintf("%s.%s", container.ShortPackage, enum.Name) {
+                hasEnum = true
+                break
+            }
+        }
+        if hasEnum {
+            enumImport = container.Import
+            break
+        }
+    }
+    return hasEnum, enumImport
 }
 
 func (i *Init) hasController(conf *meta.Configuration, ctrl string) (bool, string)  {

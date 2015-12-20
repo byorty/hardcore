@@ -16,8 +16,14 @@ func (f *File) Do(env *meta.Environment) {
     for _, file := range env.Configuration.Files {
         buf := new(bytes.Buffer)
         tmpl := template.New(file.Name  + "_tpl")
-        tmpl.Parse(file.Tpl)
-        tmpl.Execute(buf, file.Params)
+        _, err := tmpl.Parse(file.Tpl)
+        if err != nil {
+            env.Logger.Error(err)
+        }
+        err = tmpl.Execute(buf, file.Params)
+        if err != nil {
+            env.Logger.Error(err)
+        }
 
         if file.Kind == common.AutoFileKind {
             if utils.FileExists(file.Name) {

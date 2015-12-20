@@ -24,3 +24,7 @@ func (r Relation) IsOneToMany() bool {
 func (r Relation) IsManyToMany() bool {
     return r == ManyToManyRelation
 }
+
+func (r Relation) NeedMany() bool {
+    return r.IsOneToMany() || r.IsManyToMany()
+}

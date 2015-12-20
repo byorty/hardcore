@@ -2,34 +2,35 @@ package plugin
 
 import (
     "github.com/byorty/hardcore/meta"
+    "strings"
+    "fmt"
+    "github.com/byorty/hardcore/utils"
+    "github.com/byorty/hardcore/meta/model"
 )
 
 var (
     modelTpl = `package {{.Package}}
 
-import ({{range .Imports}}
-    "{{.}}"{{end}}
-)
-
 type {{.Name}} struct {
-	Auto{{.Name}}
+	{{.AutoName}}
 }
 
 type {{.MultipleName}} []*{{.Name}}
 
-type {{.Name}}DAO struct {
+type {{.DaoName}} struct {
 	dao.Base
 }
 `
-    autoModelTpl = `package {{.Package}}
+    autoModelTpl = `{{$autoName := .AutoName}}` +
+`package {{.Package}}
 
 import ({{range .AutoImports}}
     "{{.}}"{{end}}
 )
 
 type {{.AutoName}} struct { {{range .Properties}}
-    {{.Name}} {{.Kind}}{{if .HasRelation}}
-    {{.RelationName}} {{.RelationKind}}{{end}}
+    {{.Name}} {{if and .HasRelation .Relation.NeedMany}}{{end}}{{.Kind}}{{if .HasRelation}}
+    {{.Child.Name}} {{.Child.Kind}}{{end}}
 {{end}}}
 
 func(a *{{.AutoName}}) DAO() types.DAO {
@@ -41,36 +42,40 @@ func (a *{{.AutoName}}) Proto() types.Proto {
 }
 
 {{range .Properties}}
-func (a {{.AutoName}}) Set({{.Name}} {{.Kind}}) {
+func (a {{$autoName}}) Set{{.UpperName}}({{.Name}} {{.Kind}}) {
     a.{{.Name}} = {{.Name}}
 }{{if .HasRelation}}
 
-func (a {{.AutoName}}) Set({{.RelationName}} {{.RelationKind}}) {
-    a.{{.RelationName}} = {{.RelationName}}
+func (a {{$autoName}}) Set{{.Child.UpperName}}({{.Child.Name}} {{.Child.Kind}}) {
+    a.{{.Child.Name}} = {{.Child.Name}}
 }
 {{end}}
 
-func (a {{.AutoName}}) Get() {{.Kind}} {
+func (a {{$autoName}}) Get{{.UpperName}}() {{.Kind}} {
 {{if .HasRelation}}
     {{if .Relation.IsOneToOne}}
     if a.{{.Name}} == nil {
+        {{if .IsEnum}}
+        var {{.Name}} {{.Kind}}
+        a.{{.Name}} = &{{.Name}}
+        {{else}}
         a.{{.Name}} = new({{.Kind}})
-        a.{{.Name}}.DAO().ById(a.{{.RelationName}}).One(a.{{.Name}})
+        {{end}}
+        a.{{.Name}}.DAO().ById(a.{{.Child.Name}}).One(a.{{.Name}})
     }
     {{else if .Relation.IsOneToMany}}
         {{if .IsEnum}}
     if a.{{.Name}} == nil {
         var {{.Name}} {{.Kind}}
-        {{.Name}}.DAO().ByIds(a.{{.RelationName}}).All({{.Name}})
+        {{.Name}}.DAO().ByIds(a.{{.Child.Name}}).All({{.Name}})
         a.{{.Name}} = &{{.Name}}
     }
         {{else}}
     if a.{{.Name}} == nil {
-        a.{{.Name}} = make({{.Kind}}, 0)
-        a.{{.Name}}.O2MDAO().
+
     }
         {{end}}
-    {{else if .Relation.ManyOneToMany}}
+    {{else if .Relation.IsManyToMany}}
     {{end}}
 {{end}}
     return a.{{.Name}}
@@ -90,25 +95,25 @@ func ({{.ShortName}} {{.DaoName}}) Proto() types.Proto {
 	return {{.VarProtoName}}
 }
 
-func ({{.ShortName}} {{.VarDaoName}}) GetDB() string {
+func ({{.ShortName}} {{.DaoName}}) GetDB() string {
 	return "{{.DBName}}"
 }
 
-func ({{.ShortName}} {{.VarDaoName}}) GetTable() string {
+func ({{.ShortName}} {{.DaoName}}) GetTable() string {
 	return "{{.TableName}}"
 }
 
-func ({{.ShortName}} {{.VarDaoName}}) ScanAll(rows interface{}, rawModels interface{}) {
+func ({{.ShortName}} {{.DaoName}}) ScanAll(rows interface{}, rawModels interface{}) {
 	models := rawModels.(*{{.MultipleName}})
 	model := new({{.Name}})
 	{{.ShortName}}.Scan(rows, model)
 	(*models) = append((*models), model)
 }
 
-func ({{.ShortName}} {{.VarDaoName}}) Scan(row interface{}, rawModel interface{}) {
+func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, rawModel interface{}) {
 	model := rawModel.(*{{.Name}})
 	err := row.(types.SqlModelScanner).Scan({{range .Properties}}{{if .HasRelation}}
-	    &model.{{.RelationName}},
+	    &model.{{.Child.Name}},
 	{{else}}
 	    &model.{{.Name}},
     {{end}}{{end}})
@@ -123,11 +128,28 @@ type Model struct {}
 
 func (e *Model) Do(env *meta.Environment) {
     for _, container := range env.Configuration.ModelContainers {
-        for _, model := range container.Models {
+        for _, m := range container.Models {
 
-            for _, prop := range model.Properties {
-                env.Logger.Info(prop)
+            for _, prop := range m.Properties {
+                prop.Child = new(model.Property)
+//                env.Logger.Info(prop)
             }
+
+            varName := utils.LowerFirst(m.Name)
+            tmplParams := map[string]interface{}{
+                "ShortName": strings.ToLower(m.Name[0:1]),
+                "Name": m.Name,
+                "AutoName": fmt.Sprintf("Auto%s", m.Name),
+                "DaoName": fmt.Sprintf("%sDao", m.Name),
+                "Package": container.ShortPackage,
+                "AutoImports": m.Imports,
+                "VarDaoName": fmt.Sprintf("%sDao", varName),
+                "VarProtoName": fmt.Sprintf("%sProto", varName),
+                "Properties": m.Properties,
+            }
+
+            env.Configuration.AddAutoFile(m.AutoFilename, autoModelTpl, tmplParams)
+            env.Configuration.AddFile(m.Filename, modelTpl, tmplParams)
         }
     }
 }

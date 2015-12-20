@@ -23,6 +23,7 @@
                 <property name="email" type="string" size="64" required="true"/>
                 <property name="password" type="string" size="32" required="true"/>
                 <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
+                <property name="roles" type="some.UserRole" required="true" relation="OneToMany"/>
                 <property name="registerDate" type="time.Time" required="false"/>
             </properties>
             <pattern>StraightMapping</pattern>
