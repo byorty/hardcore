@@ -1,17 +1,19 @@
 package controller
 
-import "github.com/byorty/hardcore/meta/common"
+import (
+"github.com/byorty/hardcore/meta/common"
+"github.com/byorty/hardcore/meta/types"
+)
 
 type Controller struct {
-	Name string `xml:"name,attr"`
+    common.Entity
 	Route string `xml:"route,attr"`
-	Extends []*common.Extend `xml:"extends>extend"`
 	Actions []Action `xml:"actions>action"`
     Imports []string
     Filename string
     AutoFilename string
 }
 
-func (c Controller) HasParents() bool {
-    return len(c.Extends) > 0
+func (c Controller) GetKind() types.EntityKind {
+    return types.ControllerEntityKind
 }

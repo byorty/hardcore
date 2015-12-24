@@ -1,6 +1,9 @@
 package controller
 
-import "github.com/byorty/hardcore/meta/common"
+import (
+"github.com/byorty/hardcore/meta/common"
+"github.com/byorty/hardcore/meta/types"
+)
 
 type Container struct {
 	common.Container
@@ -8,6 +11,6 @@ type Container struct {
 	Controllers []*Controller `xml:"controller"`
 }
 
-func (c Container) Eq(container *Container) bool {
-	return c.Package == container.Package
+func (c Container) GetKind() types.ContainerKind {
+    return types.ControllerContainerKind
 }

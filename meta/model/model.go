@@ -1,9 +1,12 @@
 package model
 
-import "github.com/byorty/hardcore/meta/common"
+import (
+    "github.com/byorty/hardcore/meta/common"
+    "github.com/byorty/hardcore/meta/types"
+)
 
 type Model struct {
-    Name string `xml:"name,attr"`
+    common.Entity
     Source string `xml:"source,attr"`
     Extends []*common.Extend `xml:"extends>extend"`
     Filename string
@@ -12,6 +15,10 @@ type Model struct {
     Properties []*Property `xml:"properties>property"`
     Pattern Pattern `xml:"pattern"`
     Imports []string
+}
+
+func (m Model) GetKind() types.EntityKind {
+    return types.ModelEntityKind
 }
 
 func (m *Model) AddImport(newImport string) {

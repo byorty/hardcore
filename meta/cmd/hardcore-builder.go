@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	plugins = []plugin.Plugin{
-		new(plugin.Include),
-		new(plugin.Init),
-		new(plugin.Directory),
-		new(plugin.Enum),
-		new(plugin.Model),
-		new(plugin.Controller),
-		new(plugin.File),
+	plugins = []plugin1.Plugin{
+		new(plugin1.Include),
+		new(plugin1.Init),
+		new(plugin1.Directory),
+		new(plugin1.Enum),
+		new(plugin1.Model),
+		new(plugin1.Controller),
+		new(plugin1.File),
 	}
 )
 

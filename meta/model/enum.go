@@ -2,6 +2,8 @@ package model
 
 import (
     "fmt"
+    "github.com/byorty/hardcore/meta/common"
+"github.com/byorty/hardcore/meta/types"
 )
 
 type EnumKind string
@@ -91,11 +93,15 @@ func HasEnumKind(kind EnumKind) bool {
 }
 
 type Enum struct {
-    Name string `xml:"name,attr"`
+    common.Entity
     Kind EnumKind `xml:"type,attr"`
     Constants []*Constant `xml:"constants>constant"`
     Filename string
     AutoFilename string
+}
+
+func (e Enum) GetKind() types.EntityKind {
+    return types.EnumEntityKind
 }
 
 func (e Enum) GetValue(constant *Constant) string {
