@@ -67,10 +67,10 @@ func (c *Config) Do(env types.Environment) {
 func (c *Config) initModelEntities(container *model.Container) types.Container {
     entities := make([]types.Entity, 0)
     for _, entity := range container.Models {
-        entities = append(entities, entity)
+        entities = append(entities, c.initEntity(container, entity))
     }
     for _, entity := range container.Enums {
-        entities = append(entities, entity)
+        entities = append(entities, c.initEntity(container, entity))
     }
     container.Models = nil
     container.Enums = nil
@@ -78,10 +78,16 @@ func (c *Config) initModelEntities(container *model.Container) types.Container {
     return container
 }
 
+func (c *Config) initEntity(container types.Container, entity types.Entity) types.Entity {
+    entity.ClearName()
+    entity.SetContainer(container)
+    return entity
+}
+
 func (c *Config) initControllerEntities(container *controller.Container) types.Container {
     entities := make([]types.Entity, 0)
     for _, entity := range container.Controllers {
-        entities = append(entities, entity)
+        entities = append(entities, c.initEntity(container, entity))
     }
     container.Controllers = nil
     container.SetEntities(entities)

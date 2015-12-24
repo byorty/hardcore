@@ -11,6 +11,9 @@ const (
 type Entity interface {
     GetKind() EntityKind
     GetName() string
+    GetFullname() string
+    GetPointerName() string
+    GetPointerFullName() string
     SetExtends([]Entity)
     GetExtends() []Entity
     SetImports([]string)
@@ -20,4 +23,6 @@ type Entity interface {
     SetAutoFilename(string)
     GetAutoFilename()string
     GetRawExtends() []string
+    SetContainer(Container)
+    ClearName()
 }

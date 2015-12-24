@@ -62,22 +62,22 @@ var (
         RuneEnumKind,
     }
     daoByKinds = map[EnumKind]string {
-        IntEnumKind: "IntEnumDAO",
-        Int8EnumKind: "Int8EnumDAO",
-        Int16EnumKind: "Int16EnumDAO",
-        Int32EnumKind: "Int32EnumDAO",
-        Int64EnumKind: "Int64EnumDAO",
-        UintEnumKind: "UintEnumDAO",
-        Uint8EnumKind: "Uint8EnumDAO",
-        Uint16EnumKind: "Uint16EnumDAO",
-        Uint32EnumKind: "Uint32EnumDAO",
-        Uint64EnumKind: "Uint64EnumDAO",
-        Float32EnumKind: "Float32EnumDAO",
-        Float64EnumKind: "Float64EnumDAO",
-        Complex64EnumKind: "Complex64EnumDAO",
-        Complex128EnumKind: "Complex128EnumDAO",
-        StringEnumKind: "StringEnumDAO",
-        RuneEnumKind: "RuneEnumDAO",
+        IntEnumKind: "types.IntEnumDAO",
+        Int8EnumKind: "types.Int8EnumDAO",
+        Int16EnumKind: "types.Int16EnumDAO",
+        Int32EnumKind: "types.Int32EnumDAO",
+        Int64EnumKind: "types.Int64EnumDAO",
+        UintEnumKind: "types.UintEnumDAO",
+        Uint8EnumKind: "types.Uint8EnumDAO",
+        Uint16EnumKind: "types.Uint16EnumDAO",
+        Uint32EnumKind: "types.Uint32EnumDAO",
+        Uint64EnumKind: "types.Uint64EnumDAO",
+        Float32EnumKind: "types.Float32EnumDAO",
+        Float64EnumKind: "types.Float64EnumDAO",
+        Complex64EnumKind: "types.Complex64EnumDAO",
+        Complex128EnumKind: "types.Complex128EnumDAO",
+        StringEnumKind: "types.StringEnumDAO",
+        RuneEnumKind: "types.RuneEnumDAO",
     }
 )
 
@@ -96,8 +96,6 @@ type Enum struct {
     common.Entity
     Kind EnumKind `xml:"type,attr"`
     Constants []*Constant `xml:"constants>constant"`
-    Filename string
-    AutoFilename string
 }
 
 func (e Enum) GetKind() types.EntityKind {

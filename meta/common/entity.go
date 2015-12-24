@@ -1,6 +1,9 @@
 package common
 
-import "github.com/byorty/hardcore/meta/types"
+import (
+    "github.com/byorty/hardcore/meta/types"
+    "fmt"
+)
 
 type Entity struct {
     Name string `xml:"name,attr"`
@@ -9,6 +12,7 @@ type Entity struct {
     autoFilename string
     imports []string
     entities []types.Entity
+    container types.Container
 }
 
 func (e Entity) GetName() string {
@@ -49,4 +53,30 @@ func (e Entity) GetAutoFilename()string {
 
 func (e Entity) GetRawExtends() []string {
     return e.Extends
+}
+
+func (e *Entity) SetContainer(container types.Container) {
+    e.container = container
+}
+
+func (e Entity) GetFullname() string {
+    return fmt.Sprintf("%s.%s", e.container.GetShortPackage(), e.GetName())
+}
+
+func (e Entity) GetPointerName() string {
+    return e.writePointer(e.GetName())
+}
+
+func (e Entity) writePointer(name string) string {
+    return fmt.Sprintf("*%s", name)
+}
+
+func (e Entity) GetPointerFullName() string {
+    return e.writePointer(e.GetFullname())
+}
+
+func (e *Entity) ClearName() {
+    if e.Name[0] == uint8('*') {
+        e.Name = e.Name[1:]
+    }
 }

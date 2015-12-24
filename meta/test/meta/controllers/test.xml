@@ -2,10 +2,6 @@
 <configuration>
     <controllers package="controllers.some" route="/some">
         <controller name="TestCtrl" route="/test">
-            <!--<extends>-->
-            <!--<extend>some1.TestCtrl1</extend>-->
-            <!--<extend>*some2.TestCtrl2</extend>-->
-            <!--</extends>-->
             <actions>
                 <allows>
                     <allow>models.LoggedUserRole</allow>

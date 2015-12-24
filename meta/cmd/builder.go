@@ -16,10 +16,10 @@ import (
 )
 
 var (
-
     plugins = []types.Plugin{
         new(plugin.Config),
-        new(plugin.Init),
+        new(plugin.Path),
+        new(plugin.Directory),
     }
 )
 
