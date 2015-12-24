@@ -1,4 +1,23 @@
-package model
+package types
+
+type ModelEntity interface {
+    Entity
+    GetSource() string
+    SetProperties([]Property)
+    GetProperties() []Property
+}
+
+type Property interface {
+    GetName() string
+    GetKind() string
+    IsRequired() bool
+    GetRelation() Relation
+    SetUpperName(string)
+    GetUpperName() string
+    SetEntity(Entity)
+    GetEntity() Entity
+    HasRelation() bool
+}
 
 type Relation string
 
@@ -25,6 +44,6 @@ func (r Relation) IsManyToMany() bool {
     return r == ManyToManyRelation
 }
 
-func (r Relation) NeedMany() bool {
+func (r Relation) HasMany() bool {
     return r.IsOneToMany() || r.IsManyToMany()
 }

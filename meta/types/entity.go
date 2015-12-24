@@ -17,6 +17,7 @@ type Entity interface {
     SetExtends([]Entity)
     GetExtends() []Entity
     SetImports([]string)
+    AddImport(string)
     GetImports() []string
     SetFilename(string)
     GetFilename()string
@@ -24,5 +25,6 @@ type Entity interface {
     GetAutoFilename()string
     GetRawExtends() []string
     SetContainer(Container)
+    GetContainer() Container
     ClearName()
 }

@@ -56,6 +56,6 @@ func (c ConsoleLogWriter) LogWrite(rec *LogRecord) {
 // Close stops the logger from sending messages to standard output.  Attempts to
 // send log messages to this logger after a Close have undefined behavior.
 func (c ConsoleLogWriter) Close() {
+	time.Sleep(time.Second) // Try to give console I/O time to complete
 	close(c.w)
-	time.Sleep(500 * time.Millisecond) // Try to give console I/O time to complete
 }

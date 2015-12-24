@@ -11,22 +11,21 @@ type Model struct {
     Identifier *Property `xml:"properties>identifier"`
     Properties []*Property `xml:"properties>property"`
     Pattern Pattern `xml:"pattern"`
-    Imports []string
+    properties []types.Property
 }
 
 func (m Model) GetKind() types.EntityKind {
     return types.ModelEntityKind
 }
 
-func (m *Model) AddImport(newImport string) {
-    hasImport := false
-    for _, existsImport := range m.Imports {
-        if existsImport == newImport {
-            hasImport = true
-            break
-        }
-    }
-    if !hasImport {
-        m.Imports = append(m.Imports, newImport)
-    }
+func (m Model) GetSource() string {
+    return m.Source
+}
+
+func (m *Model) SetProperties(properties []types.Property) {
+    m.properties = properties
+}
+
+func (m Model) GetProperties() []types.Property {
+    return m.properties
 }

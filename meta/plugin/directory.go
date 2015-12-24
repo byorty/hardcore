@@ -14,7 +14,6 @@ func (d *Directory) Do(env types.Environment) {
             err := os.MkdirAll(container.GetPath(), os.ModePerm)
             if err != nil {
                 env.GetLogger().Error(err)
-                os.Exit(1)
             }
         }
     }

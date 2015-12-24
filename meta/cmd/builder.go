@@ -17,9 +17,10 @@ import (
 
 var (
     plugins = []types.Plugin{
-        new(plugin.Config),
+        new(plugin.Include),
         new(plugin.Path),
         new(plugin.Directory),
+        new(plugin.Type),
     }
 )
 

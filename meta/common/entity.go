@@ -35,6 +35,19 @@ func (e Entity) GetImports() []string {
     return e.imports
 }
 
+func (e *Entity) AddImport(newImport string) {
+    hasImport := false
+    for _, existsImport := range e.imports {
+        if existsImport == newImport {
+            hasImport = true
+            break
+        }
+    }
+    if !hasImport {
+        e.imports = append(e.imports, newImport)
+    }
+}
+
 func (e *Entity) SetFilename(filename string) {
     e.filename = filename
 }
@@ -57,6 +70,10 @@ func (e Entity) GetRawExtends() []string {
 
 func (e *Entity) SetContainer(container types.Container) {
     e.container = container
+}
+
+func (e Entity) GetContainer() types.Container {
+    return e.container
 }
 
 func (e Entity) GetFullname() string {
