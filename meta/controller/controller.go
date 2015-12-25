@@ -11,6 +11,6 @@ type Controller struct {
 	Actions []Action `xml:"actions>action"`
 }
 
-func (c Controller) GetKind() types.EntityKind {
+func (c Controller) GetEntityKind() types.EntityKind {
     return types.ControllerEntityKind
 }

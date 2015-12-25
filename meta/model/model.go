@@ -14,7 +14,7 @@ type Model struct {
     properties []types.Property
 }
 
-func (m Model) GetKind() types.EntityKind {
+func (m Model) GetEntityKind() types.EntityKind {
     return types.ModelEntityKind
 }
 

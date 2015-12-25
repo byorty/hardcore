@@ -9,7 +9,7 @@ const (
 )
 
 type Entity interface {
-    GetKind() EntityKind
+    GetEntityKind() EntityKind
     GetName() string
     GetFullname() string
     GetPointerName() string

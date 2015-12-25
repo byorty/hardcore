@@ -98,7 +98,14 @@ type Enum struct {
     Constants []*Constant `xml:"constants>constant"`
 }
 
-func (e Enum) GetKind() types.EntityKind {
+func (e *Enum) GetKind() EnumKind {
+	if len(e.Kind) == 0 {
+		e.Kind = IntEnumKind
+	}
+	return e.Kind
+}
+
+func (e Enum) GetEntityKind() types.EntityKind {
     return types.EnumEntityKind
 }
 

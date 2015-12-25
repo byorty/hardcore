@@ -15,7 +15,7 @@ type Container interface {
     GetImport() string
     SetPath(string)
     GetPath()string
-    GetKind() ContainerKind
+    GetContainerKind() ContainerKind
     SetEntities([]Entity)
     GetEntities() []Entity
 }

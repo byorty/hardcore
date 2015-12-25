@@ -11,6 +11,6 @@ type Container struct {
 	Controllers []*Controller `xml:"controller"`
 }
 
-func (c Container) GetKind() types.ContainerKind {
+func (c Container) GetContainerKind() types.ContainerKind {
     return types.ControllerContainerKind
 }
