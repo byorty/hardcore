@@ -61,24 +61,9 @@ func (t *Type) getEntity(name string) types.Entity {
 
 func (t *Type) fillProperties(entity types.ModelEntity) {
 	modelEntity := entity.(*model.Model)
-	properties := make([]types.Property, 0)
 
-	if modelEntity.Identifier != nil {
-		identifier := modelEntity.Identifier
-		if len(identifier.Kind) == 0 {
-			identifier.Kind = "int"
-		}
-		prop := &model.Property{
-			Name:     "id",
-			Kind:     identifier.Kind,
-			Size:     0,
-			Required: true,
-			Relation: types.NoneRelation,
-		}
-		prop.SetUpperName(utils.UpperFirst(prop.GetName()))
-
-		properties = append(properties, prop)
-	}
+	t.initModelProperties(modelEntity)
+	properties := entity.GetProperties()
 
 	for _, property := range modelEntity.Properties {
 		property.SetUpperName(utils.UpperFirst(property.GetName()))
@@ -92,29 +77,38 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 					property.GetName(),
 					entity.GetName(),
 				)
-			}
-
-			relation := property.GetRelation()
-			if relation.IsOneToOne() {
+			} else {
 				property.SetEntity(relEntity)
+				properties = append(properties, property)
 
-				var kind string
-				if relEntity.GetEntityKind() == types.EnumEntityKind {
-					enumEntity := relEntity.(*model.Enum)
-					kind = enumEntity.GetKind()
-				} else {
+				relation := property.GetRelation()
+				if relation.IsOneToOne() {
+
+					var kind string
+					if relEntity.GetEntityKind() == types.EnumEntityKind {
+						enumEntity := relEntity.(*model.Enum)
+						kind = string(enumEntity.GetKind())
+					} else if relEntity.GetEntityKind() == types.ModelEntityKind {
+						relModelEntity := relEntity.(types.ModelEntity)
+						t.initModelProperties(relModelEntity)
+						identifier := relModelEntity.GetProperties()[0]
+						kind = identifier.GetKind()
+					}
+
+					prop := &model.Property{
+						Name:     fmt.Sprintf("%sId", property.GetName()),
+						Kind:     kind,
+						Size:     0,
+						Required: property.IsRequired(),
+						Relation: types.NoneRelation,
+					}
+					prop.SetUpperName(utils.UpperFirst(prop.GetName()))
+					properties = append(properties, prop)
+				} else if relation.IsOneToMany() {
+
+				} else if relation.IsManyToMany() {
 
 				}
-				prop := &model.Property{
-					fmt.Sprintf("%sId", property.GetName()),
-					kind,
-					0,
-					property.IsRequired(),
-					types.NoneRelation,
-				}
-				prop.SetUpperName(utils.UpperFirst(prop.GetName()))
-			} else if relation.IsOneToMany() {
-			} else if relation.IsManyToMany() {
 			}
 		} else {
 			properties = append(properties, property)
@@ -122,4 +116,35 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 	}
 
 	modelEntity.SetProperties(properties)
+}
+
+func (t *Type) initModelProperties(entity types.ModelEntity) {
+	modelEntity := entity.(*model.Model)
+	isStraightMapping := entity.GetPattern() == types.StraightMappingPattern
+	hasntProperties := entity.GetProperties() == nil
+
+	if hasntProperties {
+		entity.SetProperties(make([]types.Property, 0))
+	}
+
+	if modelEntity.Identifier == nil && isStraightMapping {
+		t.logger.Error("model %s should be have identifier", entity.GetName())
+	}
+
+	if hasntProperties && isStraightMapping {
+		identifier := modelEntity.Identifier
+		if len(identifier.Kind) == 0 {
+			identifier.Kind = model.DefaultIdentifierKind
+		}
+		prop := &model.Property{
+			Name:     model.DefaultIdentifierName,
+			Kind:     identifier.Kind,
+			Size:     0,
+			Required: true,
+			Relation: types.NoneRelation,
+		}
+		prop.SetUpperName(utils.UpperFirst(prop.GetName()))
+
+		entity.SetProperties(append(entity.GetProperties(), prop))
+	}
 }

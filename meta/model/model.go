@@ -5,12 +5,15 @@ import (
     "github.com/byorty/hardcore/meta/types"
 )
 
+const DefaultIdentifierKind = "int"
+const DefaultIdentifierName = "id"
+
 type Model struct {
     common.Entity
     Source string `xml:"source,attr"`
     Identifier *Property `xml:"properties>identifier"`
     Properties []*Property `xml:"properties>property"`
-    Pattern Pattern `xml:"pattern"`
+    Pattern types.Pattern `xml:"pattern"`
     properties []types.Property
 }
 
@@ -28,4 +31,8 @@ func (m *Model) SetProperties(properties []types.Property) {
 
 func (m Model) GetProperties() []types.Property {
     return m.properties
+}
+
+func (m Model) GetPattern() types.Pattern  {
+	return m.Pattern
 }

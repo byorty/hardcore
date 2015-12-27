@@ -11,7 +11,7 @@ type Configuration struct {
 	Includes []common.Include `xml:"includes>include"`
 	ControllerContainers []*controller.Container `xml:"controllers"`
 	ModelContainers []*model.Container `xml:"models"`
-	Files []common.File
+	Files []types.File
 	сontainers []types.Container
 }
 
@@ -24,9 +24,13 @@ func (c *Configuration) SetContainers(containers []types.Container) {
 }
 
 func (c *Configuration) AddFile(name, tpl string, params map[string]interface{})  {
-    c.Files = append(c.Files, common.File{name + common.FileExt, tpl, params, common.NormalFileKind})
+    c.Files = append(c.Files, common.NewFile(name + types.FileExt, tpl, params, types.NormalFileKind))
 }
 
 func (c *Configuration) AddAutoFile(name, tpl string, params map[string]interface{})  {
-    c.Files = append(c.Files, common.File{name + common.FileExt, tpl, params, common.AutoFileKind})
+    c.Files = append(c.Files, common.NewFile(name + types.FileExt, tpl, params, types.AutoFileKind))
+}
+
+func (c Configuration) GetFiles() []types.File {
+	return c.Files
 }

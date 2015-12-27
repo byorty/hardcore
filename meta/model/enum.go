@@ -24,7 +24,8 @@ func (e EnumKind) DAO() string {
 }
 
 const (
-    IntEnumKind EnumKind = "int"
+	NilEnumKind EnumKind = ""
+    IntEnumKind = "int"
     Int8EnumKind = "in8"
     Int16EnumKind = "int16"
     Int32EnumKind = "int32"
@@ -41,6 +42,8 @@ const (
     StringEnumKind = "string"
     RuneEnumKind = "rune"
 )
+
+const DefaultEnumKind = IntEnumKind
 
 var (
     enumKinds = []EnumKind{
@@ -99,8 +102,8 @@ type Enum struct {
 }
 
 func (e *Enum) GetKind() EnumKind {
-	if len(e.Kind) == 0 {
-		e.Kind = IntEnumKind
+	if e.Kind == NilEnumKind {
+		e.Kind = DefaultEnumKind
 	}
 	return e.Kind
 }

@@ -21,6 +21,8 @@ var (
         new(plugin.Path),
         new(plugin.Directory),
         new(plugin.Type),
+        new(plugin.Enum),
+        new(plugin.File),
     }
 )
 
@@ -51,6 +53,7 @@ func main() {
                     return parts[x] == "src"
                 })
                 if i < len(parts) && parts[i] == "src" {
+                    config.Files = make([]types.File, 0)
                     env := conf.NewEnvironment(
                         absPath,
                         metaPath,

@@ -2,6 +2,7 @@ package types
 
 type ModelEntity interface {
     Entity
+	GetPattern() Pattern
     GetSource() string
     SetProperties([]Property)
     GetProperties() []Property
@@ -47,3 +48,11 @@ func (r Relation) IsManyToMany() bool {
 func (r Relation) HasMany() bool {
     return r.IsOneToMany() || r.IsManyToMany()
 }
+
+type Pattern string
+
+const (
+    NilPattern Pattern = ""
+    ValueObjectPattern = "ValueObject"
+    StraightMappingPattern = "StraightMapping"
+)
