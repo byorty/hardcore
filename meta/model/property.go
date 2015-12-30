@@ -1,6 +1,8 @@
 package model
 
-import "github.com/byorty/hardcore/meta/types"
+import (
+	"github.com/byorty/hardcore/meta/types"
+)
 
 type Property struct {
     Name string `xml:"name,attr"`
@@ -10,6 +12,7 @@ type Property struct {
     Relation types.Relation `xml:"relation,attr"`
     upperName string
     entity types.Entity
+	isSelfPackage bool
 }
 
 func (p Property) GetName() string {
@@ -47,3 +50,48 @@ func (p Property) GetEntity() types.Entity {
 func (p Property) HasRelation() bool {
     return p.Relation != types.NoneRelation
 }
+
+func (p *Property) SetSelfPackage(isSelfPackage bool) {
+	p.isSelfPackage = isSelfPackage
+}
+
+func (p Property) IsSelfPackage() bool {
+	return p.isSelfPackage
+}
+
+func (p Property) GetDefineKind() string {
+	switch p.GetRelation() {
+	case types.OneToOneRelation:
+		if p.IsSelfPackage() {
+			return p.entity.GetPointerName()
+		} else {
+			return p.entity.GetPointerFullName()
+		}
+	case types.OneToManyRelation:
+		if p.IsSelfPackage() {
+			return p.entity.GetMultipleName()
+		} else {
+			return p.entity.GetFullMultipleName()
+		}
+	default: return p.GetKind()
+	}
+}
+
+func (p Property) GetVariableKind() string {
+	switch p.GetRelation() {
+	case types.OneToOneRelation:
+		if p.IsSelfPackage() {
+			return p.entity.GetName()
+		} else {
+			return p.entity.GetFullName()
+		}
+	case types.OneToManyRelation:
+		if p.IsSelfPackage() {
+			return p.entity.GetMultipleName()
+		} else {
+			return p.entity.GetFullMultipleName()
+		}
+	default: return p.GetKind()
+	}
+}
+

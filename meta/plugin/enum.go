@@ -38,6 +38,16 @@ func ({{.ShortName}} {{.Name}}) DAO() {{.Kind.DAO}} {
 	return {{.VarDaoName}}
 }
 
+type {{.MultipleName}} []*{{.Name}}
+
+func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
+	return {{.ShortName}}[i]
+}
+
+func ({{.ShortName}} {{.MultipleName}}) Len() int {
+	return len({{.ShortName}})
+}
+
 type {{.DaoName}} struct {}
 
 func ({{.ShortName}} {{.DaoName}}) GetList() []types.Named {
@@ -116,6 +126,7 @@ func (e Enum) Do(env types.Environment) {
 							types.DefaultImport,
 							types.DaoImport,
 						},
+						"MultipleName": entity.GetMultipleName(),
 						"VarDaoName": fmt.Sprintf("%sDao", varName),
 					}
 

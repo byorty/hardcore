@@ -3,6 +3,12 @@ package common
 import (
     "github.com/byorty/hardcore/meta/types"
     "fmt"
+	"regexp"
+)
+
+var (
+	yEndRegex = regexp.MustCompile(`y$`)
+	sEndRegex = regexp.MustCompile(`(s|x)$`)
 )
 
 type Entity struct {
@@ -76,24 +82,40 @@ func (e Entity) GetContainer() types.Container {
     return e.container
 }
 
-func (e Entity) GetFullname() string {
+func (e Entity) GetFullName() string {
     return fmt.Sprintf("%s.%s", e.container.GetShortPackage(), e.GetName())
 }
 
 func (e Entity) GetPointerName() string {
-    return e.writePointer(e.GetName())
+    return e.WritePointer(e.GetName())
 }
 
-func (e Entity) writePointer(name string) string {
+func (e Entity) WritePointer(name string) string {
     return fmt.Sprintf("*%s", name)
 }
 
 func (e Entity) GetPointerFullName() string {
-    return e.writePointer(e.GetFullname())
+    return e.WritePointer(e.GetFullName())
 }
 
 func (e *Entity) ClearName() {
-    if e.Name[0] == uint8('*') {
+    if e.Name[0:1] == "*" {
         e.Name = e.Name[1:]
     }
+}
+
+func (e Entity) GetMultipleName() string {
+    var multiple string
+    if yEndRegex.MatchString(e.GetName()) {
+        multiple = yEndRegex.ReplaceAllString(e.GetName(), "ies")
+    } else if sEndRegex.MatchString(e.GetName()) {
+        multiple = fmt.Sprintf("%ses", e.GetName())
+    } else {
+        multiple = fmt.Sprintf("%ss", e.GetName())
+    }
+    return multiple
+}
+
+func (e Entity) GetFullMultipleName() string {
+    return fmt.Sprintf("%s.%s", e.GetContainer().GetShortPackage(), e.GetMultipleName())
 }

@@ -11,7 +11,7 @@ const (
 type Entity interface {
     GetEntityKind() EntityKind
     GetName() string
-    GetFullname() string
+    GetFullName() string
     GetPointerName() string
     GetPointerFullName() string
     SetExtends([]Entity)
@@ -27,4 +27,6 @@ type Entity interface {
     SetContainer(Container)
     GetContainer() Container
     ClearName()
+    GetMultipleName() string
+    GetFullMultipleName() string
 }

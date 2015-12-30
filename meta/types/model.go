@@ -18,15 +18,19 @@ type Property interface {
     SetEntity(Entity)
     GetEntity() Entity
     HasRelation() bool
+	SetSelfPackage(bool)
+	IsSelfPackage() bool
+    GetDefineKind() string
+	GetVariableKind() string
 }
 
 type Relation string
 
 const (
     NoneRelation Relation = ""
-    OneToOneRelation = "oneToOne"
-    OneToManyRelation = "oneToMany"
-    ManyToManyRelation = "manyToMany"
+    OneToOneRelation = "OneToOne"
+    OneToManyRelation = "OneToMany"
+    ManyToManyRelation = "ManyToMany"
 )
 
 func (r Relation) IsNone() bool {

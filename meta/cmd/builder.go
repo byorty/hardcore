@@ -22,6 +22,7 @@ var (
         new(plugin.Directory),
         new(plugin.Type),
         new(plugin.Enum),
+        new(plugin.Model),
         new(plugin.File),
     }
 )

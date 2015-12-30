@@ -20,7 +20,7 @@ func (t *Type) Do(env types.Environment) {
 		for _, entity := range container.GetEntities() {
 			entity.SetImports(make([]string, 0))
 			if entity.GetRawExtends() != nil {
-				t.logger.Debug("check %s parent entities", entity.GetFullname())
+				t.logger.Debug("check %s parent entities", entity.GetFullName())
 				parentEntities := make([]types.Entity, 0)
 				for _, extend := range entity.GetRawExtends() {
 					parentEntity := t.getEntity(extend)
@@ -29,7 +29,7 @@ func (t *Type) Do(env types.Environment) {
 							entity.AddImport(parentEntity.GetContainer().GetImport())
 						}
 						parentEntities = append(parentEntities, parentEntity)
-						t.logger.Debug("found %s parent entity", parentEntity.GetFullname())
+						t.logger.Debug("found %s parent entity", parentEntity.GetFullName())
 					} else {
 						t.logger.Error("parent entity %s not found", extend)
 					}
@@ -50,7 +50,7 @@ func (t *Type) getEntity(name string) types.Entity {
 	var needle types.Entity = nil
 	for _, container := range t.containers {
 		for _, entity := range container.GetEntities() {
-			if name == entity.GetFullname() {
+			if name == entity.GetFullName() {
 				needle = entity
 				break
 			}
@@ -78,6 +78,10 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 					entity.GetName(),
 				)
 			} else {
+				property.SetSelfPackage(entity.GetContainer().GetImport() == relEntity.GetContainer().GetImport())
+				if !property.IsSelfPackage() {
+					entity.AddImport(relEntity.GetContainer().GetImport())
+				}
 				property.SetEntity(relEntity)
 				properties = append(properties, property)
 

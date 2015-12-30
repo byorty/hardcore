@@ -24,7 +24,7 @@
                 <property name="password" type="string" size="32" required="true"/>
                 <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
                 <property name="roles" type="some.UserRole" required="true" relation="OneToMany"/>
-                <property name="registerDate" type="time.Time" required="false"/>
+                <!--<property name="registerDate" type="time.Time" required="false"/>-->
             </properties>
             <pattern>StraightMapping</pattern>
         </model>
@@ -57,5 +57,26 @@
                 <constant name="SomeEnum22">SomeEnum2</constant>
             </constants>
         </enum>
+        <model name="City" source="main">
+            <properties>
+                <identifier/>
+                <property name="name" type="string" required="true"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
+        <model name="Sex" source="main">
+            <properties>
+                <identifier/>
+                <property name="name" type="string" required="true"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
+        <model name="Yes" source="main">
+            <properties>
+                <identifier/>
+                <property name="name" type="string" required="true"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
     </models>
 </configuration>
