@@ -58,7 +58,11 @@ type AutoUser struct {
 	registerDate time.Time
 }
 
-func(u *AutoUser) DAO() types.ModelDAO {
+func(u *AutoUser) CommonDAO() types.ModelDAO {
+	return userDAO
+}
+
+func(u *AutoUser) DAO() UserDAO {
 	return userDAO
 }
 
@@ -104,7 +108,11 @@ func (u *AutoUser) GetRegisterDate() time.Time {
 
 type Users []*User
 
-func(u *Users) DAO() types.ModelDAO {
+func(u *Users) CommonDAO() types.ModelDAO {
+	return userDAO
+}
+
+func(u *Users) DAO() UserDAO {
 	return userDAO
 }
 

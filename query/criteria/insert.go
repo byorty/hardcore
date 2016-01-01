@@ -26,7 +26,7 @@ func (i *InserCriteriaImpl) AddArg(arg interface{}) {
 }
 
 func (i *InserCriteriaImpl) One(model types.Model) {
-	i.dao = model.DAO()
+	i.dao = model.CommonDAO()
 	i.proto = model.Proto()
 
 	for _, property := range i.proto.GetSlice() {

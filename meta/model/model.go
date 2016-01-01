@@ -7,6 +7,8 @@ import (
 
 const DefaultIdentifierKind = "int"
 const DefaultIdentifierName = "id"
+const TimeKind = "time.Time"
+const TimeImport = "time"
 
 type Model struct {
     common.Entity

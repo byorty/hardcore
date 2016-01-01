@@ -2,6 +2,10 @@ package types
 
 type EntityKind int
 
+func (e EntityKind) IsModel() bool {
+	return e == ModelEntityKind
+}
+
 const (
     ControllerEntityKind EntityKind = iota
     ModelEntityKind

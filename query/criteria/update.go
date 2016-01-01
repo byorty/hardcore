@@ -28,7 +28,7 @@ func (u *UpdateCriteriaImpl) AddArg(arg interface{}) {
 }
 
 func (u *UpdateCriteriaImpl) One(model types.Model) {
-	u.dao = model.DAO()
+	u.dao = model.CommonDAO()
 	u.proto = model.Proto()
 
 	properties := u.proto.GetMap()

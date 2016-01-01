@@ -15,8 +15,10 @@ type IntOneToMany struct {
 	OneToMany
 }
 
-func NewIntOneToMany(field string) types.IntModelDAO  {
-	return &IntOneToMany{field}
+func NewIntOneToMany(field string) *IntOneToMany  {
+	var dao IntOneToMany
+	dao.field = field
+	return &dao
 }
 
 func (o IntOneToMany) ById(id int) types.ModelScanner {

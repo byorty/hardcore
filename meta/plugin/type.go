@@ -115,6 +115,9 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 				}
 			}
 		} else {
+			if property.GetKind() == model.TimeKind {
+				entity.AddImport(model.TimeImport)
+			}
 			properties = append(properties, property)
 		}
 	}

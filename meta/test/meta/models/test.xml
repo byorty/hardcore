@@ -23,8 +23,18 @@
                 <property name="email" type="string" size="64" required="true"/>
                 <property name="password" type="string" size="32" required="true"/>
                 <property name="role" type="some.UserRole" required="true" relation="OneToOne"/>
-                <property name="roles" type="some.UserRole" required="true" relation="OneToMany"/>
-                <!--<property name="registerDate" type="time.Time" required="false"/>-->
+                <property name="registerDate" type="time.Time" required="false"/>
+
+                <property name="posts" type="some.Post" required="true" relation="OneToMany"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
+        <model name="Post" source="main">
+            <properties>
+                <identifier/>
+                <property name="user" type="some.User" required="true" relation="OneToOne"/>
+                <property name="name" type="string" required="true"/>
+                <property name="description" type="string" required="true"/>
             </properties>
             <pattern>StraightMapping</pattern>
         </model>

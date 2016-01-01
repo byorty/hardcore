@@ -10,7 +10,7 @@ type SqlModelScanner interface {
 }
 
 type DAOConnected interface {
-	DAO() ModelDAO
+	CommonDAO() ModelDAO
 }
 
 type ModelDAO interface {

@@ -11,6 +11,7 @@ type ModelEntity interface {
 type Property interface {
     GetName() string
     GetKind() string
+    GetField() string
     IsRequired() bool
     GetRelation() Relation
     SetUpperName(string)
@@ -52,6 +53,19 @@ func (r Relation) IsManyToMany() bool {
 func (r Relation) HasMany() bool {
     return r.IsOneToMany() || r.IsManyToMany()
 }
+
+func (r Relation) AsProtoRelation() string {
+	return protoRelations[r]
+}
+
+var (
+	protoRelations = map[Relation]string {
+		NoneRelation: "ProtoNoneRelation",
+		OneToOneRelation: "ProtoOneToOneRelation",
+		OneToManyRelation: "ProtoOneToManyRelation",
+		ManyToManyRelation: "ProtoManyToManyRelation",
+	}
+)
 
 type Pattern string
 

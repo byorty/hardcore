@@ -54,13 +54,13 @@ func (s *SelectCriteriaImpl) Or(logic types.Logic) types.SelectCriteria {
 }
 
 func (s *SelectCriteriaImpl) One(model types.Model) {
-	s.dao = model.DAO()
+	s.dao = model.CommonDAO()
 	s.proto = model.Proto()
 	s.dao.One(s, model)
 }
 
 func (s *SelectCriteriaImpl) All(models types.Model) {
-	s.dao = models.DAO()
+	s.dao = models.CommonDAO()
 	s.proto = models.Proto()
 	s.dao.All(s, models)
 }

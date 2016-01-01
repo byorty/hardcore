@@ -2,6 +2,12 @@ package model
 
 import (
 	"github.com/byorty/hardcore/meta/types"
+	"regexp"
+	"strings"
+)
+
+var (
+	fieldRegex = regexp.MustCompile(`([A-Z0-9])`)
 )
 
 type Property struct {
@@ -21,6 +27,10 @@ func (p Property) GetName() string {
 
 func (p Property) GetKind() string {
     return p.Kind
+}
+
+func (p Property) GetField() string {
+	return strings.ToLower(fieldRegex.ReplaceAllString(p.GetName(), "_$1"))
 }
 
 func (p Property) IsRequired() bool {
