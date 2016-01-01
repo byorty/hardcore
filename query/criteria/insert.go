@@ -6,7 +6,7 @@ import (
 )
 
 type InserCriteriaImpl struct {
-	dao         types.DAO
+	dao         types.ModelDAO
 	proto       types.Proto
 	args        []interface{}
 }
@@ -25,7 +25,7 @@ func (i *InserCriteriaImpl) AddArg(arg interface{}) {
 	i.args = append(i.args, arg)
 }
 
-func (i *InserCriteriaImpl) One(model types.StraightMappingModel) {
+func (i *InserCriteriaImpl) One(model types.Model) {
 	i.dao = model.DAO()
 	i.proto = model.Proto()
 
@@ -39,7 +39,7 @@ func (i *InserCriteriaImpl) One(model types.StraightMappingModel) {
 	i.dao.Insert(i, model)
 }
 
-func (i *InserCriteriaImpl) All(models types.StraightMappingModel) {
+func (i *InserCriteriaImpl) All(models types.Model) {
 //	i.dao = models.DAO()
 //	i.proto = models.Proto()
 //	i.dao.All(i, models)

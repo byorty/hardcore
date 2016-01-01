@@ -1,8 +1,8 @@
 package types
 
-type StraightMappingModelScanner interface {
-    One(StraightMappingModel)
-    All(StraightMappingModel)
+type ModelScanner interface {
+    One(Model)
+    All(Model)
 }
 
 type EnumScanner interface {

@@ -58,7 +58,7 @@ type AutoUser struct {
 	registerDate time.Time
 }
 
-func(u *AutoUser) DAO() types.DAO {
+func(u *AutoUser) DAO() types.ModelDAO {
 	return userDAO
 }
 
@@ -104,7 +104,7 @@ func (u *AutoUser) GetRegisterDate() time.Time {
 
 type Users []*User
 
-func(u *Users) DAO() types.DAO {
+func(u *Users) DAO() types.ModelDAO {
 	return userDAO
 }
 
@@ -121,7 +121,7 @@ func (u *User) Proto() types.Proto {
 }
 
 type UserDAO struct {
-	dao.Base
+	dao.IntModelImpl
 }
 
 func (u UserDAO) Proto() types.Proto {
@@ -172,7 +172,7 @@ var (
 )
 
 func TestDB(t *testing.T) {
-	sqlDb := db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/kapz?sslmode=disable&client_encoding=utf-8")
+	sqlDb := db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8")
 	if sqlDb == nil {
 		t.Fail()
 	}

@@ -6,9 +6,9 @@ type Query interface {
 }
 
 type QueryExecuter interface {
-	Exec(Query, DAO, StraightMappingModel)
-	Query(Query, DAO, StraightMappingModel)
-	QueryRow(Query, DAO, StraightMappingModel)
+	Exec(Query, ModelDAO, Model)
+	Query(Query, ModelDAO, Model)
+	QueryRow(Query, ModelDAO, Model)
 	Custom(Query, ...interface{})
 }
 
@@ -30,7 +30,7 @@ type DB interface {
 
 type Pool interface {
 	Add(string, DB) Pool
-	ByDAO(DAO) DB
+	ByDAO(ModelDAO) DB
 	ByName(string) DB
 }
 

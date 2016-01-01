@@ -34,9 +34,7 @@ type {{.AutoName}} struct {` +
 {{range .Properties}}` +
 `	{{.GetName}} {{.GetDefineKind}}
 {{end}}}
-
 {{range .Properties}}
-
 func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} {
 {{if .GetRelation.IsOneToOne}}
 	if {{$shortName}}.{{.GetName}} == nil {

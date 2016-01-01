@@ -26,7 +26,7 @@ type Logic interface {
 
 type Criteria interface {
 	Query
-	StraightMappingModelScanner
+	ModelScanner
 	AddArg(interface{})
 }
 

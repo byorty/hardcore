@@ -45,7 +45,7 @@ func NewSqlDB(uri string) types.DB {
 	}
 }
 
-func (s sqlDB) Exec(query types.Query, d types.DAO, model types.StraightMappingModel) {
+func (s sqlDB) Exec(query types.Query, d types.ModelDAO, model types.Model) {
 	sql := query.ToNative().(string)
 	result, err := s.db.Exec(sql, query.GetArgs()...)
 	if err == nil {
@@ -59,7 +59,7 @@ func (s sqlDB) Exec(query types.Query, d types.DAO, model types.StraightMappingM
 	}
 }
 
-func (s sqlDB) Query(query types.Query, d types.DAO, models types.StraightMappingModel) {
+func (s sqlDB) Query(query types.Query, d types.ModelDAO, models types.Model) {
 	sql := query.ToNative().(string)
 	rows, err := s.db.Query(sql, query.GetArgs()...)
 	if err == nil {
@@ -72,7 +72,7 @@ func (s sqlDB) Query(query types.Query, d types.DAO, models types.StraightMappin
 	}
 }
 
-func (s sqlDB) QueryRow(query types.Query, d types.DAO, model types.StraightMappingModel) {
+func (s sqlDB) QueryRow(query types.Query, d types.ModelDAO, model types.Model) {
 	row := s.db.QueryRow(query.ToNative().(string), query.GetArgs()...)
 	if row != nil {
 		d.Scan(row, model)

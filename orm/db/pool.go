@@ -23,7 +23,7 @@ func (p PoolImpl) Add(name string, db types.DB) types.Pool {
 	return p
 }
 
-func (p PoolImpl) ByDAO(impl types.DAO) types.DB {
+func (p PoolImpl) ByDAO(impl types.ModelDAO) types.DB {
 	return p.ByName(impl.GetDB())
 }
 

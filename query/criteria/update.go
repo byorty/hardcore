@@ -8,7 +8,7 @@ import (
 )
 
 type UpdateCriteriaImpl struct {
-	dao         types.DAO
+	dao         types.ModelDAO
 	proto       types.Proto
 	args        []interface{}
 	chains      []types.LogicChain
@@ -27,7 +27,7 @@ func (u *UpdateCriteriaImpl) AddArg(arg interface{}) {
 	u.args = append(u.args, arg)
 }
 
-func (u *UpdateCriteriaImpl) One(model types.StraightMappingModel) {
+func (u *UpdateCriteriaImpl) One(model types.Model) {
 	u.dao = model.DAO()
 	u.proto = model.Proto()
 
@@ -40,7 +40,7 @@ func (u *UpdateCriteriaImpl) One(model types.StraightMappingModel) {
 	u.dao.Update(u, model)
 }
 
-func (u *UpdateCriteriaImpl) All(models types.StraightMappingModel) {
+func (u *UpdateCriteriaImpl) All(models types.Model) {
 	//	i.dao = models.DAO()
 	//	i.proto = models.Proto()
 	//	i.dao.All(i, models)

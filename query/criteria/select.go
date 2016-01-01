@@ -7,7 +7,7 @@ import (
 )
 
 type SelectCriteriaImpl struct {
-	dao         types.DAO
+	dao         types.ModelDAO
 	proto       types.Proto
 	chains      []types.LogicChain
 	projections []types.Projection
@@ -26,7 +26,7 @@ func newSelect() *SelectCriteriaImpl {
 	}
 }
 
-func SelectByDAO(dao types.DAO) types.SelectCriteria {
+func SelectByDAO(dao types.ModelDAO) types.SelectCriteria {
 	selectCriteria := newSelect()
 	selectCriteria.dao = dao
 	selectCriteria.proto = dao.Proto()
@@ -53,13 +53,13 @@ func (s *SelectCriteriaImpl) Or(logic types.Logic) types.SelectCriteria {
 	return s.addLogic(types.OrLogicChainKind, logic)
 }
 
-func (s *SelectCriteriaImpl) One(model types.StraightMappingModel) {
+func (s *SelectCriteriaImpl) One(model types.Model) {
 	s.dao = model.DAO()
 	s.proto = model.Proto()
 	s.dao.One(s, model)
 }
 
-func (s *SelectCriteriaImpl) All(models types.StraightMappingModel) {
+func (s *SelectCriteriaImpl) All(models types.Model) {
 	s.dao = models.DAO()
 	s.proto = models.Proto()
 	s.dao.All(s, models)
