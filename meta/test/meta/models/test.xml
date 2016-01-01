@@ -5,8 +5,8 @@
             <properties>
                 <property name="item"/>
                 <property name="items"/>
-                <property name="error" type="response.Error"/>
-                <property name="errors" type="response.Errors"/>
+                <property name="error" type="response.Error" relation="OneToOne"/>
+                <property name="errors" type="response.Error" relation="OneToMany"/>
             </properties>
         </model>
         <model name="Error">

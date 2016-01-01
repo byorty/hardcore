@@ -129,7 +129,7 @@ func (u *User) Proto() types.Proto {
 }
 
 type UserDAO struct {
-	dao.IntModelImpl
+	dao.IntImpl
 }
 
 func (u UserDAO) Proto() types.Proto {

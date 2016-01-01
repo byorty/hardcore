@@ -36,5 +36,8 @@ func (m Model) GetProperties() []types.Property {
 }
 
 func (m Model) GetPattern() types.Pattern  {
+	if len(m.Pattern) == 0 {
+		m.Pattern = types.ValueObjectPattern
+	}
 	return m.Pattern
 }

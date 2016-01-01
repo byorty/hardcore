@@ -44,6 +44,32 @@ func (t *Type) Do(env types.Environment) {
 			}
 		}
 	}
+	for _, container := range t.containers {
+		for _, entity := range container.GetEntities() {
+			if entity.GetEntityKind() == types.ModelEntityKind {
+				modelEntity := entity.(types.ModelEntity)
+				if modelEntity.GetPattern() == types.StraightMappingPattern {
+					for _, property := range modelEntity.GetProperties() {
+						relation := property.GetRelation()
+						hasMany := relation.IsOneToMany() || relation.IsManyToMany()
+						isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
+						if hasMany && isModel {
+							relModel := property.GetEntity().(types.ModelEntity)
+							for _, relProp := range relModel.GetProperties() {
+								relPropRelation := relProp.GetRelation()
+								hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
+								equalKind := entity.GetFullName() == relProp.GetKind()
+								if hasRelMany && equalKind {
+									property.SetRelationProperty(relProp)
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 func (t *Type) getEntity(name string) types.Entity {
@@ -85,33 +111,45 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 				property.SetEntity(relEntity)
 				properties = append(properties, property)
 
-				relation := property.GetRelation()
-				if relation.IsOneToOne() {
+				if modelEntity.GetPattern() == types.StraightMappingPattern {
+					relation := property.GetRelation()
+					if relation.IsOneToOne() {
+						var kind string
+						if relEntity.GetEntityKind() == types.EnumEntityKind {
+							enumEntity := relEntity.(*model.Enum)
+							kind = string(enumEntity.GetKind())
+						} else if relEntity.GetEntityKind() == types.ModelEntityKind {
+							relModelEntity := relEntity.(types.ModelEntity)
+							t.initModelProperties(relModelEntity)
+							identifier := relModelEntity.GetProperties()[0]
+							kind = identifier.GetKind()
+						}
 
-					var kind string
-					if relEntity.GetEntityKind() == types.EnumEntityKind {
-						enumEntity := relEntity.(*model.Enum)
-						kind = string(enumEntity.GetKind())
-					} else if relEntity.GetEntityKind() == types.ModelEntityKind {
-						relModelEntity := relEntity.(types.ModelEntity)
-						t.initModelProperties(relModelEntity)
-						identifier := relModelEntity.GetProperties()[0]
-						kind = identifier.GetKind()
+						prop := &model.Property{
+							Name:     fmt.Sprintf("%sId", property.GetName()),
+							Kind:     kind,
+							Size:     0,
+							Required: property.IsRequired(),
+							Relation: types.NoneRelation,
+						}
+						prop.SetUpperName(utils.UpperFirst(prop.GetName()))
+						properties = append(properties, prop)
 					}
-
-					prop := &model.Property{
-						Name:     fmt.Sprintf("%sId", property.GetName()),
-						Kind:     kind,
-						Size:     0,
-						Required: property.IsRequired(),
-						Relation: types.NoneRelation,
-					}
-					prop.SetUpperName(utils.UpperFirst(prop.GetName()))
-					properties = append(properties, prop)
-				} else if relation.IsOneToMany() {
-
-				} else if relation.IsManyToMany() {
-
+//					else if relation.IsOneToMany() {
+//						if relEntity.GetEntityKind() == types.ModelEntityKind {
+//							relModelEntity := relEntity.(types.ModelEntity)
+//							t.initModelProperties(relModelEntity)
+//							identifier := relModelEntity.GetProperties()[0]
+//							property.SetRelationKind(identifier.GetKind())
+//						}
+//						relModelEntity := relEntity.(types.ModelEntity)
+//						var parentProp types.Entity
+//						for _, prop := range relModelEntity.GetProperties() {
+//							if prop
+//						}
+//					} else if relation.IsManyToMany() {
+//
+//					}
 				}
 			}
 		} else {

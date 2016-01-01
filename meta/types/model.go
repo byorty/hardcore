@@ -23,6 +23,9 @@ type Property interface {
 	IsSelfPackage() bool
     GetDefineKind() string
 	GetVariableKind() string
+	GetProtoKind() string
+	SetRelationProperty(Property)
+	GetRelationProperty() Property
 }
 
 type Relation string
@@ -70,7 +73,6 @@ var (
 type Pattern string
 
 const (
-    NilPattern Pattern = ""
     ValueObjectPattern = "ValueObject"
     StraightMappingPattern = "StraightMapping"
 )

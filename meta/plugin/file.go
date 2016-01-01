@@ -17,6 +17,7 @@ type File struct {
 func (f *File) Do(env types.Environment) {
     f.logger = env.GetLogger()
     for _, file := range env.GetConfiguration().GetFiles() {
+        f.logger.Debug("write file %s", file.GetName())
         buf := new(bytes.Buffer)
         tmpl := template.New(file.GetName()  + "_tpl")
         _, err := tmpl.Parse(file.GetTpl())

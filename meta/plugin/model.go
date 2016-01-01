@@ -25,6 +25,7 @@ type {{.DaoName}} struct {
 `{{$shortName := .ShortName}}` +
 `{{$varName := .VarName}}` +
 `{{$lastPropertyIndex := .LastPropertyIndex}}` +
+`{{$upperIdentifierKind := .UpperIdentifierKind}}` +
 `package {{.Package}}
 
 import ({{range .AutoImports}}
@@ -47,7 +48,7 @@ func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} { {{if
 {{else if .GetRelation.IsOneToMany}}
 	if {{$shortName}}.{{.GetName}} == nil {
 		var {{.GetName}} {{.GetVariableKind}}{{if .GetEntity.GetEntityKind.IsModel}}
-		dao.NewIntOneToMany("").All(&{{.GetName}})
+		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").All(&{{.GetName}})
 		{{else}}
 		{{.GetName}}.DAO().ByIds({{$shortName}}.{{.GetName}}Id).All(&{{.GetName}})
 		{{end}}{{$shortName}}.{{.GetName}} = &{{.GetName}}
@@ -96,7 +97,7 @@ func ({{.ShortName}} *{{.MultipleName}}) Proto() types.Proto {
 }
 
 type {{.AutoDaoName}} struct {
-	dao.IntModelImpl
+	dao.{{$upperIdentifierKind}}Impl
 }
 
 func ({{.ShortName}} *{{.DaoName}}) Proto() types.Proto {
@@ -120,8 +121,48 @@ var ({{range .Properties}}
 	{{$varName}}{{.GetUpperName}}Getter {{$name}}{{.GetUpperName}}Getter = (*{{$name}}).Get{{.GetUpperName}}{{end}}
 	{{.VarDaoName}} {{.DaoName}}
 	{{.VarProtoName}} = proto.New().{{range $i, $property := .Properties}}
-		Set("{{.GetName}}", proto.NewProperty("{{.GetField}}", types.ProtoBasicKind, types.{{.GetRelation.AsProtoRelation}}, {{.IsRequired}}, {{$varName}}{{.GetUpperName}}Setter, {{$varName}}{{.GetUpperName}}Getter)){{if lt $i $lastPropertyIndex}}.{{end}}{{end}}
+		Set("{{.GetName}}", proto.NewProperty("{{.GetField}}", types.{{.GetProtoKind}}, types.{{.GetRelation.AsProtoRelation}}, {{.IsRequired}}, {{$varName}}{{.GetUpperName}}Setter, {{$varName}}{{.GetUpperName}}Getter)){{if lt $i $lastPropertyIndex}}.{{end}}{{end}}
 )
+`
+
+	valueTpl = `package {{.Package}}
+
+type {{.Name}} struct {
+	{{.AutoName}}
+}
+
+type {{.MultipleName}} []*{{.Name}}
+`
+	autoValueTpl = `{{$name := .Name}}` +
+`{{$shortName := .ShortName}}` +
+`package {{.Package}}
+
+import ({{range .AutoImports}}
+	"{{.}}"{{end}}
+)
+
+type {{.AutoName}} struct {` +
+`
+{{range .Properties}}` +
+`	{{.GetName}} {{.GetDefineKind}}
+{{end}}}
+{{range .Properties}}
+func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} {
+	return {{$shortName}}.{{.GetName}}
+}
+
+func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetDefineKind}}) *{{$name}} {
+	{{$shortName}}.{{.GetName}} = {{.GetName}}
+	return {{$shortName}}
+}{{end}}
+
+func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
+	return {{.ShortName}}[i]
+}
+
+func ({{.ShortName}} {{.MultipleName}}) Len() int {
+	return len({{.ShortName}})
+}
 `
 )
 
@@ -140,23 +181,34 @@ func (m *Model) Do(env types.Environment) {
 						"Name": entity.GetName(),
 						"MultipleName": modelEntity.GetMultipleName(),
 						"AutoName": fmt.Sprintf("Auto%s", entity.GetName()),
-						"DaoName": fmt.Sprintf("%sDao", entity.GetName()),
-						"AutoDaoName": fmt.Sprintf("Auto%sDao", entity.GetName()),
 						"Package": container.GetShortPackage(),
 						"AutoImports": append([]string{
 							types.DefaultImport,
 							types.DaoImport,
 							types.ProtoImport,
 						}, entity.GetImports()...),
-						"VarName": varName,
-						"VarDaoName": fmt.Sprintf("%sDao", varName),
-						"VarProtoName": fmt.Sprintf("%sProto", varName),
 						"Properties": modelEntity.GetProperties(),
-						"LastPropertyIndex": len(modelEntity.GetProperties()) - 1,
 					}
 
-					env.GetConfiguration().AddAutoFile(modelEntity.GetAutoFilename(), autoModelTpl, tplParams)
-					env.GetConfiguration().AddFile(modelEntity.GetFilename(), modelTpl, tplParams)
+					var tpl, autoTpl string
+					if modelEntity.GetPattern() == types.StraightMappingPattern {
+						tpl = modelTpl
+						autoTpl = autoModelTpl
+
+						tplParams["UpperIdentifierKind"] = utils.UpperFirst(modelEntity.GetProperties()[0].GetKind())
+						tplParams["VarName"] = varName
+						tplParams["VarDaoName"] = fmt.Sprintf("%sDao", varName)
+						tplParams["VarProtoName"] = fmt.Sprintf("%sProto", varName)
+						tplParams["LastPropertyIndex"] = len(modelEntity.GetProperties()) - 1
+						tplParams["DaoName"] = fmt.Sprintf("%sDao", entity.GetName())
+						tplParams["AutoDaoName"] = fmt.Sprintf("Auto%sDao", entity.GetName())
+					} else {
+						tpl = valueTpl
+						autoTpl = autoValueTpl
+					}
+
+					env.GetConfiguration().AddAutoFile(modelEntity.GetAutoFilename(), autoTpl, tplParams)
+					env.GetConfiguration().AddFile(modelEntity.GetFilename(), tpl, tplParams)
 				}
 			}
 		}

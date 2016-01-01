@@ -19,6 +19,8 @@ type Property struct {
     upperName string
     entity types.Entity
 	isSelfPackage bool
+	relationProperty types.Property
+	relationKind string
 }
 
 func (p Property) GetName() string {
@@ -26,6 +28,9 @@ func (p Property) GetName() string {
 }
 
 func (p Property) GetKind() string {
+	if len(p.Kind) == 0 {
+		p.Kind = "interface{}"
+	}
     return p.Kind
 }
 
@@ -105,3 +110,22 @@ func (p Property) GetVariableKind() string {
 	}
 }
 
+func (p Property) GetProtoKind() string {
+	if p.HasRelation() {
+		if p.GetEntity().GetEntityKind().IsModel() {
+			return "ProtoModelKind"
+		} else {
+			return "ProtoEnumKind"
+		}
+	} else {
+		return "ProtoBasicKind"
+	}
+}
+
+func (p *Property) SetRelationProperty(relationProperty types.Property) {
+	p.relationProperty = relationProperty
+}
+
+func (p Property) GetRelationProperty() types.Property {
+	return p.relationProperty
+}
