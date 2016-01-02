@@ -17,7 +17,7 @@
         </model>
     </models>
     <models package="models.some">
-        <model name="User" source="main">
+        <model name="User" source="default">
             <properties>
                 <identifier/>
                 <property name="email" type="string" size="64" required="true"/>
@@ -29,7 +29,7 @@
             </properties>
             <pattern>StraightMapping</pattern>
         </model>
-        <model name="Post" source="main">
+        <model name="Post" source="default">
             <properties>
                 <identifier/>
                 <property name="user" type="some.User" required="true" relation="OneToOne"/>
@@ -67,21 +67,21 @@
                 <constant name="SomeEnum22">SomeEnum2</constant>
             </constants>
         </enum>
-        <model name="City" source="main">
+        <model name="City" source="default">
             <properties>
                 <identifier/>
                 <property name="name" type="string" required="true"/>
             </properties>
             <pattern>StraightMapping</pattern>
         </model>
-        <model name="Sex" source="main">
+        <model name="Sex" source="default">
             <properties>
                 <identifier/>
                 <property name="name" type="string" required="true"/>
             </properties>
             <pattern>StraightMapping</pattern>
         </model>
-        <model name="Yes" source="main">
+        <model name="Yes" source="default">
             <properties>
                 <identifier/>
                 <property name="name" type="string" required="true"/>

@@ -35,7 +35,9 @@ func (s SqlImpl) writeSelect(writer types.SqlQueryWriter) string {
 		}
 	} else {
 		for _, property := range s.proto.GetSlice() {
-			writer.AddField(writer.WriteField(s.table, property.GetField()))
+			if property.GetRelation() == types.ProtoNoneRelation {
+				writer.AddField(writer.WriteField(s.table, property.GetField()))
+			}
 		}
 	}
 	buf.WriteString(strings.Join(writer.GetFields(), ", "))
@@ -67,7 +69,7 @@ func (s SqlImpl) writeInsert(writer types.SqlQueryWriter) string {
 
 	writer.SetFields(make([]string, 0))
 	for _, property := range s.proto.GetSlice() {
-		if property.GetField() != "id" {
+		if property.GetField() != "id" && property.GetRelation() == types.ProtoNoneRelation {
 			writer.AddField(writer.WriteTable(property.GetField()))
 		}
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	fieldRegex = regexp.MustCompile(`([A-Z0-9])`)
+	AZ09Regex = regexp.MustCompile(`([A-Z0-9])`)
 )
 
 type Property struct {
@@ -29,13 +29,13 @@ func (p Property) GetName() string {
 
 func (p Property) GetKind() string {
 	if len(p.Kind) == 0 {
-		p.Kind = "interface{}"
+		p.Kind = DefaultPropertyKind
 	}
     return p.Kind
 }
 
 func (p Property) GetField() string {
-	return strings.ToLower(fieldRegex.ReplaceAllString(p.GetName(), "_$1"))
+	return strings.ToLower(AZ09Regex.ReplaceAllString(p.GetName(), "_$1"))
 }
 
 func (p Property) IsRequired() bool {

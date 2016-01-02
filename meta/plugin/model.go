@@ -46,13 +46,10 @@ func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} { {{if
 	}
 	return {{$shortName}}.{{.GetName}}
 {{else if .GetRelation.IsOneToMany}}
-	if {{$shortName}}.{{.GetName}} == nil {
-		var {{.GetName}} {{.GetVariableKind}}{{if .GetEntity.GetEntityKind.IsModel}}
-		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").All(&{{.GetName}})
-		{{else}}
-		{{.GetName}}.DAO().ByIds({{$shortName}}.{{.GetName}}Id).All(&{{.GetName}})
-		{{end}}{{$shortName}}.{{.GetName}} = &{{.GetName}}
-	}
+	if {{$shortName}}.{{.GetName}} == nil { {{if .GetEntity.GetEntityKind.IsModel}}
+		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").ById({{$shortName}}.GetId()).All(&{{$shortName}}.{{.GetName}})
+		{{else}}{{.GetName}}.DAO().ByIds({{$shortName}}.{{.GetName}}Id).All(&{{$shortName}}.{{.GetName}})
+{{end}}}
 	return {{$shortName}}.{{.GetName}}
 {{else}}
 	return {{$shortName}}.{{.GetName}}
@@ -80,6 +77,10 @@ func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
 	return {{.ShortName}}[i]
 }
 
+func ({{.ShortName}} {{.MultipleName}}) GetRaw(i int) interface{} {
+	return {{.ShortName}}.Get(i)
+}
+
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
 }
@@ -100,11 +101,33 @@ type {{.AutoDaoName}} struct {
 	dao.{{$upperIdentifierKind}}Impl
 }
 
-func ({{.ShortName}} *{{.DaoName}}) Proto() types.Proto {
+func ({{.ShortName}} {{.DaoName}}) GetDB() string {
+	return "{{.Source}}"
+}
+
+func ({{.ShortName}} {{.DaoName}}) GetTable() string {
+	return "{{.Table}}"
+}
+
+func ({{.ShortName}} {{.DaoName}}) Proto() types.Proto {
 	return {{.VarProtoName}}
 }
+
+func ({{.ShortName}} {{.DaoName}}) ScanAll(rows interface{}, model interface{}) {
+	items := model.(*{{.MultipleName}})
+	item := new({{.Name}})
+	{{.ShortName}}.Scan(rows, item)
+	(*items) = append((*items), item)
+}
+
+func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) {
+	item := model.(*{{.Name}})
+	row.(types.SqlModelScanner).Scan({{range .Properties}}{{if .GetRelation.IsNone}}
+		&item.{{.GetName}},{{end}}{{end}}
+	)
+}
 {{range .Properties}}
-type {{$name}}{{.GetUpperName}}Setter func(*{{$name}}, {{.GetDefineKind}})
+type {{$name}}{{.GetUpperName}}Setter func(*{{$name}}, {{.GetDefineKind}}) *{{$name}}
 
 func ({{$shortName}} {{$name}}{{.GetUpperName}}Setter) Call(model interface{}, {{.GetName}} interface{}) {
 	{{$shortName}}(model.(*{{$name}}), {{.GetName}}.({{.GetDefineKind}}))
@@ -160,6 +183,10 @@ func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
 	return {{.ShortName}}[i]
 }
 
+func ({{.ShortName}} {{.MultipleName}}) GetRaw(i int) interface{} {
+	return {{.ShortName}}.Get(i)
+}
+
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
 }
@@ -202,6 +229,8 @@ func (m *Model) Do(env types.Environment) {
 						tplParams["LastPropertyIndex"] = len(modelEntity.GetProperties()) - 1
 						tplParams["DaoName"] = fmt.Sprintf("%sDao", entity.GetName())
 						tplParams["AutoDaoName"] = fmt.Sprintf("Auto%sDao", entity.GetName())
+						tplParams["Source"] = modelEntity.GetSource()
+						tplParams["Table"] = modelEntity.GetTable()
 					} else {
 						tpl = valueTpl
 						autoTpl = autoValueTpl

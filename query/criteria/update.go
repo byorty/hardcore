@@ -33,8 +33,10 @@ func (u *UpdateCriteriaImpl) One(model types.Model) {
 
 	properties := u.proto.GetMap()
 	for name, property := range properties {
-		getter := property.GetGetter()
-		u.Add(proj.Eq(name, getter.Call(model)))
+		if property.GetRelation() == types.ProtoNoneRelation {
+			getter := property.GetGetter()
+			u.Add(proj.Eq(name, getter.Call(model)))
+		}
 	}
 
 	u.dao.Update(u, model)

@@ -44,6 +44,10 @@ func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
 	return {{.ShortName}}[i]
 }
 
+func ({{.ShortName}} {{.MultipleName}}) GetRaw(i int) interface{} {
+	return {{.ShortName}}.Get(i)
+}
+
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
 }

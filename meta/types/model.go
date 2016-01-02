@@ -6,6 +6,7 @@ type ModelEntity interface {
     GetSource() string
     SetProperties([]Property)
     GetProperties() []Property
+	GetTable() string
 }
 
 type Property interface {

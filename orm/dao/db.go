@@ -29,7 +29,7 @@ func (b BaseImpl) Insert(query types.Query, model types.Model) {
 	if currentDb.SupportLastInsertId() {
 		currentDb.Exec(query, model.CommonDAO(), model)
 	} else if currentDb.SupportReturningId() {
-		var id int
+		var id int64
 		currentDb.Custom(query, &id)
 		setter := model.Proto().GetByName("id").GetSetter()
 		setter.Call(model, id)

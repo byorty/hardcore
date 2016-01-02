@@ -50,9 +50,9 @@ func (s sqlDB) Exec(query types.Query, d types.ModelDAO, model types.Model) {
 	result, err := s.db.Exec(sql, query.GetArgs()...)
 	if err == nil {
 		id, err := result.LastInsertId()
-		if err == nil {
+		if err == nil && id > 0 {
 			setter := model.Proto().GetByName("id").GetSetter()
-			setter.Call(model, int(id))
+			setter.Call(model, id)
 		}
 	} else {
 //		logger.Warn(`db - can't exec "%s", detail - %v`, sql, err)

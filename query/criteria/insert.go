@@ -30,7 +30,7 @@ func (i *InserCriteriaImpl) One(model types.Model) {
 	i.proto = model.Proto()
 
 	for _, property := range i.proto.GetSlice() {
-		if property.GetField() != "id" {
+		if property.GetField() != "id" && property.GetRelation() == types.ProtoNoneRelation {
 			getter := property.GetGetter()
 			i.AddArg(getter.Call(model))
 		}

@@ -3,12 +3,14 @@ package model
 import (
     "github.com/byorty/hardcore/meta/common"
     "github.com/byorty/hardcore/meta/types"
+	"strings"
 )
 
-const DefaultIdentifierKind = "int"
+const DefaultIdentifierKind = "int64"
 const DefaultIdentifierName = "id"
 const TimeKind = "time.Time"
 const TimeImport = "time"
+const DefaultPropertyKind = "interface{}"
 
 type Model struct {
     common.Entity
@@ -40,4 +42,8 @@ func (m Model) GetPattern() types.Pattern  {
 		m.Pattern = types.ValueObjectPattern
 	}
 	return m.Pattern
+}
+
+func (m Model) GetTable() string {
+	return strings.ToLower(m.GetName()[0:1] + AZ09Regex.ReplaceAllString(m.GetName()[1:], "_$1"))
 }
