@@ -5,6 +5,7 @@ import (
 	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/query/expr"
+	"github.com/byorty/hardcore/slice"
 )
 
 type BaseImpl struct {}
@@ -62,7 +63,7 @@ func (i IntImpl) ById(id int) types.ModelScanner {
 }
 
 func (i IntImpl) ByIds(ids []int) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewIntsBy(ids)))
 }
 
 type Int8Impl struct {
@@ -74,7 +75,7 @@ func (i Int8Impl) ById(id int8) types.ModelScanner {
 }
 
 func (i Int8Impl) ByIds(ids []int8) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewInt8sBy(ids)))
 }
 
 type Int16Impl struct {
@@ -86,7 +87,7 @@ func (i Int16Impl) ById(id int16) types.ModelScanner {
 }
 
 func (i Int16Impl) ByIds(ids []int16) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewInt16sBy(ids)))
 }
 
 type Int32Impl struct {
@@ -98,7 +99,7 @@ func (i Int32Impl) ById(id int32) types.ModelScanner {
 }
 
 func (i Int32Impl) ByIds(ids []int32) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewInt32sBy(ids)))
 }
 
 type Int64Impl struct {
@@ -110,7 +111,7 @@ func (i Int64Impl) ById(id int64) types.ModelScanner {
 }
 
 func (i Int64Impl) ByIds(ids []int64) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewInt64sBy(ids)))
 }
 
 type UintImpl struct {
@@ -122,7 +123,7 @@ func (i UintImpl) ById(id uint) types.ModelScanner {
 }
 
 func (i UintImpl) ByIds(ids []uint) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewUintsBy(ids)))
 }
 
 type Uint8Impl struct {
@@ -134,7 +135,7 @@ func (i Uint8Impl) ById(id uint8) types.ModelScanner {
 }
 
 func (i Uint8Impl) ByIds(ids []uint8) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewUint8sBy(ids)))
 }
 
 type Uint16Impl struct {
@@ -146,7 +147,7 @@ func (i Uint16Impl) ById(id uint16) types.ModelScanner {
 }
 
 func (i Uint16Impl) ByIds(ids []uint16) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewUint16sBy(ids)))
 }
 
 type Uint32Impl struct {
@@ -158,7 +159,7 @@ func (i Uint32Impl) ById(id uint32) types.ModelScanner {
 }
 
 func (i Uint32Impl) ByIds(ids []uint32) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewUint32sBy(ids)))
 }
 
 type Uint64Impl struct {
@@ -170,5 +171,5 @@ func (i Uint64Impl) ById(id uint64) types.ModelScanner {
 }
 
 func (i Uint64Impl) ByIds(ids []uint64) types.ModelScanner {
-	return criteria.Select()//.And(expr.In("id", ids))
+	return criteria.Select().And(expr.In("id", slice.NewUint64sBy(ids)))
 }

@@ -40,16 +40,24 @@ func ({{.ShortName}} {{.Name}}) DAO() {{.Kind.DAO}} {
 
 type {{.MultipleName}} []*{{.Name}}
 
-func ({{.ShortName}} {{.MultipleName}}) Get(i int) *{{.Name}} {
-	return {{.ShortName}}[i]
-}
-
-func ({{.ShortName}} {{.MultipleName}}) GetRaw(i int) interface{} {
-	return {{.ShortName}}.Get(i)
-}
-
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
+}
+
+func ({{.ShortName}} {{.MultipleName}}) Less(x, y int) bool {
+	return {{.ShortName}}[x].GetId() < {{.ShortName}}[y].GetId()
+}
+
+func ({{.ShortName}} {{.MultipleName}}) Swap(x, y int) {
+	{{.ShortName}}[x], {{.ShortName}}[y] = {{.ShortName}}[y], {{.ShortName}}[x]
+}
+
+func ({{.ShortName}} {{.MultipleName}}) GetRaw(x int) interface{} {
+	return {{.ShortName}}.Get(x)
+}
+
+func ({{.ShortName}} {{.MultipleName}}) Get(x int) *{{.Name}} {
+	return {{.ShortName}}[x]
 }
 
 type {{.DaoName}} struct {}
