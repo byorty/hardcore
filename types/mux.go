@@ -8,6 +8,10 @@ type ActionController interface {
 	CallAction(interface{}, RequestScope)
 }
 
+type CallableAction interface {
+	Call(interface{}, RequestScope)
+}
+
 type ControllerConstructor func() ActionController
 
 type RequestScopeParams interface {

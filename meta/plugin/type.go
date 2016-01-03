@@ -38,9 +38,7 @@ func (t *Type) Do(env types.Environment) {
 			}
 			switch entity.GetEntityKind() {
 			case types.ControllerEntityKind:
-			case types.ModelEntityKind:
-				t.fillProperties(entity.(types.ModelEntity))
-				//            case types.EnumEntityKind:
+			case types.ModelEntityKind: t.fillProperties(entity.(types.ModelEntity))
 			}
 		}
 	}
@@ -135,21 +133,6 @@ func (t *Type) fillProperties(entity types.ModelEntity) {
 						prop.SetUpperName(utils.UpperFirst(prop.GetName()))
 						properties = append(properties, prop)
 					}
-//					else if relation.IsOneToMany() {
-//						if relEntity.GetEntityKind() == types.ModelEntityKind {
-//							relModelEntity := relEntity.(types.ModelEntity)
-//							t.initModelProperties(relModelEntity)
-//							identifier := relModelEntity.GetProperties()[0]
-//							property.SetRelationKind(identifier.GetKind())
-//						}
-//						relModelEntity := relEntity.(types.ModelEntity)
-//						var parentProp types.Entity
-//						for _, prop := range relModelEntity.GetProperties() {
-//							if prop
-//						}
-//					} else if relation.IsManyToMany() {
-//
-//					}
 				}
 			}
 		} else {

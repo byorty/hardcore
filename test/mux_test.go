@@ -1,4 +1,4 @@
-package hardcore
+package test
 
 import (
 	"testing"

@@ -8,7 +8,7 @@ import (
 type Controller struct {
     common.Entity
 	Route string `xml:"route,attr"`
-	Actions []Action `xml:"actions>action"`
+	Actions []*Action `xml:"actions>action"`
 }
 
 func (c Controller) GetEntityKind() types.EntityKind {

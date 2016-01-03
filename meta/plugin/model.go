@@ -47,9 +47,9 @@ func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} { {{if
 	return {{$shortName}}.{{.GetName}}
 {{else if .GetRelation.IsOneToMany}}
 	if {{$shortName}}.{{.GetName}} == nil { {{if .GetEntity.GetEntityKind.IsModel}}
-		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").ById({{$shortName}}.GetId()).All(&{{$shortName}}.{{.GetName}})
-		{{else}}{{.GetName}}.DAO().ByIds({{$shortName}}.{{.GetName}}Id).All(&{{$shortName}}.{{.GetName}})
-{{end}}}
+		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").ById({{$shortName}}.GetId()).All(&{{$shortName}}.{{.GetName}}){{else}}
+		{{.GetName}}.DAO().ByIds({{$shortName}}.{{.GetName}}Id).All(&{{$shortName}}.{{.GetName}}){{end}}
+	}
 	return {{$shortName}}.{{.GetName}}
 {{else}}
 	return {{$shortName}}.{{.GetName}}
