@@ -28,8 +28,23 @@ type ProtoKind int
 
 const (
 	ProtoBasicKind ProtoKind = iota
+	ProtoIntKind
+	ProtoInt8Kind
+	ProtoInt16Kind
+	ProtoInt32Kind
+	ProtoInt64Kind
+	ProtoUintKind
+	ProtoUint8Kind
+	ProtoUint16Kind
+	ProtoUint32Kind
+	ProtoUint64Kind
+	ProtoFloat32Kind
+	ProtoFloat64Kind
+	ProtoStringKind
+	ProtoTimeKind
 	ProtoEnumKind
 	ProtoModelKind
+	ProtoSliceKind
 )
 
 type ProtoRelation int

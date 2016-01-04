@@ -132,9 +132,29 @@ func BenchmarkReflectCallGetMethod(b *testing.B) {
 	}
 }
 
+func BenchmarkReflectCallGetMethod2(b *testing.B) {
+	method := reflect.ValueOf(post).MethodByName("GetId")
+	for i := 0;i < b.N;i++ {
+		method.Call([]reflect.Value{})
+	}
+}
+
 func BenchmarkProtoCallGetMethod(b *testing.B) {
 	for i := 0;i < b.N;i++ {
 		post.Proto().GetByName("id").GetGetter().Call(post)
+	}
+}
+
+func BenchmarkProtoCallGetMethod2(b *testing.B) {
+	method := post.Proto().GetByName("id").GetGetter()
+	for i := 0;i < b.N;i++ {
+		method.Call(post)
+	}
+}
+
+func BenchmarkNativeCallGetMethod(b *testing.B) {
+	for i := 0;i < b.N;i++ {
+		post.GetId()
 	}
 }
 
@@ -147,5 +167,11 @@ func BenchmarkReflectCallSetMethod(b *testing.B) {
 func BenchmarkProtoCallSetMethod(b *testing.B) {
 	for i := 0;i < b.N;i++ {
 		post.Proto().GetByName("id").GetSetter().Call(post, idInt64)
+	}
+}
+
+func BenchmarkNativeCallSetMethod(b *testing.B) {
+	for i := 0;i < b.N;i++ {
+		post.SetId(idInt64)
 	}
 }

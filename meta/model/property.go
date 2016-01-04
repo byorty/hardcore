@@ -4,6 +4,8 @@ import (
 	"github.com/byorty/hardcore/meta/types"
 	"regexp"
 	"strings"
+	"fmt"
+	"github.com/byorty/hardcore/utils"
 )
 
 var (
@@ -111,14 +113,21 @@ func (p Property) GetVariableKind() string {
 }
 
 func (p Property) GetProtoKind() string {
-	if p.HasRelation() {
+	switch p.GetRelation() {
+	case types.OneToOneRelation:
 		if p.GetEntity().GetEntityKind().IsModel() {
 			return "ProtoModelKind"
 		} else {
 			return "ProtoEnumKind"
 		}
-	} else {
-		return "ProtoBasicKind"
+	case types.OneToManyRelation, types.ManyToManyRelation:
+		return "ProtoSliceKind"
+	default:
+		if p.GetKind() == TimeKind {
+			return "ProtoTimeKind"
+		} else {
+			return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
+		}
 	}
 }
 
