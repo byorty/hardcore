@@ -2,9 +2,11 @@ package types
 
 type ExportedProperty interface {
 	GetName() string
-	GetProtoKind() ProtoKind
 	GetValue() interface{}
-	SetPrototyped(Prototyped) ExportedProperty
+	GetProtoKind() ProtoKind
+	SetProtoKind(ProtoKind)
+	GetPrototyped() Prototyped
+	SetPrototyped(Prototyped)
 }
 
 type Exporter interface {

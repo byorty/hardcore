@@ -106,6 +106,12 @@ func (p PostDescriptionGetter) Call(model interface{}) interface{} {
 	return p(model.(*Post))
 }
 
+type PostIdGetter2 func(*Post) int64
+
+func (p PostIdGetter2) Call(model *Post) interface{} {
+	return p(model)
+}
+
 var (
 	postIdSetter PostIdSetter = (*Post).SetId
 	postIdGetter PostIdGetter = (*Post).GetId
@@ -124,6 +130,8 @@ var (
 	post = &Post{AutoPost{1, 1, "name", "description"}}
 	idInt64 int64 = 2
 	idInt64Value = reflect.ValueOf(idInt64)
+	getIdMethod = (*Post).GetId
+	postIdGetter2 PostIdGetter2 = (*Post).GetId
 )
 
 func BenchmarkReflectCallGetMethod(b *testing.B) {
@@ -134,8 +142,9 @@ func BenchmarkReflectCallGetMethod(b *testing.B) {
 
 func BenchmarkReflectCallGetMethod2(b *testing.B) {
 	method := reflect.ValueOf(post).MethodByName("GetId")
+	value := []reflect.Value{}
 	for i := 0;i < b.N;i++ {
-		method.Call([]reflect.Value{})
+		method.Call(value)
 	}
 }
 
@@ -152,9 +161,21 @@ func BenchmarkProtoCallGetMethod2(b *testing.B) {
 	}
 }
 
+func BenchmarkProtoCallGetMethod3(b *testing.B) {
+	for i := 0;i < b.N;i++ {
+		postIdGetter2.Call(post)
+	}
+}
+
 func BenchmarkNativeCallGetMethod(b *testing.B) {
 	for i := 0;i < b.N;i++ {
 		post.GetId()
+	}
+}
+
+func BenchmarkNativeCallGetMethod2(b *testing.B) {
+	for i := 0;i < b.N;i++ {
+		getIdMethod(post)
 	}
 }
 

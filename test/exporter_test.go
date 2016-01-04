@@ -1,56 +1,27 @@
 package test
 
-import "github.com/byorty/hardcore/test/models"
+import (
+	"github.com/byorty/hardcore/test/models"
+	"time"
+	"testing"
+	"github.com/byorty/hardcore/test/exporters"
+)
 
+func TestExporter(t *testing.T) {
+	now := time.Now()
+	role := models.LoggedUserRole
+	user := new(models.User).
+		SetId(1).
+		SetEmail("user@example.com").
+		SetRole(&role).
+		SetRegisterDate(now)
 
-
-type UserExportedProperty struct {
-	user *models.User
-	name string
-	closure func(*models.User) interface{}
+	userExporter := exporters.NewUser().Export(user)
+	for i := 0;i < userExporter.Len();i++ {
+		prop := userExporter.Get(i)
+		t.Log(prop.GetName(), prop.GetValue())
+		if user.Proto().GetByName(prop.GetName()).GetGetter().Call(user) != prop.GetValue() {
+			t.Fail()
+		}
+	}
 }
-
-func (u UserExportedProperty) GetName() string {
-	return u.name
-}
-
-func (u UserExportedProperty) GetValue() interface{} {
-	return u.closure(u.user)
-}
-
-type UserExporterImpl struct {
-	properties []*UserExportedProperty
-}
-
-func (u UserExporterImpl) Len() int {
-	return len(u.properties)
-}
-
-func (u UserExporterImpl) Less(x, y int) bool {
-	return u.properties[x] < u.properties[y]
-}
-
-func (u UserExporterImpl) Swap(x, y int) {
-	u.properties[x], u.properties[y] = u.properties[y], u.properties[x]
-}
-
-func (u UserExporterImpl) GetRaw(x int) interface{} {
-	return u.properties[x]
-}
-
-func (u UserExporterImpl) Get(x int) string {
-	return u.properties[x]
-}
-
-
-
-//func (u *UserExporterImpl) Add(name string, closure func(*models.User) interface{}) *UserExporterImpl {
-//	(*u) = append((*u), UserExporterProperty{name, closure})
-//	return u
-//}
-//
-//var userExporter = make(UserExporterImpl).
-//	Add("id", func(user *models.User) interface{} { return user.GetId()}).
-//	Add("email", func(user *models.User) interface{} { return user.GetEmail()}).
-//	Add("role", func(user *models.User) interface{} { return user.GetRole().GetId()}).
-//	Add("registerDate", func(user *models.User) interface{} { return user.GetRegisterDate()})
