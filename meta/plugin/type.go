@@ -43,28 +43,37 @@ func (t *Type) Do(env types.Environment) {
 		}
 	}
 	for _, container := range t.containers {
-		for _, entity := range container.GetEntities() {
-			if entity.GetEntityKind() == types.ModelEntityKind {
-				modelEntity := entity.(types.ModelEntity)
-				if modelEntity.GetPattern() == types.StraightMappingPattern {
-					for _, property := range modelEntity.GetProperties() {
-						relation := property.GetRelation()
-						hasMany := relation.IsOneToMany() || relation.IsManyToMany()
-						isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
-						if hasMany && isModel {
-							relModel := property.GetEntity().(types.ModelEntity)
-							for _, relProp := range relModel.GetProperties() {
-								relPropRelation := relProp.GetRelation()
-								hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
-								equalKind := entity.GetFullName() == relProp.GetKind()
-								if hasRelMany && equalKind {
-									property.SetRelationProperty(relProp)
-									break
+		if container.GetContainerKind() == types.EntityContainerKind {
+			for _, entity := range container.GetEntities() {
+				if entity.GetEntityKind() == types.ModelEntityKind {
+					modelEntity := entity.(types.ModelEntity)
+					if modelEntity.GetPattern() == types.StraightMappingPattern {
+						for _, property := range modelEntity.GetProperties() {
+							relation := property.GetRelation()
+							hasMany := relation.IsOneToMany() || relation.IsManyToMany()
+							isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
+							if hasMany && isModel {
+								relModel := property.GetEntity().(types.ModelEntity)
+								for _, relProp := range relModel.GetProperties() {
+									relPropRelation := relProp.GetRelation()
+									hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
+									equalKind := entity.GetFullName() == relProp.GetKind()
+									if hasRelMany && equalKind {
+										property.SetRelationProperty(relProp)
+										break
+									}
 								}
 							}
 						}
 					}
 				}
+			}
+		}
+	}
+	for _, container := range t.containers {
+		if container.GetContainerKind() == types.ControllerContainerKind {
+			for _, controller := range container.GetEntities() {
+
 			}
 		}
 	}

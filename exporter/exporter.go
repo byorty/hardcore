@@ -30,7 +30,6 @@ func (b BaseImpl) GetRaw(x int) interface{} {
 func (b BaseImpl) Get(x int) types.ExportedProperty {
 	exportedProp := b.properties[x]
 	exportedProp.SetPrototyped(b.prototyped)
-//	exportedProp.SetProtoKind(b.prototyped.Proto().GetByName(exportedProp.GetName()).GetKind())
 	return exportedProp
 }
 

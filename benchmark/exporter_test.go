@@ -47,6 +47,7 @@ func BenchmarkExporter(b *testing.B) {
 
 		for i := 0;i < expLen;i++ {
 			prop := exp.Get(i)
+			value := prop.GetValue()
 
 			buf.WriteRune('"')
 			buf.WriteString(prop.GetName())
@@ -55,18 +56,18 @@ func BenchmarkExporter(b *testing.B) {
 			switch prop.GetProtoKind() {
 			case types.ProtoStringKind:
 				buf.WriteRune('"')
-				buf.WriteString(prop.GetValue().(string))
+				buf.WriteString(value.(string))
 				buf.WriteRune('"')
 			case types.ProtoTimeKind:
 				buf.WriteRune('"')
-				buf.WriteString(prop.GetValue().(time.Time).Format("2006-01-02T15:04:05.999999-07:00"))
+				buf.WriteString(value.(time.Time).Format("2006-01-02T15:04:05.999999-07:00"))
 				buf.WriteRune('"')
 			case types.ProtoEnumKind:
-				buf.WriteString(strconv.Itoa(prop.GetValue().(types.Enum).GetId()))
+				buf.WriteString(strconv.Itoa(value.(types.Enum).GetId()))
 			case types.ProtoInt64Kind:
-				buf.WriteString(strconv.FormatInt(prop.GetValue().(int64), 10))
+				buf.WriteString(strconv.FormatInt(value.(int64), 10))
 			default:
-				buf.WriteString(fmt.Sprintf("%v", prop.GetValue()))
+				buf.WriteString(fmt.Sprintf("%v", value))
 			}
 
 			if i < lastIndex {

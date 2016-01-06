@@ -14,3 +14,11 @@ type Controller struct {
 func (c Controller) GetEntityKind() types.EntityKind {
     return types.ControllerEntityKind
 }
+
+func (c Controller) GetRoute() string {
+	return c.Route
+}
+
+func (c Controller) GetActions() []Action {
+	return c.Actions
+}
