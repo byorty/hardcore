@@ -30,11 +30,6 @@ type User struct {
 
 func NewUser() *User {
 	user.SetProperties(userProperties)
-//	return new(User).
-//		Set("id", func(user *models.User) interface{} { return user.GetId()}).
-//		Set("email", func(user *models.User) interface{} { return user.GetEmail()}).
-//		Set("role", func(user *models.User) interface{} { return user.GetRole()}).
-//		Set("registerDate", func(user *models.User) interface{} { return user.GetRegisterDate()})
 	return user
 }
 

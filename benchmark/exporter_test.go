@@ -38,30 +38,30 @@ func BenchmarkJson(b *testing.B) {
 
 func BenchmarkExporter(b *testing.B) {
 	for i := 0;i < b.N;i++ {
+		buf := new(bytes.Buffer)
 		exp := exporters.NewUser().Export(user1)
 		expLen := exp.Len()
 		lastIndex := expLen - 1
 
-		buf := new(bytes.Buffer)
-		buf.WriteRune('{')
+		buf.WriteByte('{')
 
 		for i := 0;i < expLen;i++ {
 			prop := exp.Get(i)
 			value := prop.GetValue()
 
-			buf.WriteRune('"')
+			buf.WriteByte('"')
 			buf.WriteString(prop.GetName())
-			buf.WriteRune('"')
-			buf.WriteRune(':')
+			buf.WriteByte('"')
+			buf.WriteByte(':')
 			switch prop.GetProtoKind() {
 			case types.ProtoStringKind:
-				buf.WriteRune('"')
+				buf.WriteByte('"')
 				buf.WriteString(value.(string))
-				buf.WriteRune('"')
+				buf.WriteByte('"')
 			case types.ProtoTimeKind:
-				buf.WriteRune('"')
+				buf.WriteByte('"')
 				buf.WriteString(value.(time.Time).Format("2006-01-02T15:04:05.999999-07:00"))
-				buf.WriteRune('"')
+				buf.WriteByte('"')
 			case types.ProtoEnumKind:
 				buf.WriteString(strconv.Itoa(value.(types.Enum).GetId()))
 			case types.ProtoInt64Kind:
@@ -71,11 +71,11 @@ func BenchmarkExporter(b *testing.B) {
 			}
 
 			if i < lastIndex {
-				buf.WriteRune(',')
+				buf.WriteByte(',')
 			}
 		}
 
-		buf.WriteRune('}')
+		buf.WriteByte('}')
 		buf.Bytes()
 	}
 }

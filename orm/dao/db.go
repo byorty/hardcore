@@ -13,7 +13,7 @@ type BaseImpl struct {}
 func (b BaseImpl) Save(model types.Model) {
 	idProperty := model.Proto().GetByName("id")
 	getter := idProperty.GetGetter()
-	criteria.Update().And(expr.Eq("id", getter.Call(model))).One(model)
+	criteria.Update().And(expr.Eq("id", getter(model))).One(model)
 }
 
 func (b BaseImpl) Update(query types.Query, model types.Model) {
@@ -33,7 +33,7 @@ func (b BaseImpl) Insert(query types.Query, model types.Model) {
 		var id int64
 		currentDb.Custom(query, &id)
 		setter := model.Proto().GetByName("id").GetSetter()
-		setter.Call(model, id)
+		setter(model, id)
 	}
 }
 

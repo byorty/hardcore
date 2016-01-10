@@ -66,10 +66,5 @@ type ProtoProperty interface {
 	GetGetter() Getter
 }
 
-type Setter interface {
-	Call(interface{}, interface{})
-}
-
-type Getter interface {
-	Call(interface{}) interface{}
-}
+type Setter func(interface{}, interface{})
+type Getter func(interface{}) interface{}

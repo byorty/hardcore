@@ -1,6 +1,6 @@
 package controller
 
-import "github.com/byorty/hardcore/meta/types"
+//import "github.com/byorty/hardcore/meta/types"
 
 type Action struct {
 	Name string `xml:"name,attr"`
@@ -21,6 +21,6 @@ func (a Action) GetMethod() string {
 	return a.Method
 }
 
-func (a Action) GetParameters() []types.ActionParameter {
-	return a.Params
-}
+//func (a Action) GetParameters() []types.ActionParameter {
+//	return a.Params
+//}

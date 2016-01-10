@@ -169,12 +169,24 @@ func (u *User) Proto() types.Proto {
 	return userProto
 }
 
-func (u Users) Get(i int) *User {
-	return u[i]
-}
-
 func (u Users) Len() int {
 	return len(u)
+}
+
+func (u Users) Less(x, y int) bool {
+	return u[x].GetId() < u[y].GetId()
+}
+
+func (u Users) Swap(x, y int) {
+	u[x], u[y] = u[y], u[x]
+}
+
+func (u Users) GetRaw(x int) interface{} {
+	return u.Get(x)
+}
+
+func (u Users) Get(x int) *User {
+	return u[x]
 }
 
 func(u *Users) CommonDAO() types.ModelDAO {
@@ -223,105 +235,63 @@ func (u UserDao) Scan(row interface{}, model interface{}) {
 	)
 }
 
-type UserIdSetter func(*User, int64) *User
-
-func (u UserIdSetter) Call(model interface{}, id interface{}) {
-	u(model.(*User), id.(int64))
+func userIdSetter (model interface{}, id interface{}) {
+	model.(*User).SetId(id.(int64))
 }
 
-type UserIdGetter func(*User) int64
-
-func (u UserIdGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userIdGetter (model interface{}) interface{} {
+	return model.(*User).GetId()
 }
 
-type UserEmailSetter func(*User, string) *User
-
-func (u UserEmailSetter) Call(model interface{}, email interface{}) {
-	u(model.(*User), email.(string))
+func userEmailSetter (model interface{}, email interface{}) {
+	model.(*User).SetEmail(email.(string))
 }
 
-type UserEmailGetter func(*User) string
-
-func (u UserEmailGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userEmailGetter (model interface{}) interface{} {
+	return model.(*User).GetEmail()
 }
 
-type UserPasswordSetter func(*User, string) *User
-
-func (u UserPasswordSetter) Call(model interface{}, password interface{}) {
-	u(model.(*User), password.(string))
+func userPasswordSetter (model interface{}, password interface{}) {
+	model.(*User).SetPassword(password.(string))
 }
 
-type UserPasswordGetter func(*User) string
-
-func (u UserPasswordGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userPasswordGetter (model interface{}) interface{} {
+	return model.(*User).GetPassword()
 }
 
-type UserRoleSetter func(*User, *UserRole) *User
-
-func (u UserRoleSetter) Call(model interface{}, role interface{}) {
-	u(model.(*User), role.(*UserRole))
+func userRoleSetter (model interface{}, role interface{}) {
+	model.(*User).SetRole(role.(*UserRole))
 }
 
-type UserRoleGetter func(*User) *UserRole
-
-func (u UserRoleGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userRoleGetter (model interface{}) interface{} {
+	return model.(*User).GetRole()
 }
 
-type UserRoleIdSetter func(*User, int) *User
-
-func (u UserRoleIdSetter) Call(model interface{}, roleId interface{}) {
-	u(model.(*User), roleId.(int))
+func userRoleIdSetter (model interface{}, roleId interface{}) {
+	model.(*User).SetRoleId(roleId.(int))
 }
 
-type UserRoleIdGetter func(*User) int
-
-func (u UserRoleIdGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userRoleIdGetter (model interface{}) interface{} {
+	return model.(*User).GetRoleId()
 }
 
-type UserRegisterDateSetter func(*User, time.Time) *User
-
-func (u UserRegisterDateSetter) Call(model interface{}, registerDate interface{}) {
-	u(model.(*User), registerDate.(time.Time))
+func userRegisterDateSetter (model interface{}, registerDate interface{}) {
+	model.(*User).SetRegisterDate(registerDate.(time.Time))
 }
 
-type UserRegisterDateGetter func(*User) time.Time
-
-func (u UserRegisterDateGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userRegisterDateGetter (model interface{}) interface{} {
+	return model.(*User).GetRegisterDate()
 }
 
-type UserPostsSetter func(*User, Posts) *User
-
-func (u UserPostsSetter) Call(model interface{}, posts interface{}) {
-	u(model.(*User), posts.(Posts))
+func userPostsSetter (model interface{}, posts interface{}) {
+	model.(*User).SetPosts(posts.(Posts))
 }
 
-type UserPostsGetter func(*User) Posts
-
-func (u UserPostsGetter) Call(model interface{}) interface{} {
-	return u(model.(*User))
+func userPostsGetter (model interface{}) interface{} {
+	return model.(*User).GetPosts()
 }
 
 var (
-	userIdSetter UserIdSetter = (*User).SetId
-	userIdGetter UserIdGetter = (*User).GetId
-	userEmailSetter UserEmailSetter = (*User).SetEmail
-	userEmailGetter UserEmailGetter = (*User).GetEmail
-	userPasswordSetter UserPasswordSetter = (*User).SetPassword
-	userPasswordGetter UserPasswordGetter = (*User).GetPassword
-	userRoleSetter UserRoleSetter = (*User).SetRole
-	userRoleGetter UserRoleGetter = (*User).GetRole
-	userRoleIdSetter UserRoleIdSetter = (*User).SetRoleId
-	userRoleIdGetter UserRoleIdGetter = (*User).GetRoleId
-	userRegisterDateSetter UserRegisterDateSetter = (*User).SetRegisterDate
-	userRegisterDateGetter UserRegisterDateGetter = (*User).GetRegisterDate
-	userPostsSetter UserPostsSetter = (*User).SetPosts
-	userPostsGetter UserPostsGetter = (*User).GetPosts
 	userDao UserDao
 	userProto = proto.New().
 		Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, userIdSetter, userIdGetter)).
@@ -330,5 +300,5 @@ var (
 		Set("role", proto.NewProperty("role", types.ProtoEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
 		Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
 		Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
-		Set("posts", proto.NewProperty("posts", types.ProtoModelKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
+		Set("posts", proto.NewProperty("posts", types.ProtoSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
 )

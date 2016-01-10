@@ -135,21 +135,15 @@ func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) {
 	)
 }
 {{range .Properties}}
-type {{$name}}{{.GetUpperName}}Setter func(*{{$name}}, {{.GetDefineKind}}) *{{$name}}
-
-func ({{$shortName}} {{$name}}{{.GetUpperName}}Setter) Call(model interface{}, {{.GetName}} interface{}) {
-	{{$shortName}}(model.(*{{$name}}), {{.GetName}}.({{.GetDefineKind}}))
+func {{$varName}}{{.GetUpperName}}Setter (model interface{}, {{.GetName}} interface{}) {
+	model.(*{{$name}}).Set{{.GetUpperName}}({{.GetName}}.({{.GetDefineKind}}))
 }
 
-type {{$name}}{{.GetUpperName}}Getter func(*{{$name}}) {{.GetDefineKind}}
-
-func ({{$shortName}} {{$name}}{{.GetUpperName}}Getter) Call(model interface{}) interface{} {
-	return {{$shortName}}(model.(*{{$name}}))
+func {{$varName}}{{.GetUpperName}}Getter (model interface{}) interface{} {
+	return model.(*{{$name}}).Get{{.GetUpperName}}()
 }
 {{end}}
-var ({{range .Properties}}
-	{{$varName}}{{.GetUpperName}}Setter {{$name}}{{.GetUpperName}}Setter = (*{{$name}}).Set{{.GetUpperName}}
-	{{$varName}}{{.GetUpperName}}Getter {{$name}}{{.GetUpperName}}Getter = (*{{$name}}).Get{{.GetUpperName}}{{end}}
+var (
 	{{.VarDaoName}} {{.DaoName}}
 	{{.VarProtoName}} = proto.New().{{range $i, $property := .Properties}}
 		Set("{{.GetName}}", proto.NewProperty("{{.GetField}}", types.{{.GetProtoKind}}, types.{{.GetRelation.AsProtoRelation}}, {{.IsRequired}}, {{$varName}}{{.GetUpperName}}Setter, {{$varName}}{{.GetUpperName}}Getter)){{if lt $i $lastPropertyIndex}}.{{end}}{{end}}

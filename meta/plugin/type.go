@@ -70,13 +70,13 @@ func (t *Type) Do(env types.Environment) {
 			}
 		}
 	}
-	for _, container := range t.containers {
-		if container.GetContainerKind() == types.ControllerContainerKind {
-			for _, controller := range container.GetEntities() {
-
-			}
-		}
-	}
+//	for _, container := range t.containers {
+//		if container.GetContainerKind() == types.ControllerContainerKind {
+//			for _, controller := range container.GetEntities() {
+//
+//			}
+//		}
+//	}
 }
 
 func (t *Type) getEntity(name string) types.Entity {

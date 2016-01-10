@@ -35,7 +35,7 @@ func (u *UpdateCriteriaImpl) One(model types.Model) {
 	for name, property := range properties {
 		if property.GetRelation() == types.ProtoNoneRelation {
 			getter := property.GetGetter()
-			u.Add(proj.Eq(name, getter.Call(model)))
+			u.Add(proj.Eq(name, getter(model)))
 		}
 	}
 

@@ -83,12 +83,24 @@ func (p *Post) Proto() types.Proto {
 	return postProto
 }
 
-func (p Posts) Get(i int) *Post {
-	return p[i]
-}
-
 func (p Posts) Len() int {
 	return len(p)
+}
+
+func (p Posts) Less(x, y int) bool {
+	return p[x].GetId() < p[y].GetId()
+}
+
+func (p Posts) Swap(x, y int) {
+	p[x], p[y] = p[y], p[x]
+}
+
+func (p Posts) GetRaw(x int) interface{} {
+	return p.Get(x)
+}
+
+func (p Posts) Get(x int) *Post {
+	return p[x]
 }
 
 func(p *Posts) CommonDAO() types.ModelDAO {
@@ -136,82 +148,52 @@ func (p PostDao) Scan(row interface{}, model interface{}) {
 	)
 }
 
-type PostIdSetter func(*Post, int64) *Post
-
-func (p PostIdSetter) Call(model interface{}, id interface{}) {
-	p(model.(*Post), id.(int64))
+func postIdSetter (model interface{}, id interface{}) {
+	model.(*Post).SetId(id.(int64))
 }
 
-type PostIdGetter func(*Post) int64
-
-func (p PostIdGetter) Call(model interface{}) interface{} {
-	return p(model.(*Post))
+func postIdGetter (model interface{}) interface{} {
+	return model.(*Post).GetId()
 }
 
-type PostUserSetter func(*Post, *User) *Post
-
-func (p PostUserSetter) Call(model interface{}, user interface{}) {
-	p(model.(*Post), user.(*User))
+func postUserSetter (model interface{}, user interface{}) {
+	model.(*Post).SetUser(user.(*User))
 }
 
-type PostUserGetter func(*Post) *User
-
-func (p PostUserGetter) Call(model interface{}) interface{} {
-	return p(model.(*Post))
+func postUserGetter (model interface{}) interface{} {
+	return model.(*Post).GetUser()
 }
 
-type PostUserIdSetter func(*Post, int64) *Post
-
-func (p PostUserIdSetter) Call(model interface{}, userId interface{}) {
-	p(model.(*Post), userId.(int64))
+func postUserIdSetter (model interface{}, userId interface{}) {
+	model.(*Post).SetUserId(userId.(int64))
 }
 
-type PostUserIdGetter func(*Post) int64
-
-func (p PostUserIdGetter) Call(model interface{}) interface{} {
-	return p(model.(*Post))
+func postUserIdGetter (model interface{}) interface{} {
+	return model.(*Post).GetUserId()
 }
 
-type PostNameSetter func(*Post, string) *Post
-
-func (p PostNameSetter) Call(model interface{}, name interface{}) {
-	p(model.(*Post), name.(string))
+func postNameSetter (model interface{}, name interface{}) {
+	model.(*Post).SetName(name.(string))
 }
 
-type PostNameGetter func(*Post) string
-
-func (p PostNameGetter) Call(model interface{}) interface{} {
-	return p(model.(*Post))
+func postNameGetter (model interface{}) interface{} {
+	return model.(*Post).GetName()
 }
 
-type PostDescriptionSetter func(*Post, string) *Post
-
-func (p PostDescriptionSetter) Call(model interface{}, description interface{}) {
-	p(model.(*Post), description.(string))
+func postDescriptionSetter (model interface{}, description interface{}) {
+	model.(*Post).SetDescription(description.(string))
 }
 
-type PostDescriptionGetter func(*Post) string
-
-func (p PostDescriptionGetter) Call(model interface{}) interface{} {
-	return p(model.(*Post))
+func postDescriptionGetter (model interface{}) interface{} {
+	return model.(*Post).GetDescription()
 }
 
 var (
-	postIdSetter PostIdSetter = (*Post).SetId
-	postIdGetter PostIdGetter = (*Post).GetId
-	postUserSetter PostUserSetter = (*Post).SetUser
-	postUserGetter PostUserGetter = (*Post).GetUser
-	postUserIdSetter PostUserIdSetter = (*Post).SetUserId
-	postUserIdGetter PostUserIdGetter = (*Post).GetUserId
-	postNameSetter PostNameSetter = (*Post).SetName
-	postNameGetter PostNameGetter = (*Post).GetName
-	postDescriptionSetter PostDescriptionSetter = (*Post).SetDescription
-	postDescriptionGetter PostDescriptionGetter = (*Post).GetDescription
 	postDao PostDao
 	postProto = proto.New().
-		Set("id", proto.NewProperty("id", types.ProtoBasicKind, types.ProtoNoneRelation, true, postIdSetter, postIdGetter)).
+		Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postIdSetter, postIdGetter)).
 		Set("user", proto.NewProperty("user", types.ProtoModelKind, types.ProtoOneToOneRelation, true, postUserSetter, postUserGetter)).
-		Set("userId", proto.NewProperty("user_id", types.ProtoBasicKind, types.ProtoNoneRelation, true, postUserIdSetter, postUserIdGetter)).
-		Set("name", proto.NewProperty("name", types.ProtoBasicKind, types.ProtoNoneRelation, true, postNameSetter, postNameGetter)).
-		Set("description", proto.NewProperty("description", types.ProtoBasicKind, types.ProtoNoneRelation, true, postDescriptionSetter, postDescriptionGetter))
+		Set("userId", proto.NewProperty("user_id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postUserIdSetter, postUserIdGetter)).
+		Set("name", proto.NewProperty("name", types.ProtoStringKind, types.ProtoNoneRelation, true, postNameSetter, postNameGetter)).
+		Set("description", proto.NewProperty("description", types.ProtoStringKind, types.ProtoNoneRelation, true, postDescriptionSetter, postDescriptionGetter))
 )

@@ -19,6 +19,6 @@ func (c Controller) GetRoute() string {
 	return c.Route
 }
 
-func (c Controller) GetActions() []Action {
-	return c.Actions
-}
+//func (c Controller) GetActions() []Action {
+//	return c.Actions
+//}

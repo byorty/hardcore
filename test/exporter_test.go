@@ -20,7 +20,8 @@ func TestExporter(t *testing.T) {
 	for i := 0;i < userExporter.Len();i++ {
 		prop := userExporter.Get(i)
 		t.Log(prop.GetName(), prop.GetValue())
-		if user.Proto().GetByName(prop.GetName()).GetGetter().Call(user) != prop.GetValue() {
+		getter := user.Proto().GetByName(prop.GetName()).GetGetter()
+		if getter(user) != prop.GetValue() {
 			t.Fail()
 		}
 	}
