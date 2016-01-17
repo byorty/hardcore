@@ -89,10 +89,10 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			existsMatcher.handler.(func(types.RequestScope))(scope)
 			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
 		} else {
-			r.notFoundFunc(NewRequestScope())
+			r.callNotFoundFunc(rw, req)
 		}
 	} else {
-		r.notFoundFunc(NewRequestScope())
+		r.callNotFoundFunc(rw, req)
 	}
 }
 
@@ -100,5 +100,12 @@ func (r *Router) doMiddlewares(middlewares []types.MiddlewareFunc, scope types.R
 	for _, middleware := range middlewares {
 		middleware(scope)
 	}
+}
+
+func (r *Router) callNotFoundFunc(rw http.ResponseWriter, req *http.Request) {
+	scope := NewRequestScope()
+	scope.SetRequest(req)
+	scope.SetWriter(rw)
+	r.notFoundFunc(scope)
 }
 

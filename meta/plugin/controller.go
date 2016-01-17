@@ -3,6 +3,7 @@ package plugin
 import (
 	"github.com/byorty/hardcore/meta/types"
 	"strings"
+	"github.com/byorty/hardcore/meta/controller"
 )
 
 var (
@@ -15,7 +16,7 @@ import ({{range .Imports}}
 )
 
 type {{.Name}} struct { {{range .Extends}}
-    {{.Name}}{{end}}
+    {{.GetFullName}}{{end}}
 }
 
 func New{{.Name}}() types.ActionController {
@@ -33,7 +34,7 @@ func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {
 `{{$shortName := .ShortName}}` +
 `package {{.Package}}
 
-import ({{range .AutoImports}}
+import ({{range .FormImports}}
     "{{.}}"{{end}}
 )
 
@@ -48,28 +49,59 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 {{range .Actions}}{{if .HasForm}}
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}})
 
-func ({{$shortName}} {{$name}}{{.GetName}}) Call(ctrl interface{}, scope types.RequestScope) { {{range .GetParams}}
-	var {{.GetName}} {{.GetDefineVarKind}}{{end}}{{range .GetParams}}
-	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
-	{{.GetName}}Prim.Required(){{end}}
+func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
+	form := form.New()
+	{{range .GetParams}}{{if .IsReserved}}
+	{{else}}
+	var {{.GetName}} {{.GetDefineVarKind}}
+	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}")
+	{{if .IsRequired}}{{.GetName}}Prim.Required(){{end}}
+	{{.GetName}}Prim.SetSource({{.GetSource}})
 	{{.GetName}}Prim.Export(&{{.GetName}})
-	{{end}}
-	form := form.New(){{range .GetParams}}
-	form.Add({{.GetName}}Prim){{end}}
+	{{end}}{{end}}
 
-//		Check(scope)
+	form.Check(scope)
 
-	{{$shortName}}(ctrl.(*{{$name}}), {{.GetDefineVars}})
-//	scope.GetWriter().Write([]byte(result))
+	ctrl := rawCtrl.(*{{$name}})
+	{{$shortName}}(ctrl, {{.GetDefineVars}})
+//	{{$shortName}}(ctrl, New{{$name}}{{.GetName}}Form(ctrl.(*{{$name}})))
 }
 {{end}}{{end}}
 `
+//	formTpl = `{{$name := .Name}}` +
+//`package {{.Package}}
+//
+//import ({{range .FormImports}}
+//    "{{.}}"{{end}}
+//)
+//
+//{{range .Actions}}{{if .HasForm}}
+//func New{{$name}}{{.GetName}}Form(ctrl *{{$name}}) ({{.GetDefineKinds}}) { {{range .GetParams}}
+//	var {{.GetName}} {{.GetDefineVarKind}}{{end}}{{range .GetParams}}
+//	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
+//	{{.GetName}}Prim.Required(){{end}}
+//	{{.GetName}}Prim.Export(&{{.GetName}})
+//	{{end}}
+//	form := form.New(){{range .GetParams}}
+//	form.Add({{.GetName}}Prim){{end}}
+//
+//	return {{.GetDefineVars}}
+//}
+//{{end}}{{end}}
+//`
 )
 
 type Controller struct {}
 
 func (c *Controller) Do(env types.Environment) {
 //	logger := env.GetLogger()
+
+	container := new(controller.Container)
+	container.SetShortPackage("mux")
+	parent := new(controller.Controller)
+	parent.Name = "ControllerImpl"
+	parent.SetContainer(container)
+
 	for _, container := range env.GetConfiguration().GetContainers() {
 		if container.GetContainerKind() == types.ControllerContainerKind {
 			for _, entity := range container.GetEntities() {
@@ -87,25 +119,30 @@ func (c *Controller) Do(env types.Environment) {
 					[]string{types.DefaultImport},
 					controllerEntity.GetImports()...
 				)
-				autoImports := imports
+				var formImports []string
 				if hasForm {
-					autoImports = append(autoImports, "github.com/byorty/hardcore/form")
-					autoImports = append(autoImports, "github.com/byorty/hardcore/form/prim")
+					formImports = append(
+						[]string{
+							types.DefaultImport,
+							"github.com/byorty/hardcore/form",
+							"github.com/byorty/hardcore/form/prim",
+						},
+						controllerEntity.GetImports()...
+					)
 				}
 				tplParams := map[string]interface{}{
+					"Extends": controllerEntity.GetExtends(),
 					"ShortName": strings.ToLower(controllerEntity.GetName()[0:1]),
 					"Name": controllerEntity.GetName(),
 					"Package": container.GetShortPackage(),
 					"Imports": imports,
-					"AutoImports": autoImports,
+					"FormImports": formImports,
 					"Actions": controllerEntity.GetActions(),
 				}
-//				logger.Info(controllerEntity.GetName(), append([]string{
-//					types.DefaultImport,
-//				}, controllerEntity.GetImports()...))
 
 				env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)
 				env.GetConfiguration().AddFile(controllerEntity.GetFilename(), controllerTpl, tplParams)
+//				env.GetConfiguration().AddFile(controllerEntity.GetFilename() + "_form", formTpl, tplParams)
 			}
 		}
 	}

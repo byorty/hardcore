@@ -73,7 +73,7 @@ func TestForm(t *testing.T) {
 				var name string
 				var id int
 				strPrim := prim.String("name")
-				strPrim.SetSource(types.RoutePrimitiveSource)
+				strPrim.SetSource(types.PathPrimitiveSource)
 				strPrim.Required()
 				strPrim.Export(&name)
 				intPrim := prim.Int("id")

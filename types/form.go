@@ -16,9 +16,9 @@ type Primitive interface {
 type PrimitiveSource int
 
 const (
-	RoutePrimitiveSource PrimitiveSource = iota
-	GetPrimitiveSource
+	PathPrimitiveSource PrimitiveSource = iota
 	PostPrimitiveSource
+	GetPrimitiveSource
 )
 
 type Form interface {
@@ -28,6 +28,7 @@ type Form interface {
 	Add(Primitive) Form
 	Check(FormVerifiable) bool
 	GetErrors() FormErrors
+	IsValid() bool
 }
 
 type FormError interface {

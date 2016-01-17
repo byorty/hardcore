@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
-    <controllers package="controllers.api" route="/api">
-        <controller name="Post" route="/post">
+    <controllers package="controllers.api" path="/api">
+        <controller name="Post" path="/post">
             <actions>
                 <!--<allows>-->
                     <!--<allow>models.LoggedUserRole</allow>-->
@@ -12,21 +12,19 @@
                         <param name="page" type="int" required="false" from="query"/>
                         <param name="search" type="string" required="false" from="query"/>
                     </params>
-                    <return type="response.Response"/>
                 </action>
-                <action name="View" route="/{post:([0-9]+)}" method="GET">
+                <action name="View" path="/{post:([0-9]+)}" method="GET">
                     <params>
-                        <param name="post" type="some.Post" required="true" from="route"/>
+                        <param name="post" type="some.Post" required="true" from="path"/>
                     </params>
-                    <return type="response.Response"/>
                 </action>
-                <action name="Edit" route="/{post:([0-9]+)}" method="POST">
+                <action name="Edit" path="/{post:([0-9]+)}" method="POST">
                     <params>
-                        <param name="post" type="some.Post" required="true" from="route"/>
+                        <param name="form"/>
+                        <param name="post" type="some.Post" required="true" from="path"/>
                         <param name="name" type="string" required="true" from="form"/>
                         <param name="description" type="string" required="true" from="form"/>
                     </params>
-                    <return type="response.Response"/>
                 </action>
             </actions>
         </controller>

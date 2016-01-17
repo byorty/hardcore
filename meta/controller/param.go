@@ -8,11 +8,17 @@ import (
 )
 
 const RequestScopeKind = "types.RequestScope"
+const FormScopeKind = "types.Form"
+
+var reservedParams = map[string]string{
+	"scope": RequestScopeKind,
+	"form": FormScopeKind,
+}
 
 type Param struct {
 	Name string `xml:"name,attr"`
-	Required bool `xml:"required"`
-	Source types.ActionParamSource `xml:"from,attr"`
+	Required bool `xml:"required,attr"`
+	Source string `xml:"from,attr"`
 	Kind string `xml:"type,attr"`
 	entity types.Entity
 }
@@ -25,8 +31,12 @@ func (p Param) IsRequired() bool {
 	return p.Required
 }
 
-func (p Param) GetSource() types.ActionParamSource {
-	return p.Source
+func (p Param) GetSource() string {
+	switch p.Source {
+	case "path": return "types.PathPrimitiveSource"
+	case "form": return "types.PostPrimitiveSource"
+	default: return "types.GetPrimitiveSource"
+	}
 }
 
 func (p Param) GetKind() string {
@@ -47,7 +57,11 @@ func (p Param) GetDefineKind() string {
 
 func (p Param) getDefineKind(needPointer bool) string {
 	if p.entity == nil {
-		return p.Kind
+		if p.IsReserved() {
+			return reservedParams[p.Name]
+		} else {
+			return p.Kind
+		}
 	} else {
 		if p.isMultiple() {
 			return p.entity.GetFullMultipleName()
@@ -79,6 +93,11 @@ func (p Param) GetDefineVarName() string {
 			return fmt.Sprintf("&%s", p.Name)
 		}
 	}
+}
+
+func (p Param) IsReserved() bool {
+	_, ok := reservedParams[p.Name];
+	return ok
 }
 
 func (p Param) GetPrimitive() string {

@@ -22,7 +22,7 @@ type Action interface {
 type ActionParam interface {
 	GetName() string
 	IsRequired() bool
-	GetSource() ActionParamSource
+	GetSource() string
 	GetKind() string
 	GetEntity() Entity
 	SetEntity(entity Entity)
@@ -30,6 +30,5 @@ type ActionParam interface {
 	GetDefineVarKind() string
 	GetDefineVarName() string
 	GetPrimitive() string
+	IsReserved() bool
 }
-
-type ActionParamSource string

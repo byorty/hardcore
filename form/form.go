@@ -5,6 +5,7 @@ import "github.com/byorty/hardcore/types"
 type FormImpl struct {
 	errors FormErrorsImpl
 	primitives []types.Primitive
+	isValid bool
 }
 
 func New() types.Form {
@@ -38,10 +39,14 @@ func (f *FormImpl) Check(verifiable types.FormVerifiable) bool {
 	for _, primitive := range f.primitives {
 		verifiable.Verify(f, primitive)
 	}
-
-	return f.errors.Len() == 0
+	f.isValid = f.errors.Len() == 0
+	return f.isValid
 }
 
 func (f FormImpl) GetErrors() types.FormErrors {
 	return f.errors
+}
+
+func (f FormImpl) IsValid() bool {
+	return f.isValid
 }
