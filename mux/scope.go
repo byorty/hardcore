@@ -51,3 +51,17 @@ func (r *RequestScopeImpl) SetHeaderParams(params types.RequestScopeParams) {
 func (r *RequestScopeImpl) SetHeaderParam(key, value string) {
 	r.headerParams.Set(key, value)
 }
+
+func (r RequestScopeImpl) Verify(form types.Form, primitive types.Primitive) {
+	var value string
+
+	switch primitive.GetSource() {
+	case types.RoutePrimitiveSource: value = r.GetPathParams().GetString(primitive.GetName())
+	case types.PostPrimitiveSource: value = r.request.PostFormValue(primitive.GetName())
+	case types.GetPrimitiveSource: value = r.request.FormValue(primitive.GetName())
+	}
+
+	if !primitive.Import(value) {
+		form.AddErrorMessage(primitive.GetName(), primitive.GetError())
+	}
+}

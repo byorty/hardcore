@@ -1,10 +1,10 @@
 package prim
 
-type StringPrimitiveImpl struct {
+type StringImpl struct {
 	Base
 }
 
-func (s *StringPrimitiveImpl) Import(rawValue interface{}) bool {
+func (s *StringImpl) Import(rawValue interface{}) bool {
 	value, ok := rawValue.(string)
 	if ok {
 		if s.required {
@@ -25,13 +25,13 @@ func (s *StringPrimitiveImpl) Import(rawValue interface{}) bool {
 	}
 }
 
-func (s *StringPrimitiveImpl) setDest(value string) {
+func (s *StringImpl) setDest(value string) {
 	dest := s.dest.(*string)
 	(*dest) = value
 }
 
-func String(name string) *StringPrimitiveImpl {
-	p := new(StringPrimitiveImpl)
+func String(name string) *StringImpl {
+	p := new(StringImpl)
 	p.name = name
 	return p
 }

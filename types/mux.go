@@ -35,6 +35,7 @@ type RequestScopeParams interface {
 type RequestScopeConstructor func() RequestScope
 
 type RequestScope interface {
+	FormVerifiable
 	GetWriter() http.ResponseWriter
 	SetWriter(http.ResponseWriter)
 	GetRequest() *http.Request

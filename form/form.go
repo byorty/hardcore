@@ -2,34 +2,46 @@ package form
 
 import "github.com/byorty/hardcore/types"
 
-type FormImpl map[string]types.Primitive
+type FormImpl struct {
+	errors FormErrorsImpl
+	primitives []types.Primitive
+}
 
 func New() types.Form {
-	f := make(FormImpl)
+	return &FormImpl{
+		errors: NewFormErrors(),
+		primitives: make([]types.Primitive, 0),
+	}
+}
+
+func (f *FormImpl) Add(primitive types.Primitive) types.Form {
+	f.primitives = append(f.primitives, primitive)
 	return f
 }
 
-func (f FormImpl) Add(primitive types.Primitive) types.Form {
-	f[primitive.GetName()] = primitive
+func (f *FormImpl) AddErrorMessage(name, message string) types.Form {
+	f.AddError(NewError(name, message))
 	return f
 }
 
-func (f FormImpl) Check(scope types.RequestScope) (bool, map[string]string) {
-	errors := make(map[string]string, 0)
-	request := scope.GetRequest()
+func (f *FormImpl) AddErrorMessageWithCode(name, message string, code int) types.Form {
+	f.AddError(NewErrorWithCode(name, message, code))
+	return f
+}
 
-	for _, primitive := range f {
-		value := scope.GetPathParams().GetString(primitive.GetName())
-		if len(value) == 0 {
-			value = request.FormValue(primitive.GetName())
-		}
-		if len(value) == 0 {
-			value = request.PostFormValue(primitive.GetName())
-		}
-		if !primitive.Import(value) {
-			errors[primitive.GetName()] = primitive.GetError()
-		}
+func (f *FormImpl) AddError(err types.FormError) types.Form {
+	f.errors = append(f.errors, err)
+	return f
+}
+
+func (f *FormImpl) Check(verifiable types.FormVerifiable) bool {
+	for _, primitive := range f.primitives {
+		verifiable.Verify(f, primitive)
 	}
 
-	return len(errors) > 0, errors
+	return f.errors.Len() == 0
+}
+
+func (f FormImpl) GetErrors() types.FormErrors {
+	return f.errors
 }

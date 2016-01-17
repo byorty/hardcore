@@ -1,4 +1,5 @@
 package prim
+import "github.com/byorty/hardcore/types"
 
 type Base struct {
 	name string
@@ -8,13 +9,14 @@ type Base struct {
 	required bool
 	customs map[int]string
 	dest interface{}
+	source types.PrimitiveSource
 }
 
-func (b *Base) GetName() string {
+func (b Base) GetName() string {
 	return b.name
 }
 
-func (b *Base) GetError() string {
+func (b Base) GetError() string {
 	return b.error
 }
 
@@ -39,4 +41,12 @@ func (b *Base) Custom(i int, error string) {
 
 func (b *Base) Export(dest interface{}) {
 	b.dest = dest
+}
+
+func (b *Base) SetSource(source types.PrimitiveSource) {
+	b.source = source
+}
+
+func (b Base) GetSource() types.PrimitiveSource {
+	return b.source
 }
