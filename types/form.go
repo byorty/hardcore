@@ -10,7 +10,12 @@ type Primitive interface {
 	Wrong(string)
 	Custom(int, string)
 	Import(interface{}) bool
+	ImportFromString(string) bool
 	Export(interface{})
+	IsRequired() bool
+	SetError(string)
+	GetWrong() string
+	GetMissing() string
 }
 
 type PrimitiveSource int

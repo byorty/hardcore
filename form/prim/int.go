@@ -8,49 +8,38 @@ type IntImpl struct {
 }
 
 func (i *IntImpl) Import(rawValue interface{}) bool {
-	strValue, ok := rawValue.(string)
-	if ok {
-		if len(strValue) == 0 {
-			i.error = i.missing
-			return false
-		} else {
-			value, err := strconv.ParseInt(strValue, 10, i.bitSize)
-			if err == nil {
-				i.setDest(value)
-				return true
-			} else {
-				i.error = i.wrong
-				return false
-			}
-		}
-	} else {
-		i.error = i.wrong
-		return ok
-	}
+	return i.do(i, rawValue)
 }
 
-func (i *IntImpl) setDest(value int64) {
-	switch i.bitSize {
-	case 0:
-		dest := i.dest.(*int)
-		(*dest) = int(value)
+func (i *IntImpl) ImportFromString(strValue string) bool {
+	value, err := strconv.ParseInt(strValue, 10, i.bitSize)
+	if err == nil {
+		switch i.bitSize {
+		case 0:
+			dest := i.dest.(*int)
+			(*dest) = int(value)
 
-	case 8:
-		dest := i.dest.(*int8)
-		(*dest) = int8(value)
+		case 8:
+			dest := i.dest.(*int8)
+			(*dest) = int8(value)
 
-	case 16:
-		dest := i.dest.(*int16)
-		(*dest) = int16(value)
+		case 16:
+			dest := i.dest.(*int16)
+			(*dest) = int16(value)
 
-	case 32:
-		dest := i.dest.(*int32)
-		(*dest) = int32(value)
+		case 32:
+			dest := i.dest.(*int32)
+			(*dest) = int32(value)
 
-	case 64:
-		dest := i.dest.(*int64)
-		(*dest) = int64(value)
+		case 64:
+			dest := i.dest.(*int64)
+			(*dest) = int64(value)
 
+		}
+		return true
+	} else {
+		i.error = i.wrong
+		return false
 	}
 }
 

@@ -5,29 +5,13 @@ type StringImpl struct {
 }
 
 func (s *StringImpl) Import(rawValue interface{}) bool {
-	value, ok := rawValue.(string)
-	if ok {
-		if s.required {
-			if len(value) > 0 {
-				s.setDest(value)
-				return true
-			} else {
-				s.error = s.missing
-				return false
-			}
-		} else {
-			s.setDest(value)
-			return true
-		}
-	} else {
-		s.error = s.wrong
-		return ok
-	}
+	return s.do(s, rawValue)
 }
 
-func (s *StringImpl) setDest(value string) {
+func (s *StringImpl) ImportFromString(strValue string) bool {
 	dest := s.dest.(*string)
-	(*dest) = value
+	(*dest) = strValue
+	return true
 }
 
 func String(name string) *StringImpl {
