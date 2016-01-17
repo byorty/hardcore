@@ -36,54 +36,20 @@ func (t *Type) Do(env types.Environment) {
 				}
 				entity.SetExtends(parentEntities)
 			}
-			switch entity.GetEntityKind() {
-			case types.ControllerEntityKind:
-			case types.ModelEntityKind: t.fillProperties(entity.(types.ModelEntity))
+			if entity.GetEntityKind() == types.ModelEntityKind {
+				t.fillProperties(entity.(types.ModelEntity))
 			}
 		}
 	}
-	for _, container := range t.containers {
-		if container.GetContainerKind() == types.EntityContainerKind {
-			for _, entity := range container.GetEntities() {
-				if entity.GetEntityKind() == types.ModelEntityKind {
-					modelEntity := entity.(types.ModelEntity)
-					if modelEntity.GetPattern() == types.StraightMappingPattern {
-						for _, property := range modelEntity.GetProperties() {
-							relation := property.GetRelation()
-							hasMany := relation.IsOneToMany() || relation.IsManyToMany()
-							isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
-							if hasMany && isModel {
-								relModel := property.GetEntity().(types.ModelEntity)
-								for _, relProp := range relModel.GetProperties() {
-									relPropRelation := relProp.GetRelation()
-									hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
-									equalKind := entity.GetFullName() == relProp.GetKind()
-									if hasRelMany && equalKind {
-										property.SetRelationProperty(relProp)
-										break
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-//	for _, container := range t.containers {
-//		if container.GetContainerKind() == types.ControllerContainerKind {
-//			for _, controller := range container.GetEntities() {
-//
-//			}
-//		}
-//	}
+	t.setRelationProperties()
+	t.fillControllers()
 }
 
 func (t *Type) getEntity(name string) types.Entity {
 	var needle types.Entity = nil
 	for _, container := range t.containers {
 		for _, entity := range container.GetEntities() {
-			if name == entity.GetFullName() {
+			if name == entity.GetFullName() || name == entity.GetFullMultipleName() {
 				needle = entity
 				break
 			}
@@ -183,5 +149,56 @@ func (t *Type) initModelProperties(entity types.ModelEntity) {
 		prop.SetUpperName(utils.UpperFirst(prop.GetName()))
 
 		entity.SetProperties(append(entity.GetProperties(), prop))
+	}
+}
+
+func (t *Type) setRelationProperties() {
+	for _, container := range t.containers {
+		if container.GetContainerKind() == types.EntityContainerKind {
+			for _, entity := range container.GetEntities() {
+				if entity.GetEntityKind() == types.ModelEntityKind {
+					modelEntity := entity.(types.ModelEntity)
+					if modelEntity.GetPattern() == types.StraightMappingPattern {
+						for _, property := range modelEntity.GetProperties() {
+							relation := property.GetRelation()
+							hasMany := relation.IsOneToMany() || relation.IsManyToMany()
+							isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
+							if hasMany && isModel {
+								relModel := property.GetEntity().(types.ModelEntity)
+								for _, relProp := range relModel.GetProperties() {
+									relPropRelation := relProp.GetRelation()
+									hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
+									equalKind := entity.GetFullName() == relProp.GetKind()
+									if hasRelMany && equalKind {
+										property.SetRelationProperty(relProp)
+										break
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (t *Type) fillControllers() {
+	for _, container := range t.containers {
+		if container.GetContainerKind() == types.ControllerContainerKind {
+			for _, entity := range container.GetEntities() {
+				controller := entity.(types.ControllerEntity)
+
+				for _, action := range controller.GetActions() {
+					for _, param := range action.GetParams() {
+						existsEntity := t.getEntity(param.GetKind())
+						if existsEntity != nil {
+							param.SetEntity(existsEntity)
+							controller.AddImport(existsEntity.GetContainer().GetImport())
+						}
+					}
+				}
+			}
+		}
 	}
 }

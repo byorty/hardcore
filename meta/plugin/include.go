@@ -81,6 +81,33 @@ func (i *Include) initModelEntities(container *model.Container) types.Container 
 func (i *Include) initEntity(container types.Container, entity types.Entity) types.Entity {
     entity.ClearName()
     entity.SetContainer(container)
+
+	if entity.GetEntityKind() == types.ControllerEntityKind {
+		ctrl := entity.(*controller.Controller)
+		actions := make([]types.Action, 0)
+
+		for _, action := range ctrl.Actions {
+			params := make([]types.ActionParam, 0)
+			for _, param := range action.Params {
+				params = append(params, param)
+			}
+            if len(params) == 0 {
+                param := &controller.Param{
+                    Name: "scope",
+                    Required: true,
+                    Source: "",
+                    Kind: controller.RequestScopeKind,
+                }
+                params = append(params, param)
+            }
+			action.SetParams(params)
+			actions = append(actions, action)
+			action.Params = nil
+		}
+		ctrl.SetActions(actions)
+		ctrl.Actions = nil
+	}
+
     return entity
 }
 

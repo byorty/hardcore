@@ -2,11 +2,11 @@ package prim
 
 import "strconv"
 
-type IntPrimitiveImpl struct {
-	BasePrimitive
+type Int struct {
+	Base
 }
 
-func (i *IntPrimitiveImpl) Import(rawValue interface{}) bool {
+func (i *Int) Import(rawValue interface{}) bool {
 	strValue, ok := rawValue.(string)
 	if ok {
 		if len(strValue) == 0 {
@@ -28,13 +28,13 @@ func (i *IntPrimitiveImpl) Import(rawValue interface{}) bool {
 	}
 }
 
-func (i *IntPrimitiveImpl) setDest(value int) {
+func (i *Int) setDest(value int) {
 	dest := i.dest.(*int)
 	(*dest) = value
 }
 
-func Int(name string) *IntPrimitiveImpl {
-	p := new(IntPrimitiveImpl)
+func Int(name string) *Int {
+	p := new(Int)
 	p.name = name
 	return p
 }

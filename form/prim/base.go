@@ -1,6 +1,6 @@
 package prim
 
-type BasePrimitive struct {
+type Base struct {
 	name string
 	error string
 	missing string
@@ -10,33 +10,33 @@ type BasePrimitive struct {
 	dest interface{}
 }
 
-func (b *BasePrimitive) GetName() string {
+func (b *Base) GetName() string {
 	return b.name
 }
 
-func (b *BasePrimitive) GetError() string {
+func (b *Base) GetError() string {
 	return b.error
 }
 
-func (b *BasePrimitive) Required() {
+func (b *Base) Required() {
 	b.required = true
 }
 
-func (b *BasePrimitive) Missing(missing string) {
+func (b *Base) Missing(missing string) {
 	b.missing = missing
 }
 
-func (b *BasePrimitive) Wrong(wrong string) {
+func (b *Base) Wrong(wrong string) {
 	b.wrong = wrong
 }
 
-func (b *BasePrimitive) Custom(i int, error string) {
+func (b *Base) Custom(i int, error string) {
 	if b.customs == nil {
 		b.customs = make(map[int]string)
 	}
 	b.customs[i] = error
 }
 
-func (b *BasePrimitive) Export(dest interface{}) {
+func (b *Base) Export(dest interface{}) {
 	b.dest = dest
 }

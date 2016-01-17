@@ -14,15 +14,15 @@
                     </params>
                     <return type="response.Response"/>
                 </action>
-                <action name="View" route="/{id:([0-9]+)}" method="GET">
+                <action name="View" route="/{post:([0-9]+)}" method="GET">
                     <params>
-                        <param name="id" type="some.Post" required="true" from="route"/>
+                        <param name="post" type="some.Post" required="true" from="route"/>
                     </params>
                     <return type="response.Response"/>
                 </action>
-                <action name="Edit" route="/{id:([0-9]+)}" method="POST">
+                <action name="Edit" route="/{post:([0-9]+)}" method="POST">
                     <params>
-                        <param name="id" type="some.Post" required="true" from="route"/>
+                        <param name="post" type="some.Post" required="true" from="route"/>
                         <param name="name" type="string" required="true" from="form"/>
                         <param name="description" type="string" required="true" from="form"/>
                     </params>

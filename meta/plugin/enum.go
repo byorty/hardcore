@@ -131,7 +131,7 @@ func (e Enum) Do(env types.Environment) {
 						"DaoName": fmt.Sprintf("%sDao", enum.Name),
 						"Package": container.GetShortPackage(),
 						"SliceName": fmt.Sprintf("%sList", varName),
-						"MapName": fmt.Sprintf("%sMap", varName),
+						"MapName": fmt.Sprintf("%sNames", varName),
 						"Constants": enum.Constants,
 						"Kind": enum.GetKind(),
 						"AutoImports": []string{

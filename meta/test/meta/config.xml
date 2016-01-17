@@ -6,9 +6,6 @@
     </includes>
     <controllers package="controllers.some1" route="/some1">
         <controller name="TestCtrl1" route="/test">
-            <extends>
-                <extend>api.Post</extend>
-            </extends>
             <actions>
                 <action name="List" method="GET">
                     <params>

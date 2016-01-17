@@ -9,6 +9,7 @@ type Controller struct {
     common.Entity
 	Route string `xml:"route,attr"`
 	Actions []*Action `xml:"actions>action"`
+	actions []types.Action
 }
 
 func (c Controller) GetEntityKind() types.EntityKind {
@@ -19,6 +20,10 @@ func (c Controller) GetRoute() string {
 	return c.Route
 }
 
-//func (c Controller) GetActions() []Action {
-//	return c.Actions
-//}
+func (c Controller) GetActions() []types.Action {
+	return c.actions
+}
+
+func (c *Controller) SetActions(actions []types.Action) {
+	c.actions = actions
+}

@@ -1,17 +1,35 @@
 package types
 
-type Controller interface {
+type ControllerEntity interface {
+	Entity
 	GetRoute() string
 	GetActions() []Action
+	SetActions([]Action)
 }
 
 type Action interface {
 	GetName() string
 	GetRoute() string
 	GetMethod() string
-	GetParameters() []ActionParameter
+	GetParams() []ActionParam
+	SetParams([]ActionParam)
+	HasForm() bool
+	GetDefineKinds() string
+	GetDefineParams() string
+	GetDefineVars() string
 }
 
-type ActionParameter interface {
-
+type ActionParam interface {
+	GetName() string
+	IsRequired() bool
+	GetSource() ActionParamSource
+	GetKind() string
+	GetEntity() Entity
+	SetEntity(entity Entity)
+	GetDefineKind() string
+	GetDefineVarKind() string
+	GetDefineVarName() string
+	GetPrimitive() string
 }
+
+type ActionParamSource string

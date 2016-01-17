@@ -1,7 +1,7 @@
 package prim
 
 type StringPrimitiveImpl struct {
-	BasePrimitive
+	Base
 }
 
 func (s *StringPrimitiveImpl) Import(rawValue interface{}) bool {

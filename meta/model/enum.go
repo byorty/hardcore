@@ -84,17 +84,6 @@ var (
     }
 )
 
-func HasEnumKind(kind EnumKind) bool {
-    hasKind := false
-    for _, enumKind := range enumKinds {
-        if enumKind == kind {
-            hasKind = true
-            break
-        }
-    }
-    return hasKind
-}
-
 type Enum struct {
     common.Entity
     Kind EnumKind `xml:"type,attr"`
