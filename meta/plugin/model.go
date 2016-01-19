@@ -65,6 +65,10 @@ func({{.ShortName}} *{{.Name}}) CommonDAO() types.ModelDAO {
 	return {{.VarDaoName}}
 }
 
+func({{.ShortName}} *{{.Name}}) KindDAO() types.{{$upperIdentifierKind}}ModelDAO {
+	return {{.VarDaoName}}
+}
+
 func({{.ShortName}} *{{.Name}}) DAO() {{.DaoName}} {
 	return {{.VarDaoName}}
 }
@@ -94,6 +98,10 @@ func ({{.ShortName}} {{.MultipleName}}) Get(x int) *{{.Name}} {
 }
 
 func({{.ShortName}} *{{.MultipleName}}) CommonDAO() types.ModelDAO {
+	return {{.VarDaoName}}
+}
+
+func({{.ShortName}} *{{.MultipleName}}) KindDAO() types.{{$upperIdentifierKind}}ModelDAO {
 	return {{.VarDaoName}}
 }
 

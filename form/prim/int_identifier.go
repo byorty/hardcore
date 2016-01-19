@@ -17,22 +17,26 @@ func (i *IdentifierImpl) Import(rawValue interface{}) bool {
 func (i *IdentifierImpl) ImportFromString(strValue string) bool {
 	value, err := strconv.ParseInt(strValue, 10, i.bitSize)
 	if err == nil {
-		dest := i.dest.(types.Model)
 		switch i.bitSize {
 		case 0:
-			dest.CommonDAO().(types.IntModelDAO).ById(int(value)).One(dest)
+			dest := i.dest.(types.IntModel)
+			dest.KindDAO().ById(int(value)).One(dest)
 
 		case 8:
-			dest.CommonDAO().(types.Int8ModelDAO).ById(int8(value)).One(dest)
+			dest := i.dest.(types.Int8Model)
+			dest.KindDAO().ById(int8(value)).One(dest)
 
 		case 16:
-			dest.CommonDAO().(types.Int16ModelDAO).ById(int16(value)).One(dest)
+			dest := i.dest.(types.Int16Model)
+			dest.KindDAO().ById(int16(value)).One(dest)
 
 		case 32:
-			dest.CommonDAO().(types.Int32ModelDAO).ById(int32(value)).One(dest)
+			dest := i.dest.(types.Int32Model)
+			dest.KindDAO().ById(int32(value)).One(dest)
 
 		case 64:
-			dest.CommonDAO().(types.Int64ModelDAO).ById(value).One(dest)
+			dest := i.dest.(types.Int64Model)
+			dest.KindDAO().ById(value).One(dest)
 
 		}
 		return true

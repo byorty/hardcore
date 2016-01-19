@@ -87,3 +87,28 @@ type Uint64ModelDAO interface {
 	ById(uint64) ModelScanner
 	ByIds([]uint64) ModelScanner
 }
+
+type IntModel interface {
+	Model
+	KindDAO() IntModelDAO
+}
+
+type Int8Model interface {
+	Model
+	KindDAO() Int8ModelDAO
+}
+
+type Int16Model interface {
+	Model
+	KindDAO() Int16ModelDAO
+}
+
+type Int32Model interface {
+	Model
+	KindDAO() Int32ModelDAO
+}
+
+type Int64Model interface {
+	Model
+	KindDAO() Int64ModelDAO
+}
