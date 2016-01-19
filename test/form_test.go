@@ -96,6 +96,7 @@ func TestForm(t *testing.T) {
 				}
 
 			}),
+
 			mux.Controller("/api/form", NewFormCtrl).
 				Get("/", formCtrlGet),
 		).

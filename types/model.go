@@ -90,25 +90,60 @@ type Uint64ModelDAO interface {
 
 type IntModel interface {
 	Model
+	IntIdentifiable
 	KindDAO() IntModelDAO
 }
 
 type Int8Model interface {
 	Model
+	Int8Identifiable
 	KindDAO() Int8ModelDAO
 }
 
 type Int16Model interface {
 	Model
+	Int16Identifiable
 	KindDAO() Int16ModelDAO
 }
 
 type Int32Model interface {
 	Model
+	Int32Identifiable
 	KindDAO() Int32ModelDAO
 }
 
 type Int64Model interface {
 	Model
+	Int64Identifiable
 	KindDAO() Int64ModelDAO
+}
+
+type UintModel interface {
+	Model
+	UintIdentifiable
+	KindDAO() UintModelDAO
+}
+
+type Uint8Model interface {
+	Model
+	Uint8Identifiable
+	KindDAO() Uint8ModelDAO
+}
+
+type Uint16Model interface {
+	Model
+	Uint16Identifiable
+	KindDAO() Uint16ModelDAO
+}
+
+type Uint32Model interface {
+	Model
+	Uint32Identifiable
+	KindDAO() Uint32ModelDAO
+}
+
+type Uint64Model interface {
+	Model
+	Uint64Identifiable
+	KindDAO() Uint64ModelDAO
 }

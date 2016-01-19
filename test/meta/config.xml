@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <includes>
+        <!--<include file="controllers/test.xml"/>-->
+        <include file="models/test.xml"/>
+    </includes>
+</configuration>

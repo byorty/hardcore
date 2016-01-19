@@ -7,7 +7,7 @@ type Named interface {
 
 type Enum interface {
 	Named
-	Identifiable
+    IntIdentifiable
 }
 
 type Int8Enum interface {
@@ -151,22 +151,8 @@ type Float64EnumDAO interface {
     ById(float64) EnumScanner
 }
 
-type Complex64EnumDAO interface {
-    EnumDAO
-    ById(complex64) EnumScanner
-}
-
-type Complex128EnumDAO interface {
-    EnumDAO
-    ById(complex128) EnumScanner
-}
-
 type StringEnumDAO interface {
     EnumDAO
     ById(string) EnumScanner
 }
 
-type RuneEnumDAO interface {
-    EnumDAO
-    ById(rune) EnumScanner
-}

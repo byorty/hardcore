@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<configuration>
+    <!--<models package="models.response">-->
+        <!--<model name="Response">-->
+            <!--<properties>-->
+                <!--<property name="item"/>-->
+                <!--<property name="items"/>-->
+                <!--<property name="error" type="response.Error" relation="OneToOne"/>-->
+                <!--<property name="errors" type="response.Error" relation="OneToMany"/>-->
+            <!--</properties>-->
+        <!--</model>-->
+        <!--<model name="Error">-->
+            <!--<properties>-->
+                <!--<property name="code" type="int"/>-->
+                <!--<property name="message" type="string"/>-->
+            <!--</properties>-->
+        <!--</model>-->
+    <!--</models>-->
+    <models package="models">
+
+        <model name="User" source="default">
+            <properties>
+                <identifier/>
+                <property name="email" type="string" size="64" required="true"/>
+                <property name="password" type="string" size="32" required="true"/>
+                <property name="role" type="models.UserRole" required="true" relation="OneToOne"/>
+                <property name="registerDate" type="time.Time" required="false"/>
+
+                <property name="posts" type="models.Post" required="true" relation="OneToMany"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
+
+        <model name="Post" source="default">
+            <properties>
+                <identifier/>
+                <property name="user" type="models.User" required="true" relation="OneToOne"/>
+                <property name="name" type="string" required="true"/>
+                <property name="description" type="string" required="true"/>
+            </properties>
+            <pattern>StraightMapping</pattern>
+        </model>
+
+        <enum name="UserRole">
+            <constants>
+                <constant name="LoggedUserRole">User</constant>
+                <constant name="LoggedAdminRole">Admin</constant>
+            </constants>
+        </enum>
+    </models>
+</configuration>
