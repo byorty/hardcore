@@ -25,6 +25,7 @@ _testmain.go
 *.prof
 
 auto.go
+.idea/
 ..idea/
 meta/test/controllers
 meta/test/models
