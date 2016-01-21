@@ -15,13 +15,13 @@
                 </action>
                 <action name="View" path="/{post:([0-9]+)}" method="GET">
                     <params>
-                        <param name="post" type="some.Post" required="true" from="path"/>
+                        <param name="post" type="models.Post" required="true" from="path"/>
                     </params>
                 </action>
                 <action name="Edit" path="/{post:([0-9]+)}" method="POST">
                     <params>
                         <param name="form"/>
-                        <param name="post" type="some.Post" required="true" from="path"/>
+                        <param name="post" type="models.Post" required="true" from="path"/>
                         <param name="name" type="string" required="true" from="form"/>
                         <param name="description" type="string" required="true" from="form"/>
                     </params>

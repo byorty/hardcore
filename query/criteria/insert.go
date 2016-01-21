@@ -2,7 +2,7 @@ package criteria
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/orm/db"
+	"github.com/byorty/hardcore/pool"
 )
 
 type InserCriteriaImpl struct {
@@ -50,7 +50,7 @@ func (i *InserCriteriaImpl) GetArgs() []interface{} {
 }
 
 func (i *InserCriteriaImpl) ToNative() interface{} {
-	writer := db.Pool().ByDAO(i.dao).GetQueryWriter()
+	writer := pool.DB().ByDAO(i.dao).GetQueryWriter()
 	writer.SetProto(i.proto)
 	writer.SetTable(i.dao.GetTable())
 	writer.SetArgs(i.args)

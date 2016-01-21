@@ -1,5 +1,9 @@
 package prim
-import "strconv"
+
+import (
+"strconv"
+"github.com/byorty/hardcore/types"
+)
 
 type BoolImpl struct {
 	Base
@@ -21,7 +25,7 @@ func (b *BoolImpl) ImportFromString(strValue string) bool {
 	}
 }
 
-func Bool(name string) *BoolImpl {
+func Bool(name string) types.Primitive {
 	p := new(BoolImpl)
 	p.name = name
 	return p

@@ -1,6 +1,9 @@
 package prim
 
-import "strconv"
+import (
+"strconv"
+"github.com/byorty/hardcore/types"
+)
 
 type IntImpl struct {
 	Base
@@ -14,27 +17,13 @@ func (i *IntImpl) Import(rawValue interface{}) bool {
 func (i *IntImpl) ImportFromString(strValue string) bool {
 	value, err := strconv.ParseInt(strValue, 10, i.bitSize)
 	if err == nil {
-		switch i.bitSize {
-		case 0:
-			dest := i.dest.(*int)
-			(*dest) = int(value)
-
-		case 8:
-			dest := i.dest.(*int8)
-			(*dest) = int8(value)
-
-		case 16:
-			dest := i.dest.(*int16)
-			(*dest) = int16(value)
-
-		case 32:
-			dest := i.dest.(*int32)
-			(*dest) = int32(value)
-
-		case 64:
-			dest := i.dest.(*int64)
-			(*dest) = int64(value)
-
+		switch dest := i.dest.(type) {
+		case *int: (*dest) = int(value)
+		case *int8: (*dest) = int8(value)
+		case *int16: (*dest) = int16(value)
+		case *int32: (*dest) = int32(value)
+		case *int64: (*dest) = int64(value)
+		default: return false
 		}
 		return true
 	} else {
@@ -43,35 +32,35 @@ func (i *IntImpl) ImportFromString(strValue string) bool {
 	}
 }
 
-func Int(name string) *IntImpl {
+func Int(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 0
 	p.name = name
 	return p
 }
 
-func Int8(name string) *IntImpl {
+func Int8(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 8
 	p.name = name
 	return p
 }
 
-func Int16(name string) *IntImpl {
+func Int16(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 16
 	p.name = name
 	return p
 }
 
-func Int32(name string) *IntImpl {
+func Int32(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 32
 	p.name = name
 	return p
 }
 
-func Int64(name string) *IntImpl {
+func Int64(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 64
 	p.name = name

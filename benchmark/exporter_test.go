@@ -63,7 +63,7 @@ func BenchmarkExporter(b *testing.B) {
 				buf.WriteString(value.(time.Time).Format("2006-01-02T15:04:05.999999-07:00"))
 				buf.WriteByte('"')
 			case types.ProtoEnumKind:
-				buf.WriteString(strconv.Itoa(value.(types.Enum).GetId()))
+				buf.WriteString(strconv.Itoa(value.(types.IntEnum).GetId()))
 			case types.ProtoInt64Kind:
 				buf.WriteString(strconv.FormatInt(value.(int64), 10))
 			default:

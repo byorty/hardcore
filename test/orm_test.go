@@ -2,8 +2,6 @@ package test
 
 import (
 	"testing"
-	_ "github.com/lib/pq"
-	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/query/criteria"
 	"time"
 	"github.com/byorty/hardcore/query/proj"
@@ -13,13 +11,6 @@ import (
 
 
 func TestDB(t *testing.T) {
-	sqlDb := db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8")
-	if sqlDb == nil {
-		t.Fail()
-	}
-	db.Pool().
-		Add("default", sqlDb)
-
 	var user models.User
 	user.DAO().ById(1).One(&user)
 	t.Log(user)

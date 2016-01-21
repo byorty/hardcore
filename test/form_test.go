@@ -12,6 +12,7 @@ import (
 	"github.com/byorty/hardcore/form"
 	"github.com/byorty/hardcore/form/prim"
 	"fmt"
+	"github.com/byorty/hardcore/test/models"
 )
 
 type FormCtrl struct {}
@@ -96,7 +97,35 @@ func TestForm(t *testing.T) {
 				}
 
 			}),
+			mux.Get("/user/{id:([0-9]+)}", func(scope types.RequestScope) {
+				var user models.User
+				userPrim := prim.Int64Model("id")
+				userPrim.Required()
+				userPrim.SetSource(types.PathPrimitiveSource)
+				userPrim.Missing("user should be defined")
+				userPrim.Wrong("user is wrong")
+				userPrim.Export(&user)
 
+				var role models.UserRole
+				rolePrim := prim.IntEnum("role")
+				rolePrim.Required()
+				rolePrim.SetSource(types.GetPrimitiveSource)
+				rolePrim.Missing("role should be defined")
+				rolePrim.Wrong("role is wrong")
+				rolePrim.Export(&role)
+
+				testForm := form.New().
+					Add(userPrim).
+					Add(rolePrim)
+
+				if testForm.Check(scope) {
+					scope.GetWriter().Write([]byte(fmt.Sprintf("user#%d - email: %s, role: %s", user.GetId(), user.GetEmail(), role.GetName())))
+				} else {
+					for i := 0;i < testForm.GetErrors().Len();i++ {
+						scope.GetWriter().Write([]byte(testForm.GetErrors().Get(i).GetMessage()))
+					}
+				}
+			}),
 			mux.Controller("/api/form", NewFormCtrl).
 				Get("/", formCtrlGet),
 		).
@@ -109,6 +138,7 @@ func TestForm(t *testing.T) {
 	sendGet1(t, server, "/john?id=", "id should be defined")
 	sendGet1(t, server, "/john?id=qwert", "id is wrong")
 	sendGet1(t, server, "/api/form?search=book&page=1", "search - book, page - 1")
+	sendGet1(t, server, "/user/1?role=1", "user#1 - email: 1451507434558119572@qwerty.com, role: Admin")
 }
 
 func sendGet1(t *testing.T, server *httptest.Server, path, needle string) {

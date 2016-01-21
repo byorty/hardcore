@@ -28,8 +28,8 @@ type DB interface {
 	SupportReturningId() bool
 }
 
-type Pool interface {
-	Add(string, DB) Pool
+type DBPool interface {
+	Add(string, DB) DBPool
 	ByDAO(ModelDAO) DB
 	ByName(string) DB
 }

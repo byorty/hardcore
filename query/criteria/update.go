@@ -2,9 +2,9 @@ package criteria
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/query/proj"
+	"github.com/byorty/hardcore/pool"
 )
 
 type UpdateCriteriaImpl struct {
@@ -53,7 +53,7 @@ func (u *UpdateCriteriaImpl) GetArgs() []interface{} {
 }
 
 func (u *UpdateCriteriaImpl) ToNative() interface{} {
-	writer := db.Pool().ByDAO(u.dao).GetQueryWriter()
+	writer := pool.DB().ByDAO(u.dao).GetQueryWriter()
 	writer.SetProto(u.proto)
 	writer.SetTable(u.dao.GetTable())
 	writer.SetLogicChain(u.chains)

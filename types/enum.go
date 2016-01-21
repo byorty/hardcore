@@ -5,84 +5,82 @@ type Named interface {
 	GetName() string
 }
 
-type Enum interface {
+type IntEnum interface {
 	Named
     IntIdentifiable
+	DAO() IntEnumDAO
 }
 
 type Int8Enum interface {
 	Named
 	Int8Identifiable
+	DAO() Int8EnumDAO
 }
 
 type Int16Enum interface {
 	Named
 	Int16Identifiable
+	DAO() Int16EnumDAO
 }
 
 type Int32Enum interface {
 	Named
 	Int32Identifiable
+	DAO() Int32EnumDAO
 }
 
 type Int64Enum interface {
 	Named
 	Int64Identifiable
+	DAO() Int64EnumDAO
 }
 
 type UintEnum interface {
 	Named
 	UintIdentifiable
+	DAO() UintEnumDAO
 }
 
 type Uint8Enum interface {
 	Named
 	Uint8Identifiable
+	DAO() Uint8EnumDAO
 }
 
 type Uint16Enum interface {
 	Named
 	Uint16Identifiable
+	DAO() Uint16EnumDAO
 }
 
 type Uint32Enum interface {
 	Named
 	Uint32Identifiable
+	DAO() Uint32EnumDAO
 }
 
 type Uint64Enum interface {
 	Named
 	Uint64Identifiable
+	DAO() Uint64EnumDAO
 }
 
 type Float32Enum interface {
 	Named
 	Float32Identifiable
+	DAO() Float32EnumDAO
 }
 
 type Float64Enum interface {
 	Named
 	Float64Identifiable
-}
-
-type Complex64Enum interface {
-	Named
-	Complex64Identifiable
-}
-
-type Complex128Enum interface {
-	Named
-	Complex128Identifiable
+	DAO() Float64EnumDAO
 }
 
 type StringEnum interface {
 	Named
 	StringIdentifiable
-}
-
-type RuneEnum interface {
-	Named
-	RuneIdentifiable
+	DAO() StringEnumDAO
 }
 
 type EnumDAO interface {

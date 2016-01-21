@@ -1,9 +1,9 @@
 package criteria
 
 import (
-	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/pool"
 )
 
 type SelectCriteriaImpl struct {
@@ -66,7 +66,7 @@ func (s *SelectCriteriaImpl) All(models types.Model) {
 }
 
 func (s *SelectCriteriaImpl) ToNative() interface{} {
-	writer := db.Pool().ByDAO(s.dao).GetQueryWriter()
+	writer := pool.DB().ByDAO(s.dao).GetQueryWriter()
 	writer.SetProto(s.proto)
 	writer.SetTable(s.dao.GetTable())
 	writer.SetLogicChain(s.chains)

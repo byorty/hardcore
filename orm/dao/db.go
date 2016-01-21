@@ -2,7 +2,7 @@ package dao
 
 import (
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/orm/db"
+	"github.com/byorty/hardcore/pool"
 	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/slice"
@@ -17,7 +17,7 @@ func (b BaseImpl) Save(model types.Model) {
 }
 
 func (b BaseImpl) Update(query types.Query, model types.Model) {
-	currentDb := db.Pool().ByDAO(model.CommonDAO())
+	currentDb := pool.DB().ByDAO(model.CommonDAO())
 	currentDb.Exec(query, model.CommonDAO(), model)
 }
 
@@ -26,7 +26,7 @@ func (b BaseImpl) Add(model types.Model) {
 }
 
 func (b BaseImpl) Insert(query types.Query, model types.Model) {
-	currentDb := db.Pool().ByDAO(model.CommonDAO())
+	currentDb := pool.DB().ByDAO(model.CommonDAO())
 	if currentDb.SupportLastInsertId() {
 		currentDb.Exec(query, model.CommonDAO(), model)
 	} else if currentDb.SupportReturningId() {
@@ -39,18 +39,18 @@ func (b BaseImpl) Insert(query types.Query, model types.Model) {
 
 func (b BaseImpl) All(query types.Query, models types.Model) {
 	dao := models.CommonDAO()
-	currentDb := db.Pool().ByDAO(dao)
+	currentDb := pool.DB().ByDAO(dao)
 	currentDb.Query(query, dao, models)
 }
 
 func (b BaseImpl) One(query types.Query, model types.Model) {
 	dao := model.CommonDAO()
-	currentDb := db.Pool().ByDAO(dao)
+	currentDb := pool.DB().ByDAO(dao)
 	currentDb.QueryRow(query, dao, model)
 }
 
 func (b BaseImpl) Custom(dao types.ModelDAO, query types.Query, items ...interface{}) {
-	currentDb := db.Pool().ByDAO(dao)
+	currentDb := pool.DB().ByDAO(dao)
 	currentDb.Custom(query, items...)
 }
 

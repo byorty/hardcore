@@ -1,5 +1,7 @@
 package prim
 
+import "github.com/byorty/hardcore/types"
+
 type StringImpl struct {
 	Base
 }
@@ -14,7 +16,7 @@ func (s *StringImpl) ImportFromString(strValue string) bool {
 	return true
 }
 
-func String(name string) *StringImpl {
+func String(name string) types.Primitive {
 	p := new(StringImpl)
 	p.name = name
 	return p

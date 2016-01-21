@@ -50,15 +50,14 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}})
 
 func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
-	form := form.New()
-	{{range .GetParams}}{{if .IsReserved}}
+	form := form.New(){{range .GetParams}}{{if .IsReserved}}
 	{{else}}
 	var {{.GetName}} {{.GetDefineVarKind}}
-	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}")
-	{{if .IsRequired}}{{.GetName}}Prim.Required(){{end}}
+	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
+	{{.GetName}}Prim.Required(){{end}}
 	{{.GetName}}Prim.SetSource({{.GetSource}})
 	{{.GetName}}Prim.Export(&{{.GetName}})
-	{{end}}{{end}}
+	form.Add({{.GetName}}Prim){{end}}{{end}}
 
 	form.Check(scope)
 

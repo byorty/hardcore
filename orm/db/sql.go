@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/orm/db/writer"
+	"fmt"
 )
 
 var (
@@ -29,11 +30,13 @@ type sqlDB struct {
 func NewSqlDB(uri string) types.DB {
 	configUrl, err := url.Parse(uri)
 	if err != nil {
+		fmt.Println(err)
 //		logger.Err(`db - can't parse "%s", detail - %v`, uri, err)
 		return nil
 	}
 	db, err := sql.Open(configUrl.Scheme, configUrl.String())
 	if err != nil {
+		fmt.Println(err)
 //		logger.Err(`db - can't connect to "%s", detail - %v`, uri, err)
 		return nil
 	}

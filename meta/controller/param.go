@@ -105,15 +105,18 @@ func (p Param) GetPrimitive() string {
 		return utils.UpperFirst(p.Kind)
 	} else {
 		var kind string
+		var entityKind string
 		if p.entity.GetEntityKind() == types.ModelEntityKind {
 			kind = p.entity.(types.ModelEntity).GetProperties()[0].GetKind()
+			entityKind = "Model"
 		} else {
 			kind = string(p.entity.(*model.Enum).Kind)
+			entityKind = "Enum"
 		}
 		if p.isMultiple() {
-			return fmt.Sprintf("%sIdentifiers", utils.UpperFirst(kind))
+			return fmt.Sprintf("%s%ss", utils.UpperFirst(kind), entityKind)
 		} else {
-			return fmt.Sprintf("%sIdentifier", utils.UpperFirst(kind))
+			return fmt.Sprintf("%s%s", utils.UpperFirst(kind), entityKind)
 		}
 	}
 }
