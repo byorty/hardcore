@@ -8,36 +8,31 @@ import (
 
 var (
 	userProperties = []types.ExportedProperty{
-		&UserProperty{exporter.NewPropertyByKind("id", types.ProtoInt64Kind), func(user *models.User) interface{} { return user.GetId()}},
-		&UserProperty{exporter.NewPropertyByKind("email", types.ProtoStringKind), func(user *models.User) interface{} { return user.GetEmail()}},
-		&UserProperty{exporter.NewPropertyByKind("role", types.ProtoEnumKind), func(user *models.User) interface{} { return user.GetRole()}},
-		&UserProperty{exporter.NewPropertyByKind("registerDate", types.ProtoTimeKind), func(user *models.User) interface{} { return user.GetRegisterDate()}},
+		NewUserProperty("id", func(user *models.User) interface{} { return user.GetId()}),
+		NewUserProperty("email", func(user *models.User) interface{} { return user.GetEmail()}),
+		NewUserProperty("role", func(user *models.User) interface{} { return user.GetRole()}),
+		NewUserProperty("registerDate", func(user *models.User) interface{} { return user.GetRegisterDate()}),
 	}
 )
 
-type UserProperty struct {
+type UserPropertyImpl struct {
 	exporter.PropertyImpl
 	closure func(*models.User) interface{}
 }
 
-func (u UserProperty) GetValue() interface{} {
+func NewUserProperty(name string, closure func(user *models.User) interface{}) types.ExportedProperty {
+	return &UserPropertyImpl{
+		exporter.NewProperty("id"),
+		closure,
+	}
+}
+
+func (u UserPropertyImpl) GetValue() interface{} {
 	return u.closure(u.GetPrototyped().(*models.User))
 }
 
-type User struct {
-	exporter.BaseImpl
+func NewUser() types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties(userProperties)
+	return exp
 }
-
-func NewUser() *User {
-	user.SetProperties(userProperties)
-	return user
-}
-
-func (u *User) Set(name string, closure func(user *models.User) interface{}) *User {
-	u.Add(&UserProperty{exporter.NewProperty(name),closure})
-	return u
-}
-
-var(
-	user = new(User)
-)

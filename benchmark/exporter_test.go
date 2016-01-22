@@ -47,25 +47,24 @@ func BenchmarkExporter(b *testing.B) {
 
 		for i := 0;i < expLen;i++ {
 			prop := exp.Get(i)
-			value := prop.GetValue()
 
 			buf.WriteByte('"')
 			buf.WriteString(prop.GetName())
 			buf.WriteByte('"')
 			buf.WriteByte(':')
-			switch prop.GetProtoKind() {
-			case types.ProtoStringKind:
+			switch value := prop.GetValue().(type) {
+			case string:
 				buf.WriteByte('"')
-				buf.WriteString(value.(string))
+				buf.WriteString(value)
 				buf.WriteByte('"')
-			case types.ProtoTimeKind:
+			case time.Time:
 				buf.WriteByte('"')
-				buf.WriteString(value.(time.Time).Format("2006-01-02T15:04:05.999999-07:00"))
+				buf.WriteString(value.Format("2006-01-02T15:04:05.999999-07:00"))
 				buf.WriteByte('"')
-			case types.ProtoEnumKind:
-				buf.WriteString(strconv.Itoa(value.(types.IntEnum).GetId()))
-			case types.ProtoInt64Kind:
-				buf.WriteString(strconv.FormatInt(value.(int64), 10))
+			case types.IntEnum:
+				buf.WriteString(strconv.Itoa(value.GetId()))
+			case int64:
+				buf.WriteString(strconv.FormatInt(value, 10))
 			default:
 				buf.WriteString(fmt.Sprintf("%v", value))
 			}
