@@ -5,12 +5,14 @@ import (
 	"github.com/byorty/hardcore/meta/controller"
 	"github.com/byorty/hardcore/meta/model"
     "github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/meta/exporter"
 )
 
 type Configuration struct {
 	Includes []common.Include `xml:"includes>include"`
 	ControllerContainers []*controller.Container `xml:"controllers"`
 	ModelContainers []*model.Container `xml:"models"`
+	ExporterContainers []*exporter.Container `xml:"exporters"`
 	Files []types.File
 	сontainers []types.Container
 }

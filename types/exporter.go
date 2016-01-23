@@ -1,6 +1,6 @@
 package types
 
-type ExportedProperty interface {
+type ExportableProperty interface {
 	GetName() string
 	GetValue() interface{}
 	GetPrototyped() Prototyped
@@ -9,7 +9,7 @@ type ExportedProperty interface {
 
 type Exporter interface {
 	Slice
-	Get(int) ExportedProperty
-	Add(ExportedProperty) Exporter
+	Get(int) ExportableProperty
+	Add(ExportableProperty) Exporter
 	Export(Prototyped) Exporter
 }

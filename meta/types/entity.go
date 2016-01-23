@@ -10,6 +10,7 @@ const (
     ControllerEntityKind EntityKind = iota
     ModelEntityKind
     EnumEntityKind
+    ExporterEntityKind
 )
 
 type Entity interface {

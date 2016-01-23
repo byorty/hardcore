@@ -23,6 +23,7 @@ var (
         new(plugin.Type),
         new(plugin.Enum),
         new(plugin.Model),
+        new(plugin.Exporter),
         new(plugin.Controller),
         new(plugin.File),
     }

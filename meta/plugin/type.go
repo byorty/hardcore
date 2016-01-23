@@ -43,6 +43,7 @@ func (t *Type) Do(env types.Environment) {
 	}
 	t.setRelationProperties()
 	t.fillControllers()
+	t.initExporters()
 }
 
 func (t *Type) getEntity(name string) types.Entity {
@@ -195,6 +196,41 @@ func (t *Type) fillControllers() {
 						if existsEntity != nil {
 							param.SetEntity(existsEntity)
 							controller.AddImport(existsEntity.GetContainer().GetImport())
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (t *Type) initExporters() {
+	for _, container := range t.containers {
+		if container.GetContainerKind() == types.ExporterContainerKind {
+			for _, entity := range container.GetEntities() {
+				exporter := entity.(types.ExporterEntity)
+				existsEntity := t.getEntity(exporter.GetSource())
+				if existsEntity == nil {
+					t.logger.Error("source %s for %s not found", exporter.GetSource(), exporter.GetName())
+				} else {
+					exporter.SetSourceEntity(existsEntity)
+					exporter.AddImport(existsEntity.GetContainer().GetImport())
+					if existsEntity.GetEntityKind() == types.ModelEntityKind {
+						modelEntity := existsEntity.(types.ModelEntity)
+						for _, prop := range exporter.GetProperties() {
+							for _, modelProp := range modelEntity.GetProperties() {
+								if prop.GetName() == modelProp.GetName() {
+									prop.SetHasGetter(true)
+									break
+								}
+							}
+						}
+					} else if existsEntity.GetEntityKind() == types.EnumEntityKind {
+						for _, prop := range exporter.GetProperties() {
+							if prop.GetName() == "id" || prop.GetName() == "name" {
+								prop.SetHasGetter(true)
+								break
+							}
 						}
 					}
 				}

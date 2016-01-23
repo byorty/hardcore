@@ -4,6 +4,7 @@ const (
 	DefaultImport = "github.com/byorty/hardcore/types"
 	DaoImport = "github.com/byorty/hardcore/orm/dao"
 	ProtoImport = "github.com/byorty/hardcore/proto"
+	ExporterImport = "github.com/byorty/hardcore/exporter"
 )
 
 type Configuration interface {

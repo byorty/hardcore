@@ -5,6 +5,7 @@ type ContainerKind int
 const (
     ControllerContainerKind ContainerKind = iota
     EntityContainerKind
+    ExporterContainerKind
 )
 
 type Container interface {

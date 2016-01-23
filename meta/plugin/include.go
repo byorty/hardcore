@@ -11,6 +11,7 @@ import (
     "github.com/byorty/hardcore/meta/model"
     "sort"
     "github.com/byorty/hardcore/log"
+	"github.com/byorty/hardcore/meta/exporter"
 )
 
 type Include struct {
@@ -32,6 +33,11 @@ func (i *Include) Do(env types.Environment) {
             i.containers = append(i.containers, i.initModelEntities(container))
         }
     }
+    if config.ExporterContainers != nil {
+        for _, container := range config.ExporterContainers {
+            i.containers = append(i.containers, i.initExporterEntities(container))
+        }
+    }
 
     for _, include := range config.Includes {
         i.logger.Debug("find include %s", include.File)
@@ -47,6 +53,7 @@ func (i *Include) Do(env types.Environment) {
                     i.logger.Debug("success unmarshal include file %s", include.File)
                     i.mergeModelContainer(incConfig.ModelContainers)
                     i.mergeControllerContainer(incConfig.ControllerContainers)
+                    i.mergeExporterContainer(incConfig.ExporterContainers)
                 } else {
                     i.logger.Error("can't unmarshal include file %s", include.File)
                 }
@@ -60,6 +67,7 @@ func (i *Include) Do(env types.Environment) {
 
     config.ControllerContainers = nil
     config.ModelContainers = nil
+    config.ExporterContainers = nil
     config.Includes = nil
     config.SetContainers(i.containers)
 }
@@ -106,6 +114,14 @@ func (i *Include) initEntity(container types.Container, entity types.Entity) typ
 		}
 		ctrl.SetActions(actions)
 		ctrl.Actions = nil
+	} else if entity.GetEntityKind() == types.ExporterEntityKind {
+		exp := entity.(*exporter.Exporter)
+		props := make([]types.ExportableProperty, 0)
+		for _, prop := range exp.Properties {
+			props = append(props, prop)
+		}
+		exp.SetProperties(props)
+		exp.Properties = nil
 	}
 
     return entity
@@ -145,4 +161,20 @@ func (i *Include) mergeControllerContainer(containers []*controller.Container)  
     for _, container := range containers {
         i.mergeContainer(i.initControllerEntities(container))
     }
+}
+
+func (i *Include) initExporterEntities(container *exporter.Container) types.Container {
+	entities := make([]types.Entity, 0)
+	for _, entity := range container.Exporters {
+		entities = append(entities, i.initEntity(container, entity))
+	}
+	container.Exporters = nil
+	container.SetEntities(entities)
+	return container
+}
+
+func (i *Include) mergeExporterContainer(containers []*exporter.Container)  {
+	for _, container := range containers {
+		i.mergeContainer(i.initExporterEntities(container))
+	}
 }

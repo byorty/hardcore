@@ -48,4 +48,23 @@
             </constants>
         </enum>
     </models>
+    <exporters package="exporters">
+
+        <exporter name="User" source="models.User">
+            <properties>
+                <property name="email"/>
+                <property name="role"/>
+                <property name="registerDate"/>
+                <property name="someProp"/>
+            </properties>
+        </exporter>
+
+        <exporter name="Post" source="models.Post">
+            <properties>
+                <property name="id"/>
+                <property name="name"/>
+                <property name="description"/>
+            </properties>
+        </exporter>
+    </exporters>
 </configuration>

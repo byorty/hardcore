@@ -3,11 +3,11 @@ package exporter
 import "github.com/byorty/hardcore/types"
 
 type BaseImpl struct {
-	properties []types.ExportedProperty
+	properties []types.ExportableProperty
 	prototyped types.Prototyped
 }
 
-func (b *BaseImpl) SetProperties(properties []types.ExportedProperty) {
+func (b *BaseImpl) SetProperties(properties []types.ExportableProperty) {
 	b.properties = properties
 }
 
@@ -27,13 +27,13 @@ func (b BaseImpl) GetRaw(x int) interface{} {
 	return b.Get(x)
 }
 
-func (b BaseImpl) Get(x int) types.ExportedProperty {
+func (b BaseImpl) Get(x int) types.ExportableProperty {
 	exportedProp := b.properties[x]
 	exportedProp.SetPrototyped(b.prototyped)
 	return exportedProp
 }
 
-func (b *BaseImpl) Add(property types.ExportedProperty) types.Exporter {
+func (b *BaseImpl) Add(property types.ExportableProperty) types.Exporter {
 	b.properties = append(b.properties, property)
 	return b
 }
