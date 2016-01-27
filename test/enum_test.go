@@ -3,6 +3,7 @@ package test
 import (
     "testing"
     "github.com/byorty/hardcore/test/models"
+    "github.com/byorty/hardcore/types"
 )
 
 func TestEnum(t *testing.T) {

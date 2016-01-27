@@ -16,12 +16,13 @@ func TestExporter(t *testing.T) {
 		SetRole(&role).
 		SetRegisterDate(now)
 
-	userExporter := exporters.NewUser().Export(user)
+	userExporter := exporters.NewUser(user)
+	exportable := userExporter.GetExportable()
 	for i := 0;i < userExporter.Len();i++ {
 		prop := userExporter.Get(i)
-		t.Log(prop.GetName(), prop.GetValue())
+		t.Log(prop.GetName(), prop.GetValue(exportable))
 		getter := user.Proto().GetByName(prop.GetName()).GetGetter()
-		if getter(user) != prop.GetValue() {
+		if getter(user) != prop.GetValue(exportable) {
 			t.Fail()
 		}
 	}

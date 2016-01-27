@@ -4,7 +4,7 @@ import "github.com/byorty/hardcore/types"
 
 type BaseImpl struct {
 	properties []types.ExportableProperty
-	prototyped types.Prototyped
+	exportable types.Model
 }
 
 func (b *BaseImpl) SetProperties(properties []types.ExportableProperty) {
@@ -29,7 +29,6 @@ func (b BaseImpl) GetRaw(x int) interface{} {
 
 func (b BaseImpl) Get(x int) types.ExportableProperty {
 	exportedProp := b.properties[x]
-	exportedProp.SetPrototyped(b.prototyped)
 	return exportedProp
 }
 
@@ -38,7 +37,11 @@ func (b *BaseImpl) Add(property types.ExportableProperty) types.Exporter {
 	return b
 }
 
-func (b *BaseImpl) Export(prototyped types.Prototyped) types.Exporter {
-	b.prototyped = prototyped
+func (b *BaseImpl) SetExportable(exportable types.Model) types.Exporter {
+	b.exportable = exportable
 	return b
+}
+
+func (b *BaseImpl) GetExportable() types.Model {
+	return b.exportable
 }

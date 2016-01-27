@@ -28,14 +28,14 @@ func New{{$name}}Property(name string, closure func({{$sourceVarName}} {{$source
 	}
 }
 
-func ({{.ShortName}} {{$name}}PropertyImpl) GetValue() interface{} {
-	return {{.ShortName}}.closure({{.ShortName}}.GetPrototyped().({{$sourceName}}))
+func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model types.Model) interface{} {
+	return {{.ShortName}}.closure(model.({{$sourceName}}))
 }
 
 func New{{$name}}({{$sourceVarName}} {{$sourceName}}) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties({{.VarName}}Properties)
-	exp.Export({{$sourceVarName}})
+	exp.SetExportable({{$sourceVarName}})
 	return exp
 }
 

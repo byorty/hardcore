@@ -52,10 +52,10 @@
 
         <exporter name="User" source="models.User">
             <properties>
+                <property name="id"/>
                 <property name="email"/>
                 <property name="role"/>
                 <property name="registerDate"/>
-                <property name="someProp"/>
             </properties>
         </exporter>
 

@@ -6,7 +6,7 @@ import (
 )
 
 func (u UserRole) GetRawId() interface{} {
-	return u
+	return u.GetId()
 }
 
 func (u UserRole) GetId() int {

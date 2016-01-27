@@ -18,14 +18,14 @@ func NewPostProperty(name string, closure func(post *models.Post) interface{}) t
 	}
 }
 
-func (p PostPropertyImpl) GetValue() interface{} {
-	return p.closure(p.GetPrototyped().(*models.Post))
+func (p PostPropertyImpl) GetValue(model types.Model) interface{} {
+	return p.closure(model.(*models.Post))
 }
 
 func NewPost(post *models.Post) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties(postProperties)
-	exp.Export(post)
+	exp.SetExportable(post)
 	return exp
 }
 

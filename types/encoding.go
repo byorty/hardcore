@@ -2,14 +2,17 @@ package types
 
 type ExportableProperty interface {
 	GetName() string
-	GetValue() interface{}
-	GetPrototyped() Prototyped
-	SetPrototyped(Prototyped)
+	GetValue(Model) interface{}
 }
 
 type Exporter interface {
 	Slice
 	Get(int) ExportableProperty
 	Add(ExportableProperty) Exporter
-	Export(Prototyped) Exporter
+	SetExportable(Model) Exporter
+	GetExportable() Model
+}
+
+type Encoder interface {
+	Encode(Exporter) []byte
 }

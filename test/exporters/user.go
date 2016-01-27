@@ -18,19 +18,22 @@ func NewUserProperty(name string, closure func(user *models.User) interface{}) t
 	}
 }
 
-func (u UserPropertyImpl) GetValue() interface{} {
-	return u.closure(u.GetPrototyped().(*models.User))
+func (u UserPropertyImpl) GetValue(model types.Model) interface{} {
+	return u.closure(model.(*models.User))
 }
 
 func NewUser(user *models.User) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties(userProperties)
-	exp.Export(user)
+	exp.SetExportable(user)
 	return exp
 }
 
 var (
 	userProperties = []types.ExportableProperty{ 
+		NewUserProperty("id", func(user *models.User) interface{} {
+			return user.GetId()
+		}),
 		NewUserProperty("email", func(user *models.User) interface{} {
 			return user.GetEmail()
 		}),
@@ -39,9 +42,6 @@ var (
 		}),
 		NewUserProperty("registerDate", func(user *models.User) interface{} {
 			return user.GetRegisterDate()
-		}),
-		NewUserProperty("someProp", func(user *models.User) interface{} {
-			return nil
 		}),
 	}
 )

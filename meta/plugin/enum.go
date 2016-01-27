@@ -23,7 +23,7 @@ import ({{range .AutoImports}}
 )
 
 func ({{.ShortName}} {{.Name}}) GetRawId() interface{} {
-	return {{.ShortName}}
+	return {{.ShortName}}.GetId()
 }
 
 func ({{.ShortName}} {{.Name}}) GetId() {{.Kind}} {
