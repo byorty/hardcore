@@ -38,7 +38,7 @@ func NewErrorWithCode(name, message string, code int) types.FormError {
 
 type FormErrorsImpl []types.FormError
 
-func NewFormErrors() FormErrorsImpl {
+func NewFormErrors() types.FormErrors {
 	return make(FormErrorsImpl, 0)
 }
 

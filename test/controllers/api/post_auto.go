@@ -24,18 +24,29 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	pagePrim := prim.Int("page")
 	pagePrim.SetSource(types.GetPrimitiveSource)
 	pagePrim.Export(&page)
-	form.Add(pagePrim)
-	var search string
+	form.Add(pagePrim)var search string
 	searchPrim := prim.String("search")
 	searchPrim.SetSource(types.GetPrimitiveSource)
 	searchPrim.Export(&search)
 	form.Add(searchPrim)
 
-	form.Check(scope)
-
-	ctrl := rawCtrl.(*Post)
-	p(ctrl, page, search)
-//	p(ctrl, NewPostListForm(ctrl.(*Post)))
+	var view types.View
+	if form.Check(scope) {
+		ctrl := rawCtrl.(*Post)
+		view = p(ctrl, page, search)
+	} else {
+		handler, ok := p.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			handler, ok := rawCtrl.(types.FormErrorsHandler)
+			if ok {
+				view = handler.HandleFormErrors(form.GetErrors())
+			}
+		}
+	}
+	view.SetScope(scope)
+	view.Render()
 }
 
 type PostView func(*Post, *models.Post)
@@ -49,11 +60,23 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	postPrim.Export(&post)
 	form.Add(postPrim)
 
-	form.Check(scope)
-
-	ctrl := rawCtrl.(*Post)
-	p(ctrl, &post)
-//	p(ctrl, NewPostViewForm(ctrl.(*Post)))
+	var view types.View
+	if form.Check(scope) {
+		ctrl := rawCtrl.(*Post)
+		view = p(ctrl, &post)
+	} else {
+		handler, ok := p.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			handler, ok := rawCtrl.(types.FormErrorsHandler)
+			if ok {
+				view = handler.HandleFormErrors(form.GetErrors())
+			}
+		}
+	}
+	view.SetScope(scope)
+	view.Render()
 }
 
 type PostEdit func(*Post, types.Form, *models.Post, string, string)
@@ -66,24 +89,34 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	postPrim.Required()
 	postPrim.SetSource(types.PathPrimitiveSource)
 	postPrim.Export(&post)
-	form.Add(postPrim)
-	var name string
+	form.Add(postPrim)var name string
 	namePrim := prim.String("name")
 	namePrim.Required()
 	namePrim.SetSource(types.PostPrimitiveSource)
 	namePrim.Export(&name)
-	form.Add(namePrim)
-	var description string
+	form.Add(namePrim)var description string
 	descriptionPrim := prim.String("description")
 	descriptionPrim.Required()
 	descriptionPrim.SetSource(types.PostPrimitiveSource)
 	descriptionPrim.Export(&description)
 	form.Add(descriptionPrim)
 
-	form.Check(scope)
-
-	ctrl := rawCtrl.(*Post)
-	p(ctrl, form, &post, name, description)
-//	p(ctrl, NewPostEditForm(ctrl.(*Post)))
+	var view types.View
+	if form.Check(scope) {
+		ctrl := rawCtrl.(*Post)
+		view = p(ctrl, form, &post, name, description)
+	} else {
+		handler, ok := p.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			handler, ok := rawCtrl.(types.FormErrorsHandler)
+			if ok {
+				view = handler.HandleFormErrors(form.GetErrors())
+			}
+		}
+	}
+	view.SetScope(scope)
+	view.Render()
 }
 

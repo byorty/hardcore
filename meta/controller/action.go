@@ -10,6 +10,7 @@ type Action struct {
 	Name string `xml:"name,attr"`
 	Route string `xml:"route,attr"`
 	Method string `xml:"method,attr"`
+	Return string `xml:"return"`
 	Params []*Param `xml:"params>param"`
 	params []types.ActionParam
 }
@@ -70,4 +71,11 @@ func (a Action) GetDefineVars() string {
 	}
 
 	return strings.Join(vars, ", ")
+}
+
+func (a Action) GetReturn() string {
+	if len(a.Return) == 0 {
+		a.Return = "types.EncodeView"
+	}
+	return a.Return
 }

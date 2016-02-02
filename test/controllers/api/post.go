@@ -10,19 +10,22 @@ type Post struct {
 
 func NewPost() types.ActionController {
 	// implement me
-    return nil
+    return
 }
 
 
-func (p *Post) List(page int, search string) {
+func (p *Post) List(page int, search string) types.EncodeView {
 
+	return
 }
 
-func (p *Post) View(post *models.Post) {
+func (p *Post) View(post *models.Post) types.EncodeView {
 
+	return
 }
 
-func (p *Post) Edit(form types.Form, post *models.Post, name string, description string) {
+func (p *Post) Edit(form types.Form, post *models.Post, name string, description string) types.EncodeView {
 
+	return
 }
 

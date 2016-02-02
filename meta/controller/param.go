@@ -57,7 +57,7 @@ func (p Param) GetDefineKind() string {
 
 func (p Param) getDefineKind(needPointer bool) string {
 	if p.entity == nil {
-		if p.IsReserved() {
+		if p.IsInjection() {
 			return reservedParams[p.Name]
 		} else {
 			return p.Kind
@@ -95,7 +95,7 @@ func (p Param) GetDefineVarName() string {
 	}
 }
 
-func (p Param) IsReserved() bool {
+func (p Param) IsInjection() bool {
 	_, ok := reservedParams[p.Name];
 	return ok
 }

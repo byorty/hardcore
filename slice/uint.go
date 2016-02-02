@@ -1,151 +1,152 @@
 package slice
+import "github.com/byorty/hardcore/types"
 
-type Uints []uint
+type UintsImpl []uint
 
-func NewUints() Uints {
-	return make(Uints, 0)
+func NewUints() types.UintSlice {
+	return make(UintsImpl, 0)
 }
 
-func NewUintsBy(arr []uint) Uints {
-	return Uints(arr)
+func NewUintsBy(arr []uint) types.UintSlice {
+	return UintsImpl(arr)
 }
 
-func (u Uints) Len() int {
+func (u UintsImpl) Len() int {
 	return len(u)
 }
 
-func (u Uints) Less(x, y int) bool {
+func (u UintsImpl) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uints) Swap(x, y int) {
+func (u UintsImpl) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uints) GetRaw(x int) interface{} {
+func (u UintsImpl) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uints) Get(x int) uint {
+func (u UintsImpl) Get(x int) uint {
 	return u[x]
 }
 
-type Uint8s []uint8
+type Uint8sImpl []uint8
 
-func NewUint8s() Uint8s {
-	return make(Uint8s, 0)
+func NewUint8s() types.Uint8Slice {
+	return make(Uint8sImpl, 0)
 }
 
-func NewUint8sBy(arr []uint8) Uint8s {
-	return Uint8s(arr)
+func NewUint8sBy(arr []uint8) types.Uint8Slice {
+	return Uint8sImpl(arr)
 }
 
-func (u Uint8s) Len() int {
+func (u Uint8sImpl) Len() int {
 	return len(u)
 }
 
-func (u Uint8s) Less(x, y int) bool {
+func (u Uint8sImpl) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint8s) Swap(x, y int) {
+func (u Uint8sImpl) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint8s) GetRaw(x int) interface{} {
+func (u Uint8sImpl) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint8s) Get(x int) uint8 {
+func (u Uint8sImpl) Get(x int) uint8 {
 	return u[x]
 }
 
-type Uint16s []uint16
+type Uint16sImpl []uint16
 
-func NewUint16s() Uint16s {
-	return make(Uint16s, 0)
+func NewUint16s() types.Uint16Slice {
+	return make(Uint16sImpl, 0)
 }
 
-func NewUint16sBy(arr []uint16) Uint16s {
-	return Uint16s(arr)
+func NewUint16sBy(arr []uint16) types.Uint16Slice {
+	return Uint16sImpl(arr)
 }
 
-func (u Uint16s) Len() int {
+func (u Uint16sImpl) Len() int {
 	return len(u)
 }
 
-func (u Uint16s) Less(x, y int) bool {
+func (u Uint16sImpl) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint16s) Swap(x, y int) {
+func (u Uint16sImpl) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint16s) GetRaw(x int) interface{} {
+func (u Uint16sImpl) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint16s) Get(x int) uint16 {
+func (u Uint16sImpl) Get(x int) uint16 {
 	return u[x]
 }
 
-type Uint32s []uint32
+type Uint32sImpl []uint32
 
-func NewUint32s() Uint32s {
-	return make(Uint32s, 0)
+func NewUint32s() types.Uint32Slice {
+	return make(Uint32sImpl, 0)
 }
 
-func NewUint32sBy(arr []uint32) Uint32s {
-	return Uint32s(arr)
+func NewUint32sBy(arr []uint32) types.Uint32Slice {
+	return Uint32sImpl(arr)
 }
 
-func (u Uint32s) Len() int {
+func (u Uint32sImpl) Len() int {
 	return len(u)
 }
 
-func (u Uint32s) Less(x, y int) bool {
+func (u Uint32sImpl) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint32s) Swap(x, y int) {
+func (u Uint32sImpl) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint32s) GetRaw(x int) interface{} {
+func (u Uint32sImpl) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint32s) Get(x int) uint32 {
+func (u Uint32sImpl) Get(x int) uint32 {
 	return u[x]
 }
 
-type Uint64s []uint64
+type Uint64sImpl []uint64
 
-func NewUint64s() Uint64s {
-	return make(Uint64s, 0)
+func NewUint64s() types.Uint64Slice {
+	return make(Uint64sImpl, 0)
 }
 
-func NewUint64sBy(arr []uint64) Uint64s {
-	return Uint64s(arr)
+func NewUint64sBy(arr []uint64) types.Uint64Slice {
+	return Uint64sImpl(arr)
 }
 
-func (u Uint64s) Len() int {
+func (u Uint64sImpl) Len() int {
 	return len(u)
 }
 
-func (u Uint64s) Less(x, y int) bool {
+func (u Uint64sImpl) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint64s) Swap(x, y int) {
+func (u Uint64sImpl) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint64s) GetRaw(x int) interface{} {
+func (u Uint64sImpl) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint64s) Get(x int) uint64 {
+func (u Uint64sImpl) Get(x int) uint64 {
 	return u[x]
 }

@@ -50,3 +50,7 @@ type FormErrors interface {
 type FormVerifiable interface {
 	Verify(Form, Primitive)
 }
+
+type FormErrorsHandler interface {
+	HandleFormErrors(FormErrors) View
+}

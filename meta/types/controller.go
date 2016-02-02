@@ -17,6 +17,7 @@ type Action interface {
 	GetDefineKinds() string
 	GetDefineParams() string
 	GetDefineVars() string
+	GetReturn() string
 }
 
 type ActionParam interface {
@@ -30,5 +31,5 @@ type ActionParam interface {
 	GetDefineVarKind() string
 	GetDefineVarName() string
 	GetPrimitive() string
-	IsReserved() bool
+	IsInjection() bool
 }

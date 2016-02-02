@@ -12,11 +12,13 @@
                         <param name="page" type="int" required="false" from="query"/>
                         <param name="search" type="string" required="false" from="query"/>
                     </params>
+                    <return>types.EncodeView</return>
                 </action>
                 <action name="View" path="/{post:([0-9]+)}" method="GET">
                     <params>
                         <param name="post" type="models.Post" required="true" from="path"/>
                     </params>
+                    <return>types.EncodeView</return>
                 </action>
                 <action name="Edit" path="/{post:([0-9]+)}" method="POST">
                     <params>
@@ -25,6 +27,7 @@
                         <param name="name" type="string" required="true" from="form"/>
                         <param name="description" type="string" required="true" from="form"/>
                     </params>
+                    <return>types.EncodeView</return>
                 </action>
             </actions>
         </controller>

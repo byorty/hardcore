@@ -21,12 +21,13 @@ type {{.Name}} struct { {{range .Extends}}
 
 func New{{.Name}}() types.ActionController {
 	// implement me
-    return nil
+    return
 }
 
 {{range .Actions}}
-func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {
+func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn}} {
 
+	return
 }
 {{end}}
 `
@@ -50,51 +51,40 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}})
 
 func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
-	form := form.New(){{range .GetParams}}{{if .IsReserved}}
-	{{else}}
-	var {{.GetName}} {{.GetDefineVarKind}}
+	form := form.New()
+	{{range .GetParams}}{{if .IsInjection}}
+	{{else}}var {{.GetName}} {{.GetDefineVarKind}}
 	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
 	{{.GetName}}Prim.Required(){{end}}
 	{{.GetName}}Prim.SetSource({{.GetSource}})
 	{{.GetName}}Prim.Export(&{{.GetName}})
 	form.Add({{.GetName}}Prim){{end}}{{end}}
 
-	form.Check(scope)
-
-	ctrl := rawCtrl.(*{{$name}})
-	{{$shortName}}(ctrl, {{.GetDefineVars}})
-//	{{$shortName}}(ctrl, New{{$name}}{{.GetName}}Form(ctrl.(*{{$name}})))
+	var view types.View
+	if form.Check(scope) {
+		ctrl := rawCtrl.(*{{$name}})
+		view = {{$shortName}}(ctrl, {{.GetDefineVars}})
+	} else {
+		handler, ok := {{$shortName}}.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			handler, ok := rawCtrl.(types.FormErrorsHandler)
+			if ok {
+				view = handler.HandleFormErrors(form.GetErrors())
+			}
+		}
+	}
+	view.SetScope(scope)
+	view.Render()
 }
 {{end}}{{end}}
 `
-//	formTpl = `{{$name := .Name}}` +
-//`package {{.Package}}
-//
-//import ({{range .FormImports}}
-//    "{{.}}"{{end}}
-//)
-//
-//{{range .Actions}}{{if .HasForm}}
-//func New{{$name}}{{.GetName}}Form(ctrl *{{$name}}) ({{.GetDefineKinds}}) { {{range .GetParams}}
-//	var {{.GetName}} {{.GetDefineVarKind}}{{end}}{{range .GetParams}}
-//	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
-//	{{.GetName}}Prim.Required(){{end}}
-//	{{.GetName}}Prim.Export(&{{.GetName}})
-//	{{end}}
-//	form := form.New(){{range .GetParams}}
-//	form.Add({{.GetName}}Prim){{end}}
-//
-//	return {{.GetDefineVars}}
-//}
-//{{end}}{{end}}
-//`
 )
 
 type Controller struct {}
 
 func (c *Controller) Do(env types.Environment) {
-//	logger := env.GetLogger()
-
 	container := new(controller.Container)
 	container.SetShortPackage("mux")
 	parent := new(controller.Controller)
