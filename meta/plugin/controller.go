@@ -51,9 +51,9 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}})
 
 func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
-	form := form.New()
-	{{range .GetParams}}{{if .IsInjection}}
-	{{else}}var {{.GetName}} {{.GetDefineVarKind}}
+	form := form.New(){{range .GetParams}}{{if .IsInjection}}
+	{{else}}
+	var {{.GetName}} {{.GetDefineVarKind}}
 	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
 	{{.GetName}}Prim.Required(){{end}}
 	{{.GetName}}Prim.SetSource({{.GetSource}})
@@ -79,6 +79,10 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 	view.Render()
 }
 {{end}}{{end}}
+
+var ({{range .Actions}}{{if .HasForm}}
+	{{$name}}{{.GetName}}Action {{$name}}{{.GetName}} = (*{{$name}}).{{.GetName}}{{end}}{{end}}
+)
 `
 )
 

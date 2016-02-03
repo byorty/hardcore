@@ -24,7 +24,8 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	pagePrim := prim.Int("page")
 	pagePrim.SetSource(types.GetPrimitiveSource)
 	pagePrim.Export(&page)
-	form.Add(pagePrim)var search string
+	form.Add(pagePrim)
+	var search string
 	searchPrim := prim.String("search")
 	searchPrim.SetSource(types.GetPrimitiveSource)
 	searchPrim.Export(&search)
@@ -89,12 +90,14 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	postPrim.Required()
 	postPrim.SetSource(types.PathPrimitiveSource)
 	postPrim.Export(&post)
-	form.Add(postPrim)var name string
+	form.Add(postPrim)
+	var name string
 	namePrim := prim.String("name")
 	namePrim.Required()
 	namePrim.SetSource(types.PostPrimitiveSource)
 	namePrim.Export(&name)
-	form.Add(namePrim)var description string
+	form.Add(namePrim)
+	var description string
 	descriptionPrim := prim.String("description")
 	descriptionPrim.Required()
 	descriptionPrim.SetSource(types.PostPrimitiveSource)
@@ -120,3 +123,9 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	view.Render()
 }
 
+
+var (
+	PostListAction PostList = (*Post).List
+	PostViewAction PostView = (*Post).View
+	PostEditAction PostEdit = (*Post).Edit
+)
