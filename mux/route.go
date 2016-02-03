@@ -161,9 +161,11 @@ func (r *Route) After(middleware func (types.RequestScope)) *Route {
 }
 
 func (r *Route) Add(route *Route) *Route {
-	route.parent = r
-	route.kind = kindControllerAction
-	r.routes = append(r.routes, route)
+	if route != nil {
+		route.parent = r
+		route.kind = kindControllerAction
+		r.routes = append(r.routes, route)
+	}
 	return r
 }
 

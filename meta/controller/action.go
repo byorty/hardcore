@@ -4,11 +4,12 @@ import (
 	"github.com/byorty/hardcore/meta/types"
 	"strings"
 	"fmt"
+	"github.com/byorty/hardcore/utils"
 )
 
 type Action struct {
 	Name string `xml:"name,attr"`
-	Route string `xml:"route,attr"`
+	Route string `xml:"path,attr"`
 	Method string `xml:"method,attr"`
 	Return string `xml:"return"`
 	Params []*Param `xml:"params>param"`
@@ -20,11 +21,17 @@ func (a Action) GetName() string {
 }
 
 func (a Action) GetRoute() string {
+	if len(a.Route) == 0 {
+		a.Route = "/"
+	}
 	return a.Route
 }
 
 func (a Action) GetMethod() string {
-	return a.Method
+	if len(a.Method) == 0 {
+		a.Method = "GET"
+	}
+	return utils.UpperFirst(strings.ToLower(a.Method))
 }
 
 func (a Action) GetParams() []types.ActionParam {

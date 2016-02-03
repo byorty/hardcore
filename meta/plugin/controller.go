@@ -135,7 +135,6 @@ func (c *Controller) Do(env types.Environment) {
 
 				env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)
 				env.GetConfiguration().AddFile(controllerEntity.GetFilename(), controllerTpl, tplParams)
-//				env.GetConfiguration().AddFile(controllerEntity.GetFilename() + "_form", formTpl, tplParams)
 			}
 		}
 	}

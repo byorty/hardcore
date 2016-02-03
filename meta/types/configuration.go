@@ -5,6 +5,7 @@ const (
 	DaoImport = "github.com/byorty/hardcore/orm/dao"
 	ProtoImport = "github.com/byorty/hardcore/proto"
 	ExporterImport = "github.com/byorty/hardcore/exporter"
+	MuxImport = "github.com/byorty/hardcore/mux"
 )
 
 type Configuration interface {

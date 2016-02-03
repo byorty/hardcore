@@ -3,18 +3,14 @@
     <controllers package="controllers.api" path="/api">
         <controller name="Post" path="/post">
             <actions>
-                <!--<allows>-->
-                    <!--<allow>models.LoggedUserRole</allow>-->
-                    <!--<allow>models.LoggedAdminRole</allow>-->
-                <!--</allows>-->
-                <action name="List" method="GET">
+                <action name="List">
                     <params>
                         <param name="page" type="int" required="false" from="query"/>
                         <param name="search" type="string" required="false" from="query"/>
                     </params>
                     <return>types.EncodeView</return>
                 </action>
-                <action name="View" path="/{post:([0-9]+)}" method="GET">
+                <action name="View" path="/{post:([0-9]+)}">
                     <params>
                         <param name="post" type="models.Post" required="true" from="path"/>
                     </params>
@@ -28,6 +24,15 @@
                         <param name="description" type="string" required="true" from="form"/>
                     </params>
                     <return>types.EncodeView</return>
+                </action>
+            </actions>
+        </controller>
+        <controller name="User" path="/user">
+            <actions>
+                <action name="List">
+                    <params>
+                        <param name="page" type="int"/>
+                    </params>
                 </action>
             </actions>
         </controller>

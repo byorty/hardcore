@@ -7,7 +7,7 @@ import (
 
 type Controller struct {
     common.Entity
-	Route string `xml:"route,attr"`
+	Route string `xml:"path,attr"`
 	Actions []*Action `xml:"actions>action"`
 	actions []types.Action
 }
@@ -17,6 +17,9 @@ func (c Controller) GetEntityKind() types.EntityKind {
 }
 
 func (c Controller) GetRoute() string {
+	if len(c.Route) == 0 {
+		c.Route = "/"
+	}
 	return c.Route
 }
 
