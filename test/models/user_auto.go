@@ -41,17 +41,17 @@ func (u *User) SetPassword(password string) *User {
 	u.password = password
 	return u
 }
-func (u User) GetRole() *UserRole { 
+func (u User) GetRole() UserRole { 
 	if u.role == nil {
 		var role UserRole
 		role.DAO().ById(u.roleId).One(&role)
 		u.role = &role
 	}
-	return u.role
+	return *(u.role)
 }
 
-func (u *User) SetRole(role *UserRole) *User {
-	u.role = role
+func (u *User) SetRole(role UserRole) *User {
+	u.role = &role
 	u.SetRoleId(role.GetId())
 	return u
 }
@@ -194,7 +194,7 @@ func userPasswordGetter (model interface{}) interface{} {
 }
 
 func userRoleSetter (model interface{}, role interface{}) {
-	model.(*User).SetRole(role.(*UserRole))
+	model.(*User).SetRole(role.(UserRole))
 }
 
 func userRoleGetter (model interface{}) interface{} {

@@ -13,7 +13,7 @@ func TestExporter(t *testing.T) {
 	user := new(models.User).
 		SetId(1).
 		SetEmail("user@example.com").
-		SetRole(&role).
+		SetRole(role).
 		SetRegisterDate(now)
 
 	userExporter := exporters.NewUser(user)

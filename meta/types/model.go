@@ -23,6 +23,7 @@ type Property interface {
 	SetSelfPackage(bool)
 	IsSelfPackage() bool
     GetDefineKind() string
+    GetMethodDefineKind() string
 	GetVariableKind() string
 	GetProtoKind() string
 	SetRelationProperty(Property)

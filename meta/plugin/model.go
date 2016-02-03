@@ -38,13 +38,13 @@ type {{.AutoName}} struct {` +
 `	{{.GetName}} {{.GetDefineKind}}
 {{end}}}
 {{range .Properties}}
-func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} { {{if .GetRelation.IsOneToOne}}
+func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
 	if {{$shortName}}.{{.GetName}} == nil {
 		var {{.GetName}} {{.GetVariableKind}}
 		{{.GetName}}.DAO().ById({{$shortName}}.{{.GetName}}Id).One(&{{.GetName}})
 		{{$shortName}}.{{.GetName}} = &{{.GetName}}
 	}
-	return {{$shortName}}.{{.GetName}}
+	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}
 {{else if .GetRelation.IsOneToMany}}
 	if {{$shortName}}.{{.GetName}} == nil { {{if .GetEntity.GetEntityKind.IsModel}}
 		dao.New{{$upperIdentifierKind}}OneToMany("{{.GetRelationProperty.GetName}}").ById({{$shortName}}.GetId()).All(&{{$shortName}}.{{.GetName}}){{else}}
@@ -55,9 +55,9 @@ func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} { {{if
 	return {{$shortName}}.{{.GetName}}
 {{end}}}
 
-func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetDefineKind}}) *{{$name}} {
-	{{$shortName}}.{{.GetName}} = {{.GetName}}{{if .GetRelation.IsOneToOne}}
-	{{$shortName}}.Set{{.GetUpperName}}Id({{.GetName}}.GetId()){{end}}
+func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodDefineKind}}) *{{$name}} {
+	{{if .GetRelation.IsOneToOne}}{{$shortName}}.{{.GetName}} = {{if .GetEntity.GetEntityKind.IsEnum}}&{{end}}{{.GetName}}
+	{{$shortName}}.Set{{.GetUpperName}}Id({{.GetName}}.GetId()){{else}}{{$shortName}}.{{.GetName}} = {{.GetName}}{{end}}
 	return {{$shortName}}
 }{{end}}
 
@@ -144,7 +144,7 @@ func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) {
 }
 {{range .Properties}}
 func {{$varName}}{{.GetUpperName}}Setter (model interface{}, {{.GetName}} interface{}) {
-	model.(*{{$name}}).Set{{.GetUpperName}}({{.GetName}}.({{.GetDefineKind}}))
+	model.(*{{$name}}).Set{{.GetUpperName}}({{.GetName}}.({{.GetMethodDefineKind}}))
 }
 
 func {{$varName}}{{.GetUpperName}}Getter (model interface{}) interface{} {
@@ -180,12 +180,14 @@ type {{.AutoName}} struct {` +
 `	{{.GetName}} {{.GetDefineKind}}
 {{end}}}
 {{range .Properties}}
-func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetDefineKind}} {
+func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
+	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}
+{{else}}	return {{$shortName}}.{{.GetName}}{{end}}
 	return {{$shortName}}.{{.GetName}}
 }
 
-func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetDefineKind}}) *{{$name}} {
-	{{$shortName}}.{{.GetName}} = {{.GetName}}
+func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodDefineKind}}) *{{$name}} {
+	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{$shortName}}.{{.GetName}}){{end}}{{end}}{{.GetName}}
 	return {{$shortName}}
 }{{end}}
 

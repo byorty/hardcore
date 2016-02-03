@@ -6,6 +6,10 @@ func (e EntityKind) IsModel() bool {
 	return e == ModelEntityKind
 }
 
+func (e EntityKind) IsEnum() bool {
+    return e == EnumEntityKind
+}
+
 const (
     ControllerEntityKind EntityKind = iota
     ModelEntityKind

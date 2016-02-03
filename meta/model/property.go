@@ -138,3 +138,29 @@ func (p *Property) SetRelationProperty(relationProperty types.Property) {
 func (p Property) GetRelationProperty() types.Property {
 	return p.relationProperty
 }
+
+func (p Property) GetMethodDefineKind() string {
+	switch p.GetRelation() {
+	case types.OneToOneRelation:
+		if p.entity.GetEntityKind() == types.EnumEntityKind {
+			if p.IsSelfPackage() {
+				return p.entity.GetName()
+			} else {
+				return p.entity.GetFullName()
+			}
+		} else {
+			if p.IsSelfPackage() {
+				return p.entity.GetPointerName()
+			} else {
+				return p.entity.GetPointerFullName()
+			}
+		}
+	case types.OneToManyRelation:
+		if p.IsSelfPackage() {
+			return p.entity.GetMultipleName()
+		} else {
+			return p.entity.GetFullMultipleName()
+		}
+	default: return p.GetKind()
+	}
+}

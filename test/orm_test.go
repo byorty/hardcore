@@ -44,7 +44,7 @@ func TestDB(t *testing.T) {
 	newUser := new(models.User)
 	newUser.SetEmail(fmt.Sprintf("%v@qwerty.com", time.Now().UnixNano()))
 	newUser.SetPassword("12345")
-	newUser.SetRole(&role)
+	newUser.SetRole(role)
 	newUser.SetRegisterDate(time.Now())
 	newUser.DAO().Add(newUser)
 
