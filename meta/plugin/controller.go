@@ -21,13 +21,13 @@ type {{.Name}} struct { {{range .Extends}}
 
 func New{{.Name}}() types.ActionController {
 	// implement me
-    return
+    return nil
 }
 
 {{range .Actions}}
 func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn}} {
 
-	return
+	return nil
 }
 {{end}}
 `
@@ -48,7 +48,7 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 }
 
 {{range .Actions}}{{if .HasForm}}
-type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}})
+type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}}) {{.GetReturn}}
 
 func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form := form.New(){{range .GetParams}}{{if .IsInjection}}
@@ -65,15 +65,15 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 		ctrl := rawCtrl.(*{{$name}})
 		view = {{$shortName}}(ctrl, {{.GetDefineVars}})
 	} else {
-		handler, ok := {{$shortName}}.(types.FormErrorsHandler)
-		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
-		} else {
+//		handler, ok := {{$shortName}}.(types.FormErrorsHandler)
+//		if ok {
+//			view = handler.HandleFormErrors(form.GetErrors())
+//		} else {
 			handler, ok := rawCtrl.(types.FormErrorsHandler)
 			if ok {
 				view = handler.HandleFormErrors(form.GetErrors())
 			}
-		}
+//		}
 	}
 	view.SetScope(scope)
 	view.Render()

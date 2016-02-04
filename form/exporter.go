@@ -17,7 +17,7 @@ func NewFormErrorProperty(name string, closure func(error types.FormError) inter
 	}
 }
 
-func (u FormErrorPropertyImpl) GetValue(model types.Model) interface{} {
+func (u FormErrorPropertyImpl) GetValue(model interface{}) interface{} {
 	return u.closure(model.(types.FormError))
 }
 

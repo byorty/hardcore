@@ -1,4 +1,5 @@
 package form
+
 import "github.com/byorty/hardcore/types"
 
 type FormErrorImpl struct {
@@ -40,6 +41,10 @@ type FormErrorsImpl []types.FormError
 
 func NewFormErrors() types.FormErrors {
 	return make(FormErrorsImpl, 0)
+}
+
+func (f FormErrorsImpl) Add(error types.FormError) {
+	f = append(f, error)
 }
 
 func (f FormErrorsImpl) Len() int {

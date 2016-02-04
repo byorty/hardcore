@@ -16,7 +16,7 @@ func (p *Post) CallAction(action interface{}, scope types.RequestScope) {
 }
 
 
-type PostList func(*Post, int, string)
+type PostList func(*Post, int, string) types.EncodeView
 
 func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form := form.New()
@@ -36,21 +36,21 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, page, search)
 	} else {
-		handler, ok := p.(types.FormErrorsHandler)
-		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
-		} else {
+//		handler, ok := p.(types.FormErrorsHandler)
+//		if ok {
+//			view = handler.HandleFormErrors(form.GetErrors())
+//		} else {
 			handler, ok := rawCtrl.(types.FormErrorsHandler)
 			if ok {
 				view = handler.HandleFormErrors(form.GetErrors())
 			}
-		}
+//		}
 	}
 	view.SetScope(scope)
 	view.Render()
 }
 
-type PostView func(*Post, *models.Post)
+type PostView func(*Post, *models.Post) types.EncodeView
 
 func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form := form.New()
@@ -66,21 +66,21 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, &post)
 	} else {
-		handler, ok := p.(types.FormErrorsHandler)
-		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
-		} else {
+//		handler, ok := p.(types.FormErrorsHandler)
+//		if ok {
+//			view = handler.HandleFormErrors(form.GetErrors())
+//		} else {
 			handler, ok := rawCtrl.(types.FormErrorsHandler)
 			if ok {
 				view = handler.HandleFormErrors(form.GetErrors())
 			}
-		}
+//		}
 	}
 	view.SetScope(scope)
 	view.Render()
 }
 
-type PostEdit func(*Post, types.Form, *models.Post, string, string)
+type PostEdit func(*Post, types.Form, *models.Post, string, string) types.EncodeView
 
 func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form := form.New()
@@ -109,15 +109,15 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, form, &post, name, description)
 	} else {
-		handler, ok := p.(types.FormErrorsHandler)
-		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
-		} else {
+//		handler, ok := p.(types.FormErrorsHandler)
+//		if ok {
+//			view = handler.HandleFormErrors(form.GetErrors())
+//		} else {
 			handler, ok := rawCtrl.(types.FormErrorsHandler)
 			if ok {
 				view = handler.HandleFormErrors(form.GetErrors())
 			}
-		}
+//		}
 	}
 	view.SetScope(scope)
 	view.Render()

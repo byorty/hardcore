@@ -18,7 +18,7 @@ func NewPostProperty(name string, closure func(post *models.Post) interface{}) t
 	}
 }
 
-func (p PostPropertyImpl) GetValue(model types.Model) interface{} {
+func (p PostPropertyImpl) GetValue(model interface{}) interface{} {
 	return p.closure(model.(*models.Post))
 }
 

@@ -46,3 +46,7 @@ type RequestScope interface {
 	SetHeaderParams(params RequestScopeParams)
 	SetHeaderParam(key, value string)
 }
+
+type Router interface {
+	http.Handler
+}

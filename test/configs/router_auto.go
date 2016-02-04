@@ -12,12 +12,12 @@ func Router() *mux.Router {
 var (
 	router = mux.NewRouter().Add(
 		mux.Path("/api", 
-			mux.Controller("/post", api.NewPost).Add(
+			mux.Controller("/post", api.NewPost).Batch(
 				mux.Get("/", api.PostListAction),
 				mux.Get("/{post:([0-9]+)}", api.PostViewAction),
 				mux.Post("/{post:([0-9]+)}", api.PostEditAction),
 			),
-			mux.Controller("/user", api.NewUser).Add(
+			mux.Controller("/user", api.NewUser).Batch(
 				mux.Get("/", api.UserListAction),
 			),
 		),

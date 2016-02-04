@@ -3,7 +3,7 @@ package form
 import "github.com/byorty/hardcore/types"
 
 type FormImpl struct {
-	errors FormErrorsImpl
+	errors types.FormErrors
 	primitives []types.Primitive
 	isValid bool
 }
@@ -31,7 +31,7 @@ func (f *FormImpl) AddErrorMessageWithCode(name, message string, code int) types
 }
 
 func (f *FormImpl) AddError(err types.FormError) types.Form {
-	f.errors = append(f.errors, err)
+	f.errors.Add(err)
 	return f
 }
 

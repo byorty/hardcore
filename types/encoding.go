@@ -2,15 +2,15 @@ package types
 
 type ExportableProperty interface {
 	GetName() string
-	GetValue(Model) interface{}
+	GetValue(interface{}) interface{}
 }
 
 type Exporter interface {
 	Slice
 	Get(int) ExportableProperty
 	Add(ExportableProperty) Exporter
-	SetExportable(Model) Exporter
-	GetExportable() Model
+	SetExportable(interface{}) Exporter
+	GetExportable() interface{}
 }
 
 type Encoder interface {

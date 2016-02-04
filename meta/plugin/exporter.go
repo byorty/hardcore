@@ -28,7 +28,7 @@ func New{{$name}}Property(name string, closure func({{$sourceVarName}} {{$source
 	}
 }
 
-func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model types.Model) interface{} {
+func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model interface{}) interface{} {
 	return {{.ShortName}}.closure(model.({{$sourceName}}))
 }
 

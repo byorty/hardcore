@@ -9,12 +9,12 @@ type User struct {
 
 func NewUser() types.ActionController {
 	// implement me
-    return
+    return nil
 }
 
 
 func (u *User) List(page int) types.EncodeView {
 
-	return
+	return nil
 }
 

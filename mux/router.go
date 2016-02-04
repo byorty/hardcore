@@ -32,7 +32,9 @@ func NewRouter(routes ...*Route) *Router {
 }
 
 func (r *Router) Add(route *Route) *Router {
-	route.toMatcher(r)
+	if route != nil {
+		route.toMatcher(r)
+	}
 	return r
 }
 

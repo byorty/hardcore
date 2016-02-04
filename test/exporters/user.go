@@ -18,7 +18,7 @@ func NewUserProperty(name string, closure func(user *models.User) interface{}) t
 	}
 }
 
-func (u UserPropertyImpl) GetValue(model types.Model) interface{} {
+func (u UserPropertyImpl) GetValue(model interface{}) interface{} {
 	return u.closure(model.(*models.User))
 }
 

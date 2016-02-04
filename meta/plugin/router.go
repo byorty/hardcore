@@ -13,7 +13,7 @@ import ({{range .Imports}}
 	"{{.}}"{{end}}
 )
 
-func makeRouter() *mux.Router {
+func makeRouter() *mux.Route {
 	return nil
 }
 `
@@ -30,7 +30,7 @@ func Router() *mux.Router {
 var (
 	router = mux.NewRouter().Add({{range .Containers}}{{$package := .GetShortPackage}}
 		mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
-			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Add({{range .GetActions}}{{if .HasForm}}
+			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", (*{{$package}}.{{$ctrlName}}).{{.GetName}}),
 			{{end}}{{end}}

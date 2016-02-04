@@ -4,7 +4,7 @@ import "github.com/byorty/hardcore/types"
 
 type BaseImpl struct {
 	properties []types.ExportableProperty
-	exportable types.Model
+	exportable interface{}
 }
 
 func (b *BaseImpl) SetProperties(properties []types.ExportableProperty) {
@@ -37,11 +37,11 @@ func (b *BaseImpl) Add(property types.ExportableProperty) types.Exporter {
 	return b
 }
 
-func (b *BaseImpl) SetExportable(exportable types.Model) types.Exporter {
+func (b *BaseImpl) SetExportable(exportable interface{}) types.Exporter {
 	b.exportable = exportable
 	return b
 }
 
-func (b *BaseImpl) GetExportable() types.Model {
+func (b *BaseImpl) GetExportable() interface{} {
 	return b.exportable
 }

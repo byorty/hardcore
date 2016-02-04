@@ -169,6 +169,15 @@ func (r *Route) Add(route *Route) *Route {
 	return r
 }
 
+func (r *Route) Batch(routes ...*Route) *Route {
+	if routes != nil {
+		for _, route := range routes {
+			r.Add(route)
+		}
+	}
+	return r
+}
+
 func (r *Route) toMatcher(router *Router) {
 	if r.parent != nil {
 		if len(r.parent.schemeTpl) > 0 && len(r.schemeTpl) == 0 {

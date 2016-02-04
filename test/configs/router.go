@@ -4,6 +4,6 @@ import (
 	"github.com/byorty/hardcore/mux"
 )
 
-func makeRouter() *mux.Router {
+func makeRouter() *mux.Route {
 	return nil
 }

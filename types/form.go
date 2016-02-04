@@ -45,6 +45,7 @@ type FormError interface {
 type FormErrors interface {
 	Slice
 	Get(int) FormError
+	Add(FormError)
 }
 
 type FormVerifiable interface {
