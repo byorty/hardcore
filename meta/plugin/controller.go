@@ -35,7 +35,7 @@ func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn
 `{{$shortName := .ShortName}}` +
 `package {{.Package}}
 
-import ({{range .FormImports}}
+import ({{range .AutoImports}}
     "{{.}}"{{end}}
 )
 
@@ -46,7 +46,6 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 		action.(func(*{{.Name}}, types.RequestScope))({{.ShortName}}, scope)
 	}
 }
-
 {{range .Actions}}{{if .HasForm}}
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}}) {{.GetReturn}}
 
@@ -65,21 +64,15 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 		ctrl := rawCtrl.(*{{$name}})
 		view = {{$shortName}}(ctrl, {{.GetDefineVars}})
 	} else {
-//		handler, ok := {{$shortName}}.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
 }
 {{end}}{{end}}
-
 var ({{range .Actions}}{{if .HasForm}}
 	{{$name}}{{.GetName}}Action {{$name}}{{.GetName}} = (*{{$name}}).{{.GetName}}{{end}}{{end}}
 )
@@ -112,14 +105,15 @@ func (c *Controller) Do(env types.Environment) {
 					[]string{types.DefaultImport},
 					controllerEntity.GetImports()...
 				)
-				var formImports []string
+				autoImports := []string{types.DefaultImport}
 				if hasForm {
-					formImports = append(
-						[]string{
-							types.DefaultImport,
-							"github.com/byorty/hardcore/form",
-							"github.com/byorty/hardcore/form/prim",
-						},
+					autoImports = append(
+						autoImports,
+						"github.com/byorty/hardcore/form",
+						"github.com/byorty/hardcore/form/prim",
+					)
+					autoImports = append(
+						autoImports,
 						controllerEntity.GetImports()...
 					)
 				}
@@ -129,7 +123,7 @@ func (c *Controller) Do(env types.Environment) {
 					"Name": controllerEntity.GetName(),
 					"Package": container.GetShortPackage(),
 					"Imports": imports,
-					"FormImports": formImports,
+					"AutoImports": autoImports,
 					"Actions": controllerEntity.GetActions(),
 				}
 

@@ -15,7 +15,6 @@ func (p *Post) CallAction(action interface{}, scope types.RequestScope) {
 	}
 }
 
-
 type PostList func(*Post, int, string) types.EncodeView
 
 func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
@@ -36,15 +35,10 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, page, search)
 	} else {
-//		handler, ok := p.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
@@ -66,15 +60,10 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, &post)
 	} else {
-//		handler, ok := p.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
@@ -109,20 +98,14 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*Post)
 		view = p(ctrl, form, &post, name, description)
 	} else {
-//		handler, ok := p.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
 }
-
 
 var (
 	PostListAction PostList = (*Post).List

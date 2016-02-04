@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	runtime.GOMAXPROCS(1000)
+	runtime.GOMAXPROCS(10000)
 	app := server.New()
 	app.SetEnvironment(server.Environment())
 	app.Serve()

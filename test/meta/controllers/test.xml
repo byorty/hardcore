@@ -42,5 +42,15 @@
                 </action>
             </actions>
         </controller>
+        <controller name="Test" path="/test">
+            <actions>
+                <action name="View">
+                    <params>
+                        <param name="text" type="string" required="true"/>
+                    </params>
+                    <return>types.View</return>
+                </action>
+            </actions>
+        </controller>
     </controllers>
 </configuration>

@@ -40,6 +40,8 @@ func NewSqlDB(uri string) types.DB {
 //		logger.Err(`db - can't connect to "%s", detail - %v`, uri, err)
 		return nil
 	}
+//	db.SetMaxIdleConns(100)
+//	db.SetMaxOpenConns(1000)
 	return &sqlDB{
 		db,
 		writers[configUrl.Scheme],

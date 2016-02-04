@@ -15,7 +15,6 @@ func (u *User) CallAction(action interface{}, scope types.RequestScope) {
 	}
 }
 
-
 type UserList func(*User, int) types.EncodeView
 
 func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
@@ -31,15 +30,10 @@ func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*User)
 		view = u(ctrl, page)
 	} else {
-//		handler, ok := u.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
@@ -61,20 +55,14 @@ func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
 		ctrl := rawCtrl.(*User)
 		view = u(ctrl, &user)
 	} else {
-//		handler, ok := u.(types.FormErrorsHandler)
-//		if ok {
-//			view = handler.HandleFormErrors(form.GetErrors())
-//		} else {
-			handler, ok := rawCtrl.(types.FormErrorsHandler)
-			if ok {
-				view = handler.HandleFormErrors(form.GetErrors())
-			}
-//		}
+		handler, ok := rawCtrl.(types.FormErrorsHandler)
+		if ok {
+			view = handler.HandleFormErrors(form.GetErrors())
+		}
 	}
 	view.SetScope(scope)
 	view.Render()
 }
-
 
 var (
 	UserListAction UserList = (*User).List

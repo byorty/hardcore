@@ -21,6 +21,9 @@ var (
 				mux.Get("/", api.UserListAction),
 				mux.Get("/{user:([0-9]+)}", api.UserViewAction),
 			),
+			mux.Controller("/test", api.NewTest).Batch(
+				mux.Get("/", api.TestViewAction),
+			),
 		),
 	).Add(makeRouter())
 )
