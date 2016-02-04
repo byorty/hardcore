@@ -34,6 +34,12 @@
                         <param name="page" type="int"/>
                     </params>
                 </action>
+                <action name="View" path="/{user:([0-9]+)}">
+                    <params>
+                        <param name="user" type="models.User" required="true" from="path"/>
+                    </params>
+                    <return>types.EncodeView</return>
+                </action>
             </actions>
         </controller>
     </controllers>

@@ -1,21 +1,5 @@
 <?xml version="1.0"?>
 <configuration>
-    <!--<models package="models.response">-->
-        <!--<model name="Response">-->
-            <!--<properties>-->
-                <!--<property name="item"/>-->
-                <!--<property name="items"/>-->
-                <!--<property name="error" type="response.Error" relation="OneToOne"/>-->
-                <!--<property name="errors" type="response.Error" relation="OneToMany"/>-->
-            <!--</properties>-->
-        <!--</model>-->
-        <!--<model name="Error">-->
-            <!--<properties>-->
-                <!--<property name="code" type="int"/>-->
-                <!--<property name="message" type="string"/>-->
-            <!--</properties>-->
-        <!--</model>-->
-    <!--</models>-->
     <models package="models">
 
         <model name="User" source="default">

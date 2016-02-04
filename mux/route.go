@@ -223,13 +223,7 @@ func (r *Route) toMatcher(router *Router) {
 			r.Host(defaultHost)
 		}
 
-		var tpl string
-		if len(r.portTpl) > 0 {
-			tpl = fmt.Sprintf("^%s://%s%s%s$", r.schemeTpl, r.hostTpl, r.portTpl, r.tpl)
-		} else {
-			tpl = fmt.Sprintf("^%s://%s%s$", r.schemeTpl, r.hostTpl, r.tpl)
-		}
-
+		tpl := fmt.Sprintf("^%s$", r.tpl)
 		matcher.urlParams = newParamMatcher(tpl)
 
 		if len(r.headerTpls) > 0 {

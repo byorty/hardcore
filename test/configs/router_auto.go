@@ -19,6 +19,7 @@ var (
 			),
 			mux.Controller("/user", api.NewUser).Batch(
 				mux.Get("/", api.UserListAction),
+				mux.Get("/{user:([0-9]+)}", api.UserViewAction),
 			),
 		),
 	).Add(makeRouter())
