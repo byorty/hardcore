@@ -21,10 +21,10 @@ func (u FormErrorPropertyImpl) GetValue(model interface{}) interface{} {
 	return u.closure(model.(types.FormError))
 }
 
-func NewExporter(error types.FormError) types.Exporter {
+func NewExporter(errors types.FormErrors) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties(errorProperties)
-	exp.SetExportable(error)
+	exp.SetExportable(errors)
 	return exp
 }
 

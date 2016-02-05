@@ -2,16 +2,18 @@ package current
 
 import (
 	_ "github.com/lib/pq"
-	"github.com/byorty/hardcore/server"
 	"github.com/byorty/hardcore/test/configs"
 	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/pool"
+	"github.com/byorty/hardcore/env"
+	"github.com/byorty/hardcore/log"
 )
 
 func init()  {
-	server.Environment().
+	env.Me().
 		SetProjectName("Test").
-		SetRouter(configs.Router())
+		SetRouter(configs.Router()).
+		SetLogger(log.NewDefaultLogger(log.ERROR))
 
 	pool.DB().
 		Add(

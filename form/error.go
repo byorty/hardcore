@@ -40,11 +40,12 @@ func NewErrorWithCode(name, message string, code int) types.FormError {
 type FormErrorsImpl []types.FormError
 
 func NewFormErrors() types.FormErrors {
-	return make(FormErrorsImpl, 0)
+	errors := make(FormErrorsImpl, 0)
+	return &errors
 }
 
-func (f FormErrorsImpl) Add(error types.FormError) {
-	f = append(f, error)
+func (f *FormErrorsImpl) Add(error types.FormError) {
+	(*f) = append((*f), error)
 }
 
 func (f FormErrorsImpl) Len() int {

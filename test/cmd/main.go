@@ -4,11 +4,12 @@ import (
 	"github.com/byorty/hardcore/server"
 	_ "github.com/byorty/hardcore/test/configs/current"
 	"runtime"
+	"github.com/byorty/hardcore/env"
 )
 
 func main() {
-	runtime.GOMAXPROCS(10000)
+	runtime.GOMAXPROCS(100000)
 	app := server.New()
-	app.SetEnvironment(server.Environment())
+	app.SetEnv(env.Me())
 	app.Serve()
 }

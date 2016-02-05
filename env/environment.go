@@ -1,9 +1,10 @@
-package server
+package env
 
 import (
 	"github.com/byorty/hardcore/types"
 	"time"
 	"github.com/byorty/hardcore/utils"
+	"github.com/byorty/hardcore/log"
 )
 
 var environment types.Environment
@@ -16,22 +17,17 @@ type EnvironmentImpl struct {
 	readTimeout time.Duration
 	writeTimeout time.Duration
 	rootPath string
+	logger types.Logger
 }
 
-func Environment() types.Environment {
-	if environment == nil {
-		environment = NewEnvironment()
-	}
-	return environment
-}
-
-func NewEnvironment() types.Environment {
+func New() types.Environment {
 	return &EnvironmentImpl{
 		hostname: "localhost",
 		port: 8080,
 		readTimeout: 10 * time.Second,
 		writeTimeout: 10 * time.Second,
 		rootPath: utils.Pwd(),
+		logger: log.NewDefaultLogger(log.FINEST),
 	}
 }
 
@@ -96,4 +92,24 @@ func (e EnvironmentImpl) GetRootPath() string {
 func (e *EnvironmentImpl) SetRootPath(rootPath string) types.Environment {
 	e.rootPath = rootPath
 	return e
+}
+
+func (e EnvironmentImpl) GetLogger() types.Logger {
+	return e.logger
+}
+
+func (e *EnvironmentImpl) SetLogger(logger types.Logger) types.Environment {
+	e.logger = logger
+	return e
+}
+
+func Me() types.Environment {
+	if environment == nil {
+		environment = New()
+	}
+	return environment
+}
+
+func Set(e types.Environment) {
+	environment = e
 }

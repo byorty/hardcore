@@ -6,7 +6,7 @@ import (
 )
 
 type EntityImpl struct {
-	Base
+	BaseImpl
 	bitSize int
 }
 
@@ -29,23 +29,30 @@ func (i *IntModelImpl) Import(rawValue interface{}) bool {
 func (i *IntModelImpl) ImportFromString(strValue string) bool {
 	value, err := strconv.ParseInt(strValue, 10, i.bitSize)
 	if err == nil {
+		var isReceived bool
 		switch dest := i.dest.(type) {
 		case types.IntModel:
 			dest.KindDAO().ById(int(value)).One(dest)
-			return i.isReceived(dest.GetId() != 0)
+			isReceived = i.isReceived(dest.GetId() != 0)
 		case types.Int8Model:
 			dest.KindDAO().ById(int8(value)).One(dest)
-			return i.isReceived(dest.GetId() != 0)
+			isReceived = i.isReceived(dest.GetId() != 0)
 		case types.Int16Model:
 			dest.KindDAO().ById(int16(value)).One(dest)
-			return i.isReceived(dest.GetId() != 0)
+			isReceived = i.isReceived(dest.GetId() != 0)
 		case types.Int32Model:
 			dest.KindDAO().ById(int32(value)).One(dest)
-			return i.isReceived(dest.GetId() != 0)
+			isReceived = i.isReceived(dest.GetId() != 0)
 		case types.Int64Model:
 			dest.KindDAO().ById(value).One(dest)
-			return i.isReceived(dest.GetId() != 0)
-		default: return false
+			isReceived = i.isReceived(dest.GetId() != 0)
+		default: isReceived = false
+		}
+		if isReceived {
+			return true
+		} else {
+			i.error = i.wrong
+			return false
 		}
 	} else {
 		i.error = i.wrong
@@ -56,35 +63,35 @@ func (i *IntModelImpl) ImportFromString(strValue string) bool {
 func IntModel(name string) types.Primitive {
 	p := new(IntModelImpl)
 	p.bitSize = 0
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int8Model(name string) types.Primitive {
 	p := new(IntModelImpl)
 	p.bitSize = 8
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int16Model(name string) types.Primitive {
 	p := new(IntModelImpl)
 	p.bitSize = 16
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int32Model(name string) types.Primitive {
 	p := new(IntModelImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int64Model(name string) types.Primitive {
 	p := new(IntModelImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }
 
@@ -126,34 +133,34 @@ func (u *UintModelImpl) ImportFromString(strValue string) bool {
 func UintModel(name string) types.Primitive {
 	p := new(UintModelImpl)
 	p.bitSize = 0
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint8Model(name string) types.Primitive {
 	p := new(UintModelImpl)
 	p.bitSize = 8
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint16Model(name string) types.Primitive {
 	p := new(UintModelImpl)
 	p.bitSize = 16
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint32Model(name string) types.Primitive {
 	p := new(UintModelImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint64Model(name string) types.Primitive {
 	p := new(UintModelImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }

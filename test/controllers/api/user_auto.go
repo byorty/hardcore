@@ -4,6 +4,7 @@ import (
     "github.com/byorty/hardcore/types"
     "github.com/byorty/hardcore/form"
     "github.com/byorty/hardcore/form/prim"
+    "github.com/byorty/hardcore/view"
     "github.com/byorty/hardcore/test/models"
 )
 
@@ -25,18 +26,20 @@ func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	pagePrim.Export(&page)
 	form.Add(pagePrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*User)
-		view = u(ctrl, page)
+		v = u(ctrl, page)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 type UserView func(*User, *models.User) types.EncodeView
@@ -50,18 +53,20 @@ func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	userPrim.Export(&user)
 	form.Add(userPrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*User)
-		view = u(ctrl, &user)
+		v = u(ctrl, &user)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 var (

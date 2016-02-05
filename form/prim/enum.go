@@ -104,69 +104,69 @@ func (e EnumImpl) importFloat(value float64) bool {
 func IntEnum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 0
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int8Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 8
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int16Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 16
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int32Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int64Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func UintEnum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 0
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint8Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 8
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint16Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 16
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint32Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Uint64Enum(name string) types.Primitive {
 	p := new(EnumImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }

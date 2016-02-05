@@ -6,7 +6,7 @@ import (
 )
 
 type IntImpl struct {
-	Base
+	BaseImpl
 	bitSize int
 }
 
@@ -35,35 +35,35 @@ func (i *IntImpl) ImportFromString(strValue string) bool {
 func Int(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 0
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int8(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 8
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int16(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 16
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int32(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Int64(name string) types.Primitive {
 	p := new(IntImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }
 

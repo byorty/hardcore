@@ -6,7 +6,7 @@ import (
 )
 
 type BoolImpl struct {
-	Base
+	BaseImpl
 }
 
 func (b *BoolImpl) Import(rawValue interface{}) bool {
@@ -27,6 +27,6 @@ func (b *BoolImpl) ImportFromString(strValue string) bool {
 
 func Bool(name string) types.Primitive {
 	p := new(BoolImpl)
-	p.name = name
+	p.init(name)
 	return p
 }

@@ -59,18 +59,20 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 	{{.GetName}}Prim.Export(&{{.GetName}})
 	form.Add({{.GetName}}Prim){{end}}{{end}}
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*{{$name}})
-		view = {{$shortName}}(ctrl, {{.GetDefineVars}})
+		v = {{$shortName}}(ctrl, {{.GetDefineVars}})
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 {{end}}{{end}}
 var ({{range .Actions}}{{if .HasForm}}
@@ -111,6 +113,7 @@ func (c *Controller) Do(env types.Environment) {
 						autoImports,
 						"github.com/byorty/hardcore/form",
 						"github.com/byorty/hardcore/form/prim",
+						"github.com/byorty/hardcore/view",
 					)
 					autoImports = append(
 						autoImports,

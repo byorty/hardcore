@@ -15,3 +15,8 @@ type HtmlView interface {
 	View
 	SetTemplate(string)
 }
+
+type RawView interface {
+	View
+	SetStatus(int) RawView
+}

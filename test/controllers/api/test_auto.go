@@ -4,6 +4,7 @@ import (
     "github.com/byorty/hardcore/types"
     "github.com/byorty/hardcore/form"
     "github.com/byorty/hardcore/form/prim"
+    "github.com/byorty/hardcore/view"
 )
 
 func (t *Test) CallAction(action interface{}, scope types.RequestScope) {
@@ -25,18 +26,20 @@ func (t TestView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	textPrim.Export(&text)
 	form.Add(textPrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Test)
-		view = t(ctrl, text)
+		v = t(ctrl, text)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 var (

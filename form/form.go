@@ -1,6 +1,8 @@
 package form
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+)
 
 type FormImpl struct {
 	errors types.FormErrors

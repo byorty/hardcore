@@ -2,7 +2,7 @@ package prim
 
 import "github.com/byorty/hardcore/types"
 
-type Base struct {
+type BaseImpl struct {
 	name string
 	error string
 	missing string
@@ -13,62 +13,68 @@ type Base struct {
 	source types.PrimitiveSource
 }
 
-func (b Base) GetName() string {
+func (b *BaseImpl) init(name string) {
+	b.name = name
+	b.missing = "missing argument"
+	b.wrong = "wrong argument"
+}
+
+func (b BaseImpl) GetName() string {
 	return b.name
 }
 
-func (b Base) GetError() string {
+func (b BaseImpl) GetError() string {
 	return b.error
 }
 
-func (b *Base) Required() {
+func (b *BaseImpl) Required() {
 	b.required = true
 }
 
-func (b *Base) Missing(missing string) {
+func (b *BaseImpl) Missing(missing string) {
 	b.missing = missing
 }
 
-func (b *Base) Wrong(wrong string) {
+func (b *BaseImpl) Wrong(wrong string) {
 	b.wrong = wrong
 }
 
-func (b *Base) Custom(i int, error string) {
+func (b *BaseImpl) Custom(i int, error string) {
 	if b.customs == nil {
 		b.customs = make(map[int]string)
 	}
 	b.customs[i] = error
 }
 
-func (b *Base) Export(dest interface{}) {
+func (b *BaseImpl) Export(dest interface{}) {
 	b.dest = dest
 }
 
-func (b *Base) SetSource(source types.PrimitiveSource) {
+func (b *BaseImpl) SetSource(source types.PrimitiveSource) {
 	b.source = source
 }
 
-func (b Base) GetSource() types.PrimitiveSource {
+func (b BaseImpl) GetSource() types.PrimitiveSource {
 	return b.source
 }
 
-func (b Base) IsRequired() bool {
+func (b BaseImpl) IsRequired() bool {
 	return b.required
 }
 
-func (b *Base) SetError(error string) {
+func (b *BaseImpl) SetError(error string) {
 	b.error = error
 }
 
-func (b Base) GetWrong() string {
+func (b BaseImpl) GetWrong() string {
 	return b.wrong
 }
 
-func (b Base) GetMissing() string {
+func (b BaseImpl) GetMissing() string {
 	return b.missing
 }
 
-func (b Base) do(primitive types.Primitive, rawValue interface{}) bool {
+func (b BaseImpl) do(primitive types.Primitive, rawValue interface{}) bool {
 	strValue, ok := rawValue.(string)
 	if ok {
 		if primitive.IsRequired() {

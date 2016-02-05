@@ -43,6 +43,7 @@ func (e EncodeImpl) Render() {
 	if e.status == 0 {
 		e.status = http.StatusOK
 	}
+//	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	rw.WriteHeader(e.status)
 	rw.Write(e.encoder.Encode(e.exporter))
 }

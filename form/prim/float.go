@@ -6,7 +6,7 @@ import (
 )
 
 type FloatImpl struct {
-	Base
+	BaseImpl
 	bitSize int
 }
 
@@ -32,13 +32,13 @@ func (f *FloatImpl) ImportFromString(strValue string) bool {
 func Float32(name string) types.Primitive {
 	p := new(FloatImpl)
 	p.bitSize = 32
-	p.name = name
+	p.init(name)
 	return p
 }
 
 func Float64(name string) types.Primitive {
 	p := new(FloatImpl)
 	p.bitSize = 64
-	p.name = name
+	p.init(name)
 	return p
 }

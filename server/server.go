@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/types"
 	"net/http"
 	"fmt"
+	"github.com/byorty/hardcore/env"
 )
 
 type Server struct {
@@ -14,7 +15,7 @@ func New() types.Server {
 	return new(Server)
 }
 
-func (s *Server) SetEnvironment(environment types.Environment) {
+func (s *Server) SetEnv(environment types.Environment) {
 	s.environment = environment
 }
 
@@ -25,5 +26,6 @@ func (s Server) Serve() {
 		ReadTimeout:    s.environment.GetReadTimeout(),
 		WriteTimeout:   s.environment.GetWriteTimeout(),
 	}
-	fmt.Println(app.ListenAndServe())
+	env.Me().GetLogger().Info("server - run on %s:%d", s.environment.GetHostname(), s.environment.GetPort())
+	env.Me().GetLogger().Error("server - %v", app.ListenAndServe())
 }

@@ -3,7 +3,7 @@ package prim
 import "github.com/byorty/hardcore/types"
 
 type StringImpl struct {
-	Base
+	BaseImpl
 }
 
 func (s *StringImpl) Import(rawValue interface{}) bool {
@@ -18,6 +18,6 @@ func (s *StringImpl) ImportFromString(strValue string) bool {
 
 func String(name string) types.Primitive {
 	p := new(StringImpl)
-	p.name = name
+	p.init(name)
 	return p
 }

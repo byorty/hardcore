@@ -4,6 +4,7 @@ import (
     "github.com/byorty/hardcore/types"
     "github.com/byorty/hardcore/form"
     "github.com/byorty/hardcore/form/prim"
+    "github.com/byorty/hardcore/view"
     "github.com/byorty/hardcore/test/models"
 )
 
@@ -30,18 +31,20 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	searchPrim.Export(&search)
 	form.Add(searchPrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
-		view = p(ctrl, page, search)
+		v = p(ctrl, page, search)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 type PostView func(*Post, *models.Post) types.EncodeView
@@ -55,18 +58,20 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	postPrim.Export(&post)
 	form.Add(postPrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
-		view = p(ctrl, &post)
+		v = p(ctrl, &post)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 type PostEdit func(*Post, types.Form, *models.Post, string, string) types.EncodeView
@@ -93,18 +98,20 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	descriptionPrim.Export(&description)
 	form.Add(descriptionPrim)
 
-	var view types.View
+	var v types.View
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
-		view = p(ctrl, form, &post, name, description)
+		v = p(ctrl, form, &post, name, description)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
-			view = handler.HandleFormErrors(form.GetErrors())
+			v = handler.HandleFormErrors(form.GetErrors())
+		} else {
+			v = view.BadRequest()
 		}
 	}
-	view.SetScope(scope)
-	view.Render()
+	v.SetScope(scope)
+	v.Render()
 }
 
 var (

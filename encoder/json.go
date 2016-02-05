@@ -38,7 +38,7 @@ func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
 func (j JsonImpl) encodeExporter(exporter types.Exporter) {
 	switch exportable := exporter.GetExportable().(type) {
 	case types.Slice: j.encodeSlice(exportable)
-	case types.Model: j.encodeModel(exportable)
+	case types.Model: j.encodeStruct(exportable)
 	default: j.buf.Write(null)
 	}
 }
@@ -56,7 +56,7 @@ func (j *JsonImpl) encodeSlice(slice types.Slice) {
 	j.buf.Write(endSquareBracket)
 }
 
-func (j *JsonImpl) encodeModel(model types.Model) {
+func (j *JsonImpl) encodeStruct(model interface{}) {
 	propsLen := j.exporter.Len()
 	lastIndex := propsLen - 1
 	j.buf.Write(startBrace)
@@ -98,7 +98,7 @@ func (j *JsonImpl) encode(exportable interface{}) {
 		j.encodeTime(value)
 		j.buf.Write(quotes)
 	case types.Slice: j.encodeSlice(value)
-	case types.Model: j.encodeModel(value)
+	case types.Model, types.FormError: j.encodeStruct(value)
 	case types.Named: j.encode(value.GetRawId())
 	case nil: j.buf.Write(null)
 	}
