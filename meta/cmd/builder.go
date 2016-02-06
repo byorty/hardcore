@@ -51,11 +51,10 @@ func main() {
 
                 metaPath := filepath.Dir(filename)
                 absPath, _ := filepath.Abs(filepath.Join(metaPath, ".."))
-                parts := strings.Split(absPath, string(filepath.Separator))
-
-                i := sort.Search(len(parts), func(x int) bool {
-                    return parts[x] == "src"
-                })
+                var parts sort.StringSlice
+                parts = strings.Split(absPath, string(filepath.Separator))
+                parts.Sort()
+                i := parts.Search("src")
                 if i < len(parts) && parts[i] == "src" {
                     config.Files = make([]types.File, 0)
                     env := conf.NewEnvironment(
@@ -71,15 +70,15 @@ func main() {
                     }
                 } else {
                     logger.Critical("can't find directory src")
-                    os.Exit(1)
+                    os.Exit(4)
                 }
             } else {
                 logger.Critical("can't unmarshal xml file %s", filename)
-                os.Exit(1)
+                os.Exit(3)
             }
         } else {
             logger.Critical("can't read file %s", filename)
-            os.Exit(1)
+            os.Exit(2)
         }
     } else {
         logger.Critical("file %s not found", filename)

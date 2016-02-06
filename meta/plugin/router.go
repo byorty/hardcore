@@ -28,7 +28,7 @@ func Router() *mux.Router {
 }
 
 var (
-	router = mux.NewRouter().Add({{range .Containers}}{{$package := .GetShortPackage}}
+	router = mux.NewRouter(){{if .Containers}}.Add({{range .Containers}}{{$package := .GetShortPackage}}
 		mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
 			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
@@ -36,7 +36,7 @@ var (
 			{{end}}{{end}}
 			),{{end}}
 		),
-	{{end}}).Add(makeRouter())
+	{{end}}){{end}}.Add(makeRouter())
 )
 `
 )
