@@ -13,6 +13,8 @@ const FormScopeKind = "types.Form"
 var reservedParams = map[string]string{
 	"scope": RequestScopeKind,
 	"form": FormScopeKind,
+	"paginator": "types.Paginator",
+	"sorter": "types.Sorter",
 }
 
 type Param struct {

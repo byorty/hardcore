@@ -10,7 +10,6 @@ import (
     "encoding/xml"
     "github.com/byorty/hardcore/meta/conf"
     "strings"
-    "sort"
     "github.com/byorty/hardcore/meta/types"
     "github.com/byorty/hardcore/meta/plugin"
 )
@@ -51,11 +50,19 @@ func main() {
 
                 metaPath := filepath.Dir(filename)
                 absPath, _ := filepath.Abs(filepath.Join(metaPath, ".."))
-                var parts sort.StringSlice
-                parts = strings.Split(absPath, string(filepath.Separator))
-                parts.Sort()
-                i := parts.Search("src")
-                if i < len(parts) && parts[i] == "src" {
+                parts := strings.Split(absPath, string(filepath.Separator))
+
+                var i int
+                hasSrcDir := false
+                for j, part := range parts {
+                    if part == "src" {
+                        i = j
+                        hasSrcDir = true
+                        break
+                    }
+                }
+
+                if hasSrcDir {
                     config.Files = make([]types.File, 0)
                     env := conf.NewEnvironment(
                         absPath,
