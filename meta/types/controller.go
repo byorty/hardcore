@@ -32,4 +32,14 @@ type ActionParam interface {
 	GetDefineVarName() string
 	GetPrimitive() string
 	IsInjection() bool
+	GetInjection() Injection
+}
+
+type Injection interface {
+	SetParam(ActionParam)
+	IsMustWrite() bool
+	GetKind() string
+	GetBody() string
+	GetImports() []string
+	GetAutoImports() []string
 }

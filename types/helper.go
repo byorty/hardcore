@@ -1,10 +1,13 @@
 package types
 
 type Paginator interface {
-	SetPageQueryName(string)
-	SetLimitQueryName(string)
+	GetPage() int
 	SetPage(int)
-	SetLimit(int)
+	GetItemsPerPage() int
+	SetItemsPerPage(int)
+	GetOffset() int
+	SetCount(int)
+	GetPageCount() int
 }
 
 type Sorter interface {

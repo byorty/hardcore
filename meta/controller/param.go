@@ -10,11 +10,10 @@ import (
 const RequestScopeKind = "types.RequestScope"
 const FormScopeKind = "types.Form"
 
-var reservedParams = map[string]string{
-	"scope": RequestScopeKind,
-	"form": FormScopeKind,
-	"paginator": "types.Paginator",
-	"sorter": "types.Sorter",
+var injections = map[string]func() types.Injection {
+	"scope": NewRequestScopeInjection,
+	"form": NewFormInjection,
+	"paginator": NewPaginatorInjection,
 }
 
 type Param struct {
@@ -23,6 +22,7 @@ type Param struct {
 	Source string `xml:"from,attr"`
 	Kind string `xml:"type,attr"`
 	entity types.Entity
+	injection types.Injection
 }
 
 func (p Param) GetName() string {
@@ -60,7 +60,7 @@ func (p Param) GetDefineKind() string {
 func (p Param) getDefineKind(needPointer bool) string {
 	if p.entity == nil {
 		if p.IsInjection() {
-			return reservedParams[p.Name]
+			return p.GetInjection().GetKind()
 		} else {
 			return p.Kind
 		}
@@ -98,7 +98,7 @@ func (p Param) GetDefineVarName() string {
 }
 
 func (p Param) IsInjection() bool {
-	_, ok := reservedParams[p.Name];
+	_, ok := injections[p.Name];
 	return ok
 }
 
@@ -121,4 +121,12 @@ func (p Param) GetPrimitive() string {
 			return fmt.Sprintf("%s%s", utils.UpperFirst(kind), entityKind)
 		}
 	}
+}
+
+func (p Param) GetInjection() types.Injection {
+	if p.IsInjection() && p.injection == nil {
+		p.injection = injections[p.Name]()
+		p.injection.SetParam(&p)
+	}
+	return p.injection
 }

@@ -22,7 +22,7 @@ func (i *IntImpl) ImportFromString(strValue string) bool {
 		case *int8: (*dest) = int8(value)
 		case *int16: (*dest) = int16(value)
 		case *int32: (*dest) = int32(value)
-		case *int64: (*dest) = int64(value)
+		case *int64: (*dest) = value
 		default: return false
 		}
 		return true

@@ -22,7 +22,7 @@ func (u *UintImpl) ImportFromString(strValue string) bool {
 		case *uint8: (*dest) = uint8(value)
 		case *uint16: (*dest) = uint16(value)
 		case *uint32: (*dest) = uint32(value)
-		case *uint64: (*dest) = uint64(value)
+		case *uint64: (*dest) = value
 		default: return false
 		}
 		return true

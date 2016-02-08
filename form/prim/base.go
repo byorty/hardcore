@@ -1,6 +1,8 @@
 package prim
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+)
 
 type BaseImpl struct {
 	name string

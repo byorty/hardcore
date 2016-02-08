@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/meta/types"
 	"strings"
 	"github.com/byorty/hardcore/meta/controller"
+	"sort"
 )
 
 var (
@@ -50,8 +51,8 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}}) {{.GetReturn}}
 
 func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
-	form := form.New(){{range .GetParams}}{{if .IsInjection}}
-	{{else}}
+	form := form.New(){{range .GetParams}}{{if .IsInjection}}{{if .GetInjection.IsMustWrite}}
+	{{.GetInjection.GetBody}}{{end}}{{else}}
 	var {{.GetName}} {{.GetDefineVarKind}}
 	{{.GetName}}Prim := prim.{{.GetPrimitive}}("{{.GetName}}"){{if .IsRequired}}
 	{{.GetName}}Prim.Required(){{end}}
@@ -94,11 +95,23 @@ func (c *Controller) Do(env types.Environment) {
 		if container.GetContainerKind() == types.ControllerContainerKind {
 			for _, entity := range container.GetEntities() {
 
+				var autoInjectionImports sort.StringSlice
 				controllerEntity := entity.(types.ControllerEntity)
 				hasForm := false
 				for _, action := range controllerEntity.GetActions() {
 					if action.HasForm() {
 						hasForm = true
+						for _, param := range action.GetParams() {
+							if param.IsInjection() {
+								for _, newImport := range param.GetInjection().GetAutoImports() {
+									autoInjectionImports.Sort()
+									i := autoInjectionImports.Search(newImport)
+									if i == autoInjectionImports.Len() {
+										autoInjectionImports = append(autoInjectionImports, newImport)
+									}
+								}
+							}
+						}
 						break
 					}
 				}
@@ -118,6 +131,10 @@ func (c *Controller) Do(env types.Environment) {
 					autoImports = append(
 						autoImports,
 						controllerEntity.GetImports()...
+					)
+					autoImports = append(
+						autoImports,
+						autoInjectionImports...
 					)
 				}
 				tplParams := map[string]interface{}{
