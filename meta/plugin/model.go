@@ -77,6 +77,10 @@ func ({{.ShortName}} *{{.Name}}) Proto() types.Proto {
 	return {{.VarProtoName}}
 }
 
+func ({{.ShortName}} {{.Name}}) IsScanned() bool {
+	return {{.ShortName}}.GetId() != 0
+}
+
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
 }
@@ -111,6 +115,10 @@ func({{.ShortName}} *{{.MultipleName}}) DAO() {{.DaoName}} {
 
 func ({{.ShortName}} *{{.MultipleName}}) Proto() types.Proto {
 	return {{.VarProtoName}}
+}
+
+func ({{.ShortName}} {{.MultipleName}}) IsScanned() bool {
+	return {{.ShortName}}.Len() > 0 && {{.ShortName}}.Get(0).GetId() != 0
 }
 
 type {{.AutoDaoName}} struct {

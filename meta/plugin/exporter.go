@@ -32,10 +32,10 @@ func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model interface{}) interfac
 	return {{.ShortName}}.closure(model.({{$sourceName}}))
 }
 
-func New{{$name}}({{$sourceVarName}} {{$sourceName}}) types.Exporter {
+func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties({{.VarName}}Properties)
-	exp.SetExportable({{$sourceVarName}})
+	exp.SetExportable({{.ExportableVarName}})
 	return exp
 }
 
@@ -58,6 +58,14 @@ func (e *Exporter) Do(env types.Environment) {
 
 				expEntity := entity.(types.ExporterEntity)
 				entity := expEntity.GetSourceEntity()
+				var exportableName, exportableVarName string
+				if expEntity.GetSource() == entity.GetFullMultipleName() {
+					exportableName = entity.GetFullMultipleName()
+					exportableVarName = utils.LowerFirst(entity.GetMultipleName())
+				} else {
+					exportableName = entity.GetPointerFullName()
+					exportableVarName = utils.LowerFirst(entity.GetName())
+				}
 				tplParams := map[string]interface{}{
 					"Name": expEntity.GetName(),
 					"ShortName": strings.ToLower(expEntity.GetName()[0:1]),
@@ -68,6 +76,8 @@ func (e *Exporter) Do(env types.Environment) {
 					}, expEntity.GetImports()...),
 					"Properties": expEntity.GetProperties(),
 					"VarName": utils.LowerFirst(expEntity.GetName()),
+					"ExportableName": exportableName,
+					"ExportableVarName": exportableVarName,
 					"SourceName": entity.GetPointerFullName(),
 					"SourceVarName": utils.LowerFirst(entity.GetName()),
 				}

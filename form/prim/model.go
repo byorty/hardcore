@@ -48,15 +48,23 @@ func (i *IntModelImpl) ImportFromString(strValue string) bool {
 			isReceived = i.isReceived(dest.GetId() != 0)
 		default: isReceived = false
 		}
-		if isReceived {
-			return true
+		if i.IsRequired() {
+			if isReceived {
+				return true
+			} else {
+				i.error = i.wrong
+				return false
+			}
 		} else {
-			i.error = i.wrong
-			return false
+			return true
 		}
 	} else {
-		i.error = i.wrong
-		return false
+		if i.IsRequired() {
+			i.error = i.wrong
+			return false
+		} else {
+			return true
+		}
 	}
 }
 

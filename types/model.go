@@ -3,6 +3,7 @@ package types
 type Model interface {
 	DAOConnected
 	Prototyped
+	IsScanned() bool
 }
 
 type SqlModelScanner interface {
@@ -24,6 +25,7 @@ type ModelDAO interface {
 	Custom(ModelDAO, Query, ...interface{})
 	Save(Model)
 	Add(Model)
+	Take(Model)
 	Insert(Query, Model)
 	Update(Query, Model)
 }

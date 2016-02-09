@@ -89,7 +89,6 @@ func (b BaseImpl) do(primitive types.Primitive, rawValue interface{}) bool {
 		} else {
 			return primitive.ImportFromString(strValue)
 		}
-
 	} else {
 		primitive.SetError(primitive.GetWrong())
 		return ok

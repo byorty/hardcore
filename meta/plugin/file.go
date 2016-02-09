@@ -35,7 +35,7 @@ func (f *File) Do(env types.Environment) {
             }
             f.create(file)
         } else {
-            os.Remove(file.GetName())
+//            os.Remove(file.GetName())
             if !utils.FileExists(file.GetName()) {
                 f.create(file)
             }

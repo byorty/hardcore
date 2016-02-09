@@ -54,6 +54,14 @@ func (b BaseImpl) Custom(dao types.ModelDAO, query types.Query, items ...interfa
 	currentDb.Custom(query, items...)
 }
 
+func (b BaseImpl) Take(model types.Model) {
+	if model.IsScanned() {
+		 b.Save(model)
+	} else {
+		 b.Add(model)
+	}
+}
+
 type IntImpl struct {
 	BaseImpl
 }
