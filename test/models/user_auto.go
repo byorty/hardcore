@@ -160,7 +160,7 @@ func (u UserDao) ScanAll(rows interface{}, model interface{}) {
 
 func (u UserDao) Scan(row interface{}, model interface{}) {
 	item := model.(*User)
-	row.(types.SqlModelScanner).Scan(
+	row.(types.DBScanner).Scan(
 		&item.id,
 		&item.email,
 		&item.password,

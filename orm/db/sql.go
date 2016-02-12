@@ -47,54 +47,45 @@ func NewSqlDB(uri string) types.DB {
 	}
 }
 
-func (s sqlDB) Exec(query types.Query, d types.ModelDAO, model types.Model) {
+func (s sqlDB) Exec(query types.Query) types.DBResult {
 	sql := query.ToNative().(string)
 	result, err := s.db.Exec(sql, query.GetArgs()...)
-	if err == nil {
-		id, err := result.LastInsertId()
-		if err == nil && id > 0 {
-			setter := model.Proto().GetByName("id").GetSetter()
-			setter(model, id)
-		}
-		env.Me().GetLogger().Debug("db - exec query %s %v", sql, query.GetArgs())
-	} else {
-		env.Me().GetLogger().Error("db - can't exec %s %v, detail - %v", sql, query.GetArgs(), err)
+	return &DBResult{
+		Result: result,
+		err: err,
+		sql: sql,
+		args: query.GetArgs(),
 	}
 }
 
-func (s sqlDB) Query(query types.Query, d types.ModelDAO, models types.Model) {
+func (s sqlDB) Query(query types.Query) types.DBRows {
 	sql := query.ToNative().(string)
 	rows, err := s.db.Query(sql, query.GetArgs()...)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			d.ScanAll(rows, models)
-		}
-		env.Me().GetLogger().Debug("db - exec query %s %v", sql, query.GetArgs())
-	} else {
-		env.Me().GetLogger().Error("db - can't exec query %s %v, detail - %v", sql, query.GetArgs(), err)
+	return &DBRowsImpl{
+		Rows: rows,
+		err: err,
+		sql: sql,
+		args: query.GetArgs(),
 	}
 }
 
-func (s sqlDB) QueryRow(query types.Query, d types.ModelDAO, model types.Model) {
+func (s sqlDB) QueryRow(query types.Query) types.DBRow {
 	sql := query.ToNative().(string)
 	row := s.db.QueryRow(sql, query.GetArgs()...)
-	if row == nil {
-		env.Me().GetLogger().Debug("db - result hasn't row, query %s %v", sql, query.GetArgs())
-	} else {
-		d.Scan(row, model)
-		env.Me().GetLogger().Debug("db - exec query row %s %v", sql, query.GetArgs())
+	return &DBRowImpl{
+		Row: row,
+		sql: sql,
+		args: query.GetArgs(),
 	}
 }
 
-func (s sqlDB) Custom(query types.Query, items ...interface{}) {
+func (s sqlDB) Custom(query types.Query) types.DBCustomRow {
 	sql := query.ToNative().(string)
 	row := s.db.QueryRow(sql, query.GetArgs()...)
-	if row == nil {
-		env.Me().GetLogger().Debug("db - custom result hasn't row, query %s %v", sql, query.GetArgs())
-	} else {
-		row.Scan(items...)
-		env.Me().GetLogger().Debug("db - exec custom query %s %v", sql, query.GetArgs())
+	return &DBCustomRowImpl{
+		Row: row,
+		sql: sql,
+		args: query.GetArgs(),
 	}
 }
 
@@ -119,4 +110,84 @@ func (s sqlDB) SupportLastInsertId() bool {
 
 func (s sqlDB) SupportReturningId() bool {
 	return s.supportReturningId
+}
+
+func (s sqlDB) Prepare(query types.Query) types.DBStatement {
+	sql := query.ToNative().(string)
+	_, err := s.db.Prepare(sql)
+	if err == nil {
+
+	} else {
+		env.Me().GetLogger().Error("db - can't prepare query %s, detail - %v", sql, err)
+	}
+	return nil
+}
+
+type DBRowImpl struct {
+	*sql.Row
+	sql string
+	args []interface{}
+}
+
+func (d *DBRowImpl) One(model types.Model) {
+	err := model.CommonDAO().Scan(d, model)
+	if err == nil {
+		env.Me().GetLogger().Debug("db - exec row query row %s %v", d.sql, d.args)
+	} else {
+		env.Me().GetLogger().Debug("db - can`t exec row query %s %v, detail - %v", d.sql, d.args, err)
+	}
+}
+
+type DBCustomRowImpl struct {
+	*sql.Row
+	sql string
+	args []interface{}
+}
+
+func (d *DBCustomRowImpl) One(items ...interface{}) {
+	err := d.Scan(items...)
+	if err == nil {
+		env.Me().GetLogger().Debug("db - exec custom query %s %v", d.sql, d.args)
+	} else {
+		env.Me().GetLogger().Debug("db -  can`t exec custom query %s %v, detail - %v", d.sql, d.args, err)
+	}
+}
+
+type DBRowsImpl struct {
+	*sql.Rows
+	err error
+	sql string
+	args []interface{}
+}
+
+func (d *DBRowsImpl) All(models types.Model) {
+	if d.err == nil {
+		defer d.Rows.Close()
+		for d.Rows.Next() && d.err == nil {
+			d.err = models.CommonDAO().ScanAll(d.Rows, models)
+		}
+		env.Me().GetLogger().Debug("db - exec rows query row %s %v", d.sql, d.args)
+	} else {
+		env.Me().GetLogger().Debug("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
+	}
+}
+
+type DBResult struct {
+	sql.Result
+	err error
+	sql string
+	args []interface{}
+}
+
+func (d *DBResult) One(model types.Model) {
+	if d.err == nil {
+		id, err := d.Result.LastInsertId()
+		if err == nil && id > 0 {
+			setter := model.Proto().GetByName("id").GetSetter()
+			setter(model, id)
+		}
+		env.Me().GetLogger().Debug("db - exec query %s %v", d.sql, d.args)
+	} else {
+		env.Me().GetLogger().Error("db - can't exec %s %v, detail - %v", d.sql, d.args, d.err)
+	}
 }

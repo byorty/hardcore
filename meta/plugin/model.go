@@ -137,16 +137,18 @@ func ({{.ShortName}} {{.DaoName}}) Proto() types.Proto {
 	return {{.VarProtoName}}
 }
 
-func ({{.ShortName}} {{.DaoName}}) ScanAll(rows interface{}, model interface{}) {
+func ({{.ShortName}} {{.DaoName}}) ScanAll(rows interface{}, model interface{}) error {
+	var err error
 	items := model.(*{{.MultipleName}})
 	item := new({{.Name}})
-	{{.ShortName}}.Scan(rows, item)
+	err = {{.ShortName}}.Scan(rows, item)
 	(*items) = append((*items), item)
+	return err
 }
 
-func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) {
+func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) error {
 	item := model.(*{{.Name}})
-	row.(types.SqlModelScanner).Scan({{range .Properties}}{{if .GetRelation.IsNone}}
+	return row.(types.DBScanner).Scan({{range .Properties}}{{if .GetRelation.IsNone}}
 		&item.{{.GetName}},{{end}}{{end}}
 	)
 }

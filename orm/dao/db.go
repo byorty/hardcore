@@ -18,7 +18,7 @@ func (b BaseImpl) Save(model types.Model) {
 
 func (b BaseImpl) Update(query types.Query, model types.Model) {
 	currentDb := pool.DB().ByDAO(model.CommonDAO())
-	currentDb.Exec(query, model.CommonDAO(), model)
+	currentDb.Exec(query).One(model)
 }
 
 func (b BaseImpl) Add(model types.Model) {
@@ -28,10 +28,10 @@ func (b BaseImpl) Add(model types.Model) {
 func (b BaseImpl) Insert(query types.Query, model types.Model) {
 	currentDb := pool.DB().ByDAO(model.CommonDAO())
 	if currentDb.SupportLastInsertId() {
-		currentDb.Exec(query, model.CommonDAO(), model)
+		currentDb.Exec(query).One(model)
 	} else if currentDb.SupportReturningId() {
 		var id int64
-		currentDb.Custom(query, &id)
+		currentDb.Custom(query).One(&id)
 		setter := model.Proto().GetByName("id").GetSetter()
 		setter(model, id)
 	}
@@ -40,18 +40,18 @@ func (b BaseImpl) Insert(query types.Query, model types.Model) {
 func (b BaseImpl) All(query types.Query, models types.Model) {
 	dao := models.CommonDAO()
 	currentDb := pool.DB().ByDAO(dao)
-	currentDb.Query(query, dao, models)
+	currentDb.Query(query).All(models)
 }
 
 func (b BaseImpl) One(query types.Query, model types.Model) {
 	dao := model.CommonDAO()
 	currentDb := pool.DB().ByDAO(dao)
-	currentDb.QueryRow(query, dao, model)
+	currentDb.QueryRow(query).One(model)
 }
 
 func (b BaseImpl) Custom(dao types.ModelDAO, query types.Query, items ...interface{}) {
 	currentDb := pool.DB().ByDAO(dao)
-	currentDb.Custom(query, items...)
+	currentDb.Custom(query).One(items...)
 }
 
 func (b BaseImpl) Take(model types.Model) {

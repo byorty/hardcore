@@ -6,10 +6,6 @@ type Model interface {
 	IsScanned() bool
 }
 
-type SqlModelScanner interface {
-	Scan(...interface{}) error
-}
-
 type DAOConnected interface {
 	CommonDAO() ModelDAO
 }
@@ -18,8 +14,8 @@ type ModelDAO interface {
 	Proto() Proto
 	GetDB() string
 	GetTable() string
-	ScanAll(interface{}, interface{})
-	Scan(interface{}, interface{})
+	ScanAll(interface{}, interface{}) error
+	Scan(interface{}, interface{}) error
 	All(Query, Model)
 	One(Query, Model)
 	Custom(ModelDAO, Query, ...interface{})

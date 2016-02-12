@@ -6,10 +6,33 @@ type Query interface {
 }
 
 type QueryExecuter interface {
-	Exec(Query, ModelDAO, Model)
-	Query(Query, ModelDAO, Model)
-	QueryRow(Query, ModelDAO, Model)
-	Custom(Query, ...interface{})
+	Exec(Query) DBResult
+	Query(Query) DBRows
+	QueryRow(Query) DBRow
+	Custom(Query) DBCustomRow
+}
+
+type DBScanner interface {
+	Scan(...interface{}) error
+}
+
+type DBRow interface {
+	DBScanner
+	One(Model)
+}
+
+type DBCustomRow interface {
+	DBScanner
+	One(...interface{})
+}
+
+type DBRows interface {
+	DBScanner
+	All(Model)
+}
+
+type DBResult interface {
+	One(Model)
 }
 
 type DBKind int
@@ -26,6 +49,13 @@ type DB interface {
 	GetQueryWriter() QueryWriter
 	SupportLastInsertId() bool
 	SupportReturningId() bool
+	Prepare(Query) DBStatement
+}
+
+type DBStatement interface {
+	Exec(ModelDAO, ...interface{})
+	Query(ModelDAO, ...interface{})
+	QueryRow(ModelDAO, ...interface{})
 }
 
 type DBPool interface {

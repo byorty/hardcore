@@ -138,7 +138,7 @@ func (p PostDao) ScanAll(rows interface{}, model interface{}) {
 
 func (p PostDao) Scan(row interface{}, model interface{}) {
 	item := model.(*Post)
-	row.(types.SqlModelScanner).Scan(
+	row.(types.DBScanner).Scan(
 		&item.id,
 		&item.userId,
 		&item.name,
