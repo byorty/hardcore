@@ -8,7 +8,12 @@ import (
 	"github.com/byorty/hardcore/slice"
 )
 
-type BaseImpl struct {}
+type BaseImpl struct {
+	byIdStatement types.DBStatement
+	byIdsStatement types.DBStatement
+	insertStatement types.DBStatement
+	updateStatement types.DBStatement
+}
 
 func (b BaseImpl) Save(model types.Model) {
 	idProperty := model.Proto().GetByName("id")
