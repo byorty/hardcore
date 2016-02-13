@@ -10,6 +10,10 @@ import (
 var (
 	modelTpl = `package {{.Package}}
 
+import ({{range .Imports}}
+	"{{.}}"{{end}}
+)
+
 type {{.Name}} struct {
 	{{.AutoName}}
 }
@@ -19,6 +23,8 @@ type {{.MultipleName}} []*{{.Name}}
 type {{.DaoName}} struct {
 	{{.AutoDaoName}}
 }
+
+func ({{.ShortName}} *{{.DaoName}}) Init(db types.DB) {}
 `
 
 	autoModelTpl = `{{$name := .Name}}` +
@@ -62,15 +68,15 @@ func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodD
 }{{end}}
 
 func({{.ShortName}} *{{.Name}}) CommonDAO() types.ModelDAO {
-	return {{.VarDaoName}}
+	return {{.ShortName}}.DAO()
 }
 
 func({{.ShortName}} *{{.Name}}) KindDAO() types.{{$upperIdentifierKind}}ModelDAO {
-	return {{.VarDaoName}}
+	return {{.ShortName}}.DAO()
 }
 
-func({{.ShortName}} *{{.Name}}) DAO() {{.DaoName}} {
-	return {{.VarDaoName}}
+func({{.ShortName}} *{{.Name}}) DAO() *{{.DaoName}} {
+	return {{.DaoName}}Inst()
 }
 
 func ({{.ShortName}} *{{.Name}}) Proto() types.Proto {
@@ -102,15 +108,15 @@ func ({{.ShortName}} {{.MultipleName}}) Get(x int) *{{.Name}} {
 }
 
 func({{.ShortName}} *{{.MultipleName}}) CommonDAO() types.ModelDAO {
-	return {{.VarDaoName}}
+	return {{.ShortName}}.DAO()
 }
 
 func({{.ShortName}} *{{.MultipleName}}) KindDAO() types.{{$upperIdentifierKind}}ModelDAO {
-	return {{.VarDaoName}}
+	return {{.ShortName}}.DAO()
 }
 
-func({{.ShortName}} *{{.MultipleName}}) DAO() {{.DaoName}} {
-	return {{.VarDaoName}}
+func({{.ShortName}} *{{.MultipleName}}) DAO() *{{.DaoName}} {
+	return {{.DaoName}}Inst()
 }
 
 func ({{.ShortName}} *{{.MultipleName}}) Proto() types.Proto {
@@ -123,6 +129,13 @@ func ({{.ShortName}} {{.MultipleName}}) IsScanned() bool {
 
 type {{.AutoDaoName}} struct {
 	dao.{{$upperIdentifierKind}}Impl
+}
+
+func {{.DaoName}}Inst() *{{.DaoName}} {
+	if {{.VarDaoName}} == nil {
+		{{.VarDaoName}} = new({{.DaoName}})
+	}
+	return {{.VarDaoName}}
 }
 
 func ({{.ShortName}} {{.DaoName}}) GetDB() string {
@@ -152,17 +165,21 @@ func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) erro
 		&item.{{.GetName}},{{end}}{{end}}
 	)
 }
+
+func ({{.ShortName}} *{{.DaoName}}) AutoInit(db types.DB) {
+
+}
 {{range .Properties}}
-func {{$varName}}{{.GetUpperName}}Setter (model interface{}, {{.GetName}} interface{}) {
+func {{$varName}}{{.GetUpperName}}Setter(model interface{}, {{.GetName}} interface{}) {
 	model.(*{{$name}}).Set{{.GetUpperName}}({{.GetName}}.({{.GetMethodDefineKind}}))
 }
 
-func {{$varName}}{{.GetUpperName}}Getter (model interface{}) interface{} {
+func {{$varName}}{{.GetUpperName}}Getter(model interface{}) interface{} {
 	return model.(*{{$name}}).Get{{.GetUpperName}}()
 }
 {{end}}
 var (
-	{{.VarDaoName}} {{.DaoName}}
+	{{.VarDaoName}} *{{.DaoName}}
 	{{.VarProtoName}} = proto.New().{{range $i, $property := .Properties}}
 		Set("{{.GetName}}", proto.NewProperty("{{.GetField}}", types.{{.GetProtoKind}}, types.{{.GetRelation.AsProtoRelation}}, {{.IsRequired}}, {{$varName}}{{.GetUpperName}}Setter, {{$varName}}{{.GetUpperName}}Getter)){{if lt $i $lastPropertyIndex}}.{{end}}{{end}}
 )
@@ -261,6 +278,9 @@ func (m *Model) Do(env types.Environment) {
 						tplParams["AutoDaoName"] = fmt.Sprintf("Auto%sDao", entity.GetName())
 						tplParams["Source"] = modelEntity.GetSource()
 						tplParams["Table"] = modelEntity.GetTable()
+						tplParams["Imports"] = []string{
+							types.DefaultImport,
+						}
 					} else {
 						tpl = valueTpl
 						autoTpl = autoValueTpl

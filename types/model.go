@@ -16,14 +16,16 @@ type ModelDAO interface {
 	GetTable() string
 	ScanAll(interface{}, interface{}) error
 	Scan(interface{}, interface{}) error
-	All(Query, Model)
-	One(Query, Model)
+	SelectAll(Query, Model)
+	SelectOne(Query, Model)
 	Custom(ModelDAO, Query, ...interface{})
 	Save(Model)
 	Add(Model)
 	Take(Model)
 	Insert(Query, Model)
 	Update(Query, Model)
+	AutoInit(DB)
+	Init(DB)
 }
 
 type IntModelDAO interface {

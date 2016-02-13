@@ -7,6 +7,7 @@ const (
 	ExporterImport = "github.com/byorty/hardcore/exporter"
 	MuxImport = "github.com/byorty/hardcore/mux"
 	HelperImport = "github.com/byorty/hardcore/helper"
+	PoolImport = "github.com/byorty/hardcore/pool"
 )
 
 type Configuration interface {

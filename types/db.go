@@ -44,6 +44,8 @@ const (
 
 type DB interface {
 	QueryExecuter
+	SetMaxIdleConns(int) DB
+	SetMaxOpenConns(int) DB
 	GetKind() DBKind
 	Close()
 	GetQueryWriter() QueryWriter
@@ -53,9 +55,10 @@ type DB interface {
 }
 
 type DBStatement interface {
-	Exec(ModelDAO, ...interface{})
-	Query(ModelDAO, ...interface{})
-	QueryRow(ModelDAO, ...interface{})
+	Exec(...interface{}) DBResult
+	Query(...interface{}) DBRows
+	QueryRow(...interface{}) DBRow
+	Custom(...interface{}) DBCustomRow
 }
 
 type DBPool interface {

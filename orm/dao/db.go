@@ -37,13 +37,13 @@ func (b BaseImpl) Insert(query types.Query, model types.Model) {
 	}
 }
 
-func (b BaseImpl) All(query types.Query, models types.Model) {
+func (b BaseImpl) SelectAll(query types.Query, models types.Model) {
 	dao := models.CommonDAO()
 	currentDb := pool.DB().ByDAO(dao)
 	currentDb.Query(query).All(models)
 }
 
-func (b BaseImpl) One(query types.Query, model types.Model) {
+func (b BaseImpl) SelectOne(query types.Query, model types.Model) {
 	dao := model.CommonDAO()
 	currentDb := pool.DB().ByDAO(dao)
 	currentDb.QueryRow(query).One(model)
