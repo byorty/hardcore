@@ -22,7 +22,7 @@ var (
 	user1 = new(models.User).
 		SetId(1).
 		SetEmail("user@example.com").
-		SetRole(&role).
+		SetRole(role).
 		SetRegisterDate(time.Now())
 	user2 = &User2{1, "user@example.com", role.GetId(), now}
 )

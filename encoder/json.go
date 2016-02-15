@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/types"
 	"bytes"
 	"time"
+	"sync"
 )
 
 var (
@@ -15,6 +16,8 @@ var (
 	startSquareBracket = []byte("[")
 	endSquareBracket = []byte("]")
 	null = []byte("null")
+	jsonBuf = new(bytes.Buffer)
+	jsonMutex = new(sync.Mutex)
 )
 
 type JsonImpl struct {
@@ -24,13 +27,17 @@ type JsonImpl struct {
 func NewJson() types.Encoder {
 	return &JsonImpl{
 		BaseImpl{
-			buf: new(bytes.Buffer),
+			buf: jsonBuf,
 		},
 	}
 }
 
 func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
+	jsonMutex.Lock()
+	defer jsonMutex.Unlock()
+
 	j.exporter = exporter
+	j.buf.Reset()
 	j.encodeExporter(j.exporter)
 	return j.buf.Bytes()
 }
@@ -47,7 +54,7 @@ func (j *JsonImpl) encodeSlice(slice types.Slice) {
 	sliceLen := slice.Len()
 	lastIndex := sliceLen - 1
 	j.buf.Write(startSquareBracket)
-	for i := 0;i < slice.Len();i++ {
+	for i := 0; i < slice.Len(); i++ {
 		j.encode(slice.GetRaw(i))
 		if i < lastIndex {
 			j.buf.Write(comma)
@@ -60,7 +67,7 @@ func (j *JsonImpl) encodeStruct(model interface{}) {
 	propsLen := j.exporter.Len()
 	lastIndex := propsLen - 1
 	j.buf.Write(startBrace)
-	for i := 0;i < propsLen;i++ {
+	for i := 0; i < propsLen; i++ {
 		prop := j.exporter.Get(i)
 		j.buf.Write(quotes)
 		j.buf.WriteString(prop.GetName())

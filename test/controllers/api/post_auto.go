@@ -78,7 +78,6 @@ type PostEdit func(*Post, types.Form, *models.Post, string, string) types.Encode
 
 func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form := form.New()
-	
 	var post models.Post
 	postPrim := prim.Int64Model("post")
 	postPrim.Required()

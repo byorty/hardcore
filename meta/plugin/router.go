@@ -23,12 +23,8 @@ import ({{range .AutoImports}}
 	"{{.}}"{{end}}
 )
 
-func Router() *mux.Router {
-	return router
-}
-
 var (
-	router = mux.NewRouter(){{if .Containers}}.Add({{range .Containers}}{{$package := .GetShortPackage}}
+	Router = mux.NewRouter(){{if .Containers}}.Add({{range .Containers}}{{$package := .GetShortPackage}}
 		mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
 			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}

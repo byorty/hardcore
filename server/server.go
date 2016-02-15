@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/byorty/hardcore/env"
+	"github.com/byorty/hardcore/pool"
 )
 
 type Server struct {
@@ -20,6 +21,12 @@ func (s *Server) SetEnv(environment types.Environment) {
 }
 
 func (s Server) Serve() {
+	for _, dao := range s.environment.GetDAOs() {
+		db := pool.DB().ByDAO(dao)
+		dao.AutoInit(db)
+		dao.Init(db)
+	}
+
 	app := &http.Server{
 		Addr:           fmt.Sprintf("%s:%d", s.environment.GetHostname(), s.environment.GetPort()),
 		Handler:        s.environment.GetRouter(),

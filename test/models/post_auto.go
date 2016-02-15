@@ -62,19 +62,23 @@ func (p *Post) SetDescription(description string) *Post {
 }
 
 func(p *Post) CommonDAO() types.ModelDAO {
-	return postDao
+	return p.DAO()
 }
 
 func(p *Post) KindDAO() types.Int64ModelDAO {
-	return postDao
+	return p.DAO()
 }
 
-func(p *Post) DAO() PostDao {
-	return postDao
+func(p *Post) DAO() *PostDao {
+	return PostDaoInst()
 }
 
 func (p *Post) Proto() types.Proto {
 	return postProto
+}
+
+func (p Post) IsScanned() bool {
+	return p.GetId() != 0
 }
 
 func (p Posts) Len() int {
@@ -98,23 +102,34 @@ func (p Posts) Get(x int) *Post {
 }
 
 func(p *Posts) CommonDAO() types.ModelDAO {
-	return postDao
+	return p.DAO()
 }
 
 func(p *Posts) KindDAO() types.Int64ModelDAO {
-	return postDao
+	return p.DAO()
 }
 
-func(p *Posts) DAO() PostDao {
-	return postDao
+func(p *Posts) DAO() *PostDao {
+	return PostDaoInst()
 }
 
 func (p *Posts) Proto() types.Proto {
 	return postProto
 }
 
+func (p Posts) IsScanned() bool {
+	return p.Len() > 0 && p.Get(0).GetId() != 0
+}
+
 type AutoPostDao struct {
 	dao.Int64Impl
+}
+
+func PostDaoInst() *PostDao {
+	if postDao == nil {
+		postDao = new(PostDao)
+	}
+	return postDao
 }
 
 func (p PostDao) GetDB() string {
@@ -129,16 +144,18 @@ func (p PostDao) Proto() types.Proto {
 	return postProto
 }
 
-func (p PostDao) ScanAll(rows interface{}, model interface{}) {
+func (p PostDao) ScanAll(rows interface{}, model interface{}) error {
+	var err error
 	items := model.(*Posts)
 	item := new(Post)
-	p.Scan(rows, item)
+	err = p.Scan(rows, item)
 	(*items) = append((*items), item)
+	return err
 }
 
-func (p PostDao) Scan(row interface{}, model interface{}) {
+func (p PostDao) Scan(row interface{}, model interface{}) error {
 	item := model.(*Post)
-	row.(types.DBScanner).Scan(
+	return row.(types.DBScanner).Scan(
 		&item.id,
 		&item.userId,
 		&item.name,
@@ -146,48 +163,52 @@ func (p PostDao) Scan(row interface{}, model interface{}) {
 	)
 }
 
-func postIdSetter (model interface{}, id interface{}) {
+func (p *PostDao) AutoInit(db types.DB) {
+
+}
+
+func postIdSetter(model interface{}, id interface{}) {
 	model.(*Post).SetId(id.(int64))
 }
 
-func postIdGetter (model interface{}) interface{} {
+func postIdGetter(model interface{}) interface{} {
 	return model.(*Post).GetId()
 }
 
-func postUserSetter (model interface{}, user interface{}) {
+func postUserSetter(model interface{}, user interface{}) {
 	model.(*Post).SetUser(user.(*User))
 }
 
-func postUserGetter (model interface{}) interface{} {
+func postUserGetter(model interface{}) interface{} {
 	return model.(*Post).GetUser()
 }
 
-func postUserIdSetter (model interface{}, userId interface{}) {
+func postUserIdSetter(model interface{}, userId interface{}) {
 	model.(*Post).SetUserId(userId.(int64))
 }
 
-func postUserIdGetter (model interface{}) interface{} {
+func postUserIdGetter(model interface{}) interface{} {
 	return model.(*Post).GetUserId()
 }
 
-func postNameSetter (model interface{}, name interface{}) {
+func postNameSetter(model interface{}, name interface{}) {
 	model.(*Post).SetName(name.(string))
 }
 
-func postNameGetter (model interface{}) interface{} {
+func postNameGetter(model interface{}) interface{} {
 	return model.(*Post).GetName()
 }
 
-func postDescriptionSetter (model interface{}, description interface{}) {
+func postDescriptionSetter(model interface{}, description interface{}) {
 	model.(*Post).SetDescription(description.(string))
 }
 
-func postDescriptionGetter (model interface{}) interface{} {
+func postDescriptionGetter(model interface{}) interface{} {
 	return model.(*Post).GetDescription()
 }
 
 var (
-	postDao PostDao
+	postDao *PostDao
 	postProto = proto.New().
 		Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postIdSetter, postIdGetter)).
 		Set("user", proto.NewProperty("user", types.ProtoModelKind, types.ProtoOneToOneRelation, true, postUserSetter, postUserGetter)).

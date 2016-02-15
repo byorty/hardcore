@@ -18,6 +18,7 @@ type EnvironmentImpl struct {
 	writeTimeout time.Duration
 	rootPath string
 	logger types.Logger
+	daos []types.ModelDAO
 }
 
 func New() types.Environment {
@@ -100,6 +101,15 @@ func (e EnvironmentImpl) GetLogger() types.Logger {
 
 func (e *EnvironmentImpl) SetLogger(logger types.Logger) types.Environment {
 	e.logger = logger
+	return e
+}
+
+func (e EnvironmentImpl) GetDAOs() []types.ModelDAO {
+	return e.daos
+}
+
+func (e *EnvironmentImpl) SetDAOs(daos []types.ModelDAO) types.Environment {
+	e.daos = daos
 	return e
 }
 

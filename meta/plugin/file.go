@@ -3,11 +3,11 @@ package plugin
 import (
     "bytes"
     "text/template"
-    "github.com/astaxie/beego/utils"
     "os"
     "bufio"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/log"
+    "github.com/byorty/hardcore/utils"
 )
 
 type File struct {

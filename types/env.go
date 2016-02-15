@@ -19,4 +19,6 @@ type Environment interface {
 	SetRootPath(string) Environment
 	GetLogger() Logger
 	SetLogger(Logger) Environment
+	GetDAOs() []ModelDAO
+	SetDAOs([]ModelDAO) Environment
 }
