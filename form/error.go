@@ -37,6 +37,12 @@ func NewErrorWithCode(name, message string, code int) types.FormError {
 	return err
 }
 
+func NewErrorMessage(message string) types.FormError {
+	return &FormErrorImpl{
+		message: message,
+	}
+}
+
 type FormErrorsImpl []types.FormError
 
 func NewFormErrors() types.FormErrors {

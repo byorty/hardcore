@@ -45,7 +45,7 @@ func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
 func (j JsonImpl) encodeExporter(exporter types.Exporter) {
 	switch exportable := exporter.GetExportable().(type) {
 	case types.Slice: j.encodeSlice(exportable)
-	case types.Model: j.encodeStruct(exportable)
+	case types.Model, types.FormError: j.encodeStruct(exportable)
 	default: j.buf.Write(null)
 	}
 }

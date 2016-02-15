@@ -21,7 +21,21 @@ func (u FormErrorPropertyImpl) GetValue(model interface{}) interface{} {
 	return u.closure(model.(types.FormError))
 }
 
-func NewExporter(errors types.FormErrors) types.Exporter {
+func ExportError(error types.FormError) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties(errorProperties)
+	exp.SetExportable(error)
+	return exp
+}
+
+func ExportErrorMessage(error types.FormError) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties(errorMessageProperties)
+	exp.SetExportable(error)
+	return exp
+}
+
+func ExportErrors(errors types.FormErrors) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties(errorProperties)
 	exp.SetExportable(errors)
@@ -29,6 +43,11 @@ func NewExporter(errors types.FormErrors) types.Exporter {
 }
 
 var (
+	errorMessageProperties = []types.ExportableProperty{
+		NewFormErrorProperty("message", func(error types.FormError) interface{} {
+			return error.GetMessage()
+		}),
+	}
 	errorProperties = []types.ExportableProperty{
 		NewFormErrorProperty("name", func(error types.FormError) interface{} {
 			return error.GetName()
