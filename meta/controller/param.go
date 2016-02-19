@@ -68,8 +68,12 @@ func (p Param) getDefineKind(needPointer bool) string {
 		if p.isMultiple() {
 			return p.entity.GetFullMultipleName()
 		} else {
-			if needPointer {
-				return p.entity.GetPointerFullName()
+			if p.entity.GetEntityKind() == types.ModelEntityKind {
+				if needPointer {
+					return p.entity.GetPointerFullName()
+				} else {
+					return p.entity.GetFullName()
+				}
 			} else {
 				return p.entity.GetFullName()
 			}
@@ -92,7 +96,11 @@ func (p Param) GetDefineVarName() string {
 		if p.isMultiple() {
 			return p.Name
 		} else {
-			return fmt.Sprintf("&%s", p.Name)
+			if p.entity.GetEntityKind() == types.ModelEntityKind {
+				return fmt.Sprintf("&%s", p.Name)
+			} else {
+				return p.Name
+			}
 		}
 	}
 }

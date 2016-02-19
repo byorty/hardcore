@@ -167,7 +167,8 @@ func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) erro
 }
 
 func ({{.ShortName}} *{{.DaoName}}) AutoInit(db types.DB) {
-
+	{{.ShortName}}.ByIdStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.Eq("id", nil)))
+	{{.ShortName}}.ByIdsStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.In("id", nil)))
 }
 {{range .Properties}}
 func {{$varName}}{{.GetUpperName}}Setter(model interface{}, {{.GetName}} interface{}) {
@@ -260,6 +261,8 @@ func (m *Model) Do(env types.Environment) {
 							types.DefaultImport,
 							types.DaoImport,
 							types.ProtoImport,
+							types.CriteriaImport,
+							types.ExprImport,
 						}, entity.GetImports()...),
 						"Properties": modelEntity.GetProperties(),
 					}

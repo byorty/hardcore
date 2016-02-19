@@ -30,61 +30,61 @@ type ModelDAO interface {
 
 type IntModelDAO interface {
 	ModelDAO
-	ById(int) ModelScanner
+	ById(int) DBRow
 	ByIds([]int) ModelScanner
 }
 
 type Int8ModelDAO interface {
 	ModelDAO
-	ById(int8) ModelScanner
+	ById(int8) DBRow
 	ByIds([]int8) ModelScanner
 }
 
 type Int16ModelDAO interface {
 	ModelDAO
-	ById(int16) ModelScanner
+	ById(int16) DBRow
 	ByIds([]int16) ModelScanner
 }
 
 type Int32ModelDAO interface {
 	ModelDAO
-	ById(int32) ModelScanner
+	ById(int32) DBRow
 	ByIds([]int32) ModelScanner
 }
 
 type Int64ModelDAO interface {
 	ModelDAO
-	ById(int64) ModelScanner
+	ById(int64) DBRow
 	ByIds([]int64) ModelScanner
 }
 
 type UintModelDAO interface {
 	ModelDAO
-	ById(uint) ModelScanner
+	ById(uint) DBRow
 	ByIds([]uint) ModelScanner
 }
 
 type Uint8ModelDAO interface {
 	ModelDAO
-	ById(uint8) ModelScanner
+	ById(uint8) DBRow
 	ByIds([]uint8) ModelScanner
 }
 
 type Uint16ModelDAO interface {
 	ModelDAO
-	ById(uint16) ModelScanner
+	ById(uint16) DBRow
 	ByIds([]uint16) ModelScanner
 }
 
 type Uint32ModelDAO interface {
 	ModelDAO
-	ById(uint32) ModelScanner
+	ById(uint32) DBRow
 	ByIds([]uint32) ModelScanner
 }
 
 type Uint64ModelDAO interface {
 	ModelDAO
-	ById(uint64) ModelScanner
+	ById(uint64) DBRow
 	ByIds([]uint64) ModelScanner
 }
 

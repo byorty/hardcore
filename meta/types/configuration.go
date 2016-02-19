@@ -8,6 +8,8 @@ const (
 	MuxImport = "github.com/byorty/hardcore/mux"
 	HelperImport = "github.com/byorty/hardcore/helper"
 	PoolImport = "github.com/byorty/hardcore/pool"
+	CriteriaImport = "github.com/byorty/hardcore/query/criteria"
+	ExprImport = "github.com/byorty/hardcore/query/expr"
 )
 
 type Configuration interface {

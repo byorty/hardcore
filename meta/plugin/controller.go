@@ -21,7 +21,6 @@ type {{.Name}} struct { {{range .Extends}}
 }
 
 func New{{.Name}}() types.ActionController {
-	// implement me
     return nil
 }
 

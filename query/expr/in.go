@@ -24,9 +24,14 @@ func (e ExprIn) GetArg() interface{} {
 }
 
 func (e ExprIn) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, table string, i int) string {
-	argTpls := make([]string, e.args.Len())
-	for i := 0;i < e.args.Len();i++ {
-		argTpls[i] = writer.GetArgTpl()
+	var argTpls []string
+	if e.args == nil {
+		argTpls = append(argTpls, writer.GetArgTpl())
+	} else {
+		argTpls = make([]string, e.args.Len())
+		for i := 0;i < e.args.Len();i++ {
+			argTpls = append(argTpls, writer.GetArgTpl())
+		}
 	}
 	property := proto.GetByName(e.name)
 	return fmt.Sprintf(
@@ -37,8 +42,12 @@ func (e ExprIn) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, tab
 }
 
 func (e ExprIn) AddArg(criteria types.Criteria) {
-	for i := 0;i < e.args.Len();i++ {
-		criteria.AddArg(e.args.GetRaw(i))
+	if e.args == nil {
+		criteria.AddArg(nil)
+	} else {
+		for i := 0;i < e.args.Len();i++ {
+			criteria.AddArg(e.args.GetRaw(i))
+		}
 	}
 }
 

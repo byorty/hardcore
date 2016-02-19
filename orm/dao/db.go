@@ -9,10 +9,10 @@ import (
 )
 
 type BaseImpl struct {
-	byIdStatement types.DBStatement
-	byIdsStatement types.DBStatement
-	insertStatement types.DBStatement
-	updateStatement types.DBStatement
+	ByIdStmt types.DBStatement
+	ByIdsStmt types.DBStatement
+	InsertStmt types.DBStatement
+	UpdateStmt types.DBStatement
 }
 
 func (b BaseImpl) Save(model types.Model) {
@@ -71,8 +71,8 @@ type IntImpl struct {
 	BaseImpl
 }
 
-func (i IntImpl) ById(id int) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (i IntImpl) ById(id int) types.DBRow {
+	return i.ByIdStmt.QueryRow(id)
 }
 
 func (i IntImpl) ByIds(ids []int) types.ModelScanner {
@@ -83,8 +83,8 @@ type Int8Impl struct {
 	BaseImpl
 }
 
-func (i Int8Impl) ById(id int8) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (i Int8Impl) ById(id int8) types.DBRow {
+	return i.ByIdStmt.QueryRow(id)
 }
 
 func (i Int8Impl) ByIds(ids []int8) types.ModelScanner {
@@ -95,8 +95,8 @@ type Int16Impl struct {
 	BaseImpl
 }
 
-func (i Int16Impl) ById(id int16) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (i Int16Impl) ById(id int16) types.DBRow {
+	return i.ByIdStmt.QueryRow(id)
 }
 
 func (i Int16Impl) ByIds(ids []int16) types.ModelScanner {
@@ -107,8 +107,8 @@ type Int32Impl struct {
 	BaseImpl
 }
 
-func (i Int32Impl) ById(id int32) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (i Int32Impl) ById(id int32) types.DBRow {
+	return i.ByIdStmt.QueryRow(id)
 }
 
 func (i Int32Impl) ByIds(ids []int32) types.ModelScanner {
@@ -119,8 +119,8 @@ type Int64Impl struct {
 	BaseImpl
 }
 
-func (i Int64Impl) ById(id int64) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (i Int64Impl) ById(id int64) types.DBRow {
+	return i.ByIdStmt.QueryRow(id)
 }
 
 func (i Int64Impl) ByIds(ids []int64) types.ModelScanner {
@@ -131,8 +131,8 @@ type UintImpl struct {
 	BaseImpl
 }
 
-func (i UintImpl) ById(id uint) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (u UintImpl) ById(id uint) types.DBRow {
+	return u.ByIdStmt.QueryRow(id)
 }
 
 func (i UintImpl) ByIds(ids []uint) types.ModelScanner {
@@ -143,8 +143,8 @@ type Uint8Impl struct {
 	BaseImpl
 }
 
-func (i Uint8Impl) ById(id uint8) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (u Uint8Impl) ById(id uint8) types.DBRow {
+	return u.ByIdStmt.QueryRow(id)
 }
 
 func (i Uint8Impl) ByIds(ids []uint8) types.ModelScanner {
@@ -155,8 +155,8 @@ type Uint16Impl struct {
 	BaseImpl
 }
 
-func (i Uint16Impl) ById(id uint16) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (u Uint16Impl) ById(id uint16) types.DBRow {
+	return u.ByIdStmt.QueryRow(id)
 }
 
 func (i Uint16Impl) ByIds(ids []uint16) types.ModelScanner {
@@ -167,8 +167,8 @@ type Uint32Impl struct {
 	BaseImpl
 }
 
-func (i Uint32Impl) ById(id uint32) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (u Uint32Impl) ById(id uint32) types.DBRow {
+	return u.ByIdStmt.QueryRow(id)
 }
 
 func (i Uint32Impl) ByIds(ids []uint32) types.ModelScanner {
@@ -179,8 +179,8 @@ type Uint64Impl struct {
 	BaseImpl
 }
 
-func (i Uint64Impl) ById(id uint64) types.ModelScanner {
-	return criteria.Select().And(expr.Eq("id", id))
+func (u Uint64Impl) ById(id uint64) types.DBRow {
+	return u.ByIdStmt.QueryRow(id)
 }
 
 func (i Uint64Impl) ByIds(ids []uint64) types.ModelScanner {

@@ -126,6 +126,7 @@ func (s SqlDBImpl) Prepare(query types.Query) types.DBStatement {
 	sql := query.ToNative().(string)
 	stmt, err := s.db.Prepare(sql)
 	if err == nil {
+		env.Me().GetLogger().Debug("db - prepare query %s success", sql)
 		return &DBStatementImpl{
 			Stmt: stmt,
 			sql: sql,
