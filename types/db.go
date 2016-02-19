@@ -1,4 +1,5 @@
 package types
+import "database/sql"
 
 type Query interface {
 	ToNative() interface{}

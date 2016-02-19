@@ -164,3 +164,11 @@ func (p Property) GetMethodDefineKind() string {
 	default: return p.GetKind()
 	}
 }
+
+func (p Property) IsIdentifier() bool {
+	return p.GetName() == "id"
+}
+
+func (p Property) NotIdentifier() bool {
+	return !p.IsIdentifier()
+}

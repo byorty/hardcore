@@ -28,6 +28,8 @@ type Property interface {
 	GetProtoKind() string
 	SetRelationProperty(Property)
 	GetRelationProperty() Property
+    IsIdentifier() bool
+    NotIdentifier() bool
 }
 
 type Relation string

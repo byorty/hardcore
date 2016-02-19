@@ -1,6 +1,8 @@
 package types
 
-import "sort"
+import (
+	"sort"
+)
 
 type Slice interface {
 	sort.Interface

@@ -1,6 +1,8 @@
 package slice
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+)
 
 type IntsImpl []int
 

@@ -15,6 +15,18 @@ func Insert() types.Criteria {
 	return newInsert()
 }
 
+func InsertByDao(dao types.ModelDAO) types.Criteria {
+	insert := newInsert()
+	insert.dao = dao
+	insert.proto = dao.Proto()
+	for _, property := range insert.proto.GetSlice() {
+		if property.GetField() != "id" && property.GetRelation() == types.ProtoNoneRelation {
+			insert.AddArg(nil)
+		}
+	}
+	return insert
+}
+
 func newInsert() *InserCriteriaImpl {
 	return &InserCriteriaImpl{
 		args: make([]interface{}, 0),

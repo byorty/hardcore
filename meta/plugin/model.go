@@ -166,9 +166,23 @@ func ({{.ShortName}} {{.DaoName}}) Scan(row interface{}, model interface{}) erro
 	)
 }
 
+func ({{.ShortName}} *{{.DaoName}}) Add(model *{{.Name}}) {
+	db := pool.DB().ByDAO({{.ShortName}})
+	if db.SupportLastInsertId() {
+		{{.ShortName}}.InsertStmt.Exec({{range .Properties}}{{if and .NotIdentifier .GetRelation.IsNone}}
+			&model.{{.GetName}},{{end}}{{end}}
+		).One(model)
+	} else if db.SupportReturningId() {
+		{{.ShortName}}.InsertStmt.Custom({{range .Properties}}{{if and .NotIdentifier .GetRelation.IsNone}}
+			&model.{{.GetName}},{{end}}{{end}}
+		).One(&model.id)
+	}
+}
+
 func ({{.ShortName}} *{{.DaoName}}) AutoInit(db types.DB) {
 	{{.ShortName}}.ByIdStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.Eq("id", nil)))
-	{{.ShortName}}.ByIdsStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.In("id", nil)))
+	//{{.ShortName}}.ByIdsStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.In("id", nil)))
+	{{.ShortName}}.InsertStmt = db.Prepare(criteria.InsertByDao({{.ShortName}}))
 }
 {{range .Properties}}
 func {{$varName}}{{.GetUpperName}}Setter(model interface{}, {{.GetName}} interface{}) {
@@ -263,6 +277,7 @@ func (m *Model) Do(env types.Environment) {
 							types.ProtoImport,
 							types.CriteriaImport,
 							types.ExprImport,
+							types.PoolImport,
 						}, entity.GetImports()...),
 						"Properties": modelEntity.GetProperties(),
 					}
