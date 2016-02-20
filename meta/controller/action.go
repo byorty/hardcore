@@ -81,8 +81,12 @@ func (a Action) GetDefineVars() string {
 }
 
 func (a Action) GetReturn() string {
-	if len(a.Return) == 0 {
-		a.Return = "types.EncodeView"
+	if a.HasForm() {
+		if len(a.Return) == 0 {
+			a.Return = "types.EncodeView"
+		}
+	} else {
+		a.Return = "types.View"
 	}
 	return a.Return
 }

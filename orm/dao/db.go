@@ -15,19 +15,9 @@ type BaseImpl struct {
 	UpdateStmt types.DBStatement
 }
 
-func (b BaseImpl) Save(model types.Model) {
-	idProperty := model.Proto().GetByName("id")
-	getter := idProperty.GetGetter()
-	criteria.Update().And(expr.Eq("id", getter(model))).One(model)
-}
-
 func (b BaseImpl) Update(query types.Query, model types.Model) {
 	currentDb := pool.DB().ByDAO(model.CommonDAO())
 	currentDb.Exec(query).One(model)
-}
-
-func (b BaseImpl) Add(model types.Model) {
-	criteria.Insert().One(model)
 }
 
 func (b BaseImpl) Insert(query types.Query, model types.Model) {
@@ -57,14 +47,6 @@ func (b BaseImpl) SelectOne(query types.Query, model types.Model) {
 func (b BaseImpl) Custom(dao types.ModelDAO, query types.Query, items ...interface{}) {
 	currentDb := pool.DB().ByDAO(dao)
 	currentDb.Custom(query).One(items...)
-}
-
-func (b BaseImpl) Take(model types.Model) {
-	if model.IsScanned() {
-		 b.Save(model)
-	} else {
-		 b.Add(model)
-	}
 }
 
 type IntImpl struct {

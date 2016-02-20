@@ -43,7 +43,9 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 	if callable, ok := action.(types.CallableAction); ok {
 		callable.Call({{.ShortName}}, scope)
 	} else {
-		action.(func(*{{.Name}}, types.RequestScope))({{.ShortName}}, scope)
+		v := action.(func(*{{.Name}}, types.RequestScope) types.View)({{.ShortName}}, scope)
+		v.SetScope(scope)
+		v.Render()
 	}
 }
 {{range .Actions}}{{if .HasForm}}

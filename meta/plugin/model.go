@@ -170,12 +170,27 @@ func ({{.ShortName}} *{{.DaoName}}) Add(model *{{.Name}}) {
 	db := pool.DB().ByDAO({{.ShortName}})
 	if db.SupportLastInsertId() {
 		{{.ShortName}}.InsertStmt.Exec({{range .Properties}}{{if and .NotIdentifier .GetRelation.IsNone}}
-			&model.{{.GetName}},{{end}}{{end}}
+			model.{{.GetName}},{{end}}{{end}}
 		).One(model)
 	} else if db.SupportReturningId() {
 		{{.ShortName}}.InsertStmt.Custom({{range .Properties}}{{if and .NotIdentifier .GetRelation.IsNone}}
-			&model.{{.GetName}},{{end}}{{end}}
+			model.{{.GetName}},{{end}}{{end}}
 		).One(&model.id)
+	}
+}
+
+func ({{.ShortName}} *{{.DaoName}}) Save(model *{{.Name}}) {
+	{{.ShortName}}.UpdateStmt.Exec({{range .Properties}}{{if and .NotIdentifier .GetRelation.IsNone}}
+		model.{{.GetName}},{{end}}{{end}}
+		model.id,
+	).One(model)
+}
+
+func ({{.ShortName}} *{{.DaoName}}) Take(model *{{.Name}}) {
+	if model.IsScanned() {
+		 {{.ShortName}}.Save(model)
+	} else {
+		 {{.ShortName}}.Add(model)
 	}
 }
 
@@ -183,6 +198,7 @@ func ({{.ShortName}} *{{.DaoName}}) AutoInit(db types.DB) {
 	{{.ShortName}}.ByIdStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.Eq("id", nil)))
 	//{{.ShortName}}.ByIdsStmt = db.Prepare(criteria.SelectByDAO({{.ShortName}}).And(expr.In("id", nil)))
 	{{.ShortName}}.InsertStmt = db.Prepare(criteria.InsertByDao({{.ShortName}}))
+	{{.ShortName}}.UpdateStmt = db.Prepare(criteria.UpdateByDAO({{.ShortName}}).And(expr.Eq("id", nil)))
 }
 {{range .Properties}}
 func {{$varName}}{{.GetUpperName}}Setter(model interface{}, {{.GetName}} interface{}) {

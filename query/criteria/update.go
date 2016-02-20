@@ -16,11 +16,30 @@ type UpdateCriteriaImpl struct {
 }
 
 func Update() types.UpdateCriteria {
+	return newUpdate()
+}
+
+func newUpdate() *UpdateCriteriaImpl {
 	return &UpdateCriteriaImpl{
 		chains:      make([]types.LogicChain, 0),
 		projections: make([]types.Projection, 0),
 		args: make([]interface{}, 0),
 	}
+}
+
+func UpdateByDAO(dao types.ModelDAO) types.UpdateCriteria {
+	update := newUpdate()
+
+	update.dao = dao
+	update.proto = dao.Proto()
+
+	for _, property := range update.proto.GetSlice() {
+		if property.GetRelation() == types.ProtoNoneRelation && property.GetField() != "id" {
+			update.Add(proj.Eq(property.GetName(), nil))
+		}
+	}
+
+	return update
 }
 
 func (u *UpdateCriteriaImpl) AddArg(arg interface{}) {

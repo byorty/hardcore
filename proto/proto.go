@@ -32,6 +32,7 @@ func (p protoStruct) GetByNum(i int) types.ProtoProperty {
 
 func (p *protoStruct) Set(name string, property types.ProtoProperty) types.Proto {
 	p.propMap[name] = property
+	property.SetName(name)
 	p.props = append(p.props, property)
 	return p
 }

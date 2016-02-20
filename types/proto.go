@@ -57,6 +57,8 @@ const (
 )
 
 type ProtoProperty interface {
+	GetName() string
+	SetName(string)
 	GetField() string
 	GetKind() ProtoKind
 	GetRelation() ProtoRelation

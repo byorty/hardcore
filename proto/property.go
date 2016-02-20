@@ -3,6 +3,7 @@ package proto
 import "github.com/byorty/hardcore/types"
 
 type Property struct {
+	name     string
 	field    string
 	kind     types.ProtoKind
 	relation types.ProtoRelation
@@ -59,4 +60,12 @@ func (p Property) GetSetter() types.Setter {
 
 func (p Property) GetGetter() types.Getter {
 	return p.getter
+}
+
+func (p *Property) SetName(name string) {
+	p.name = name
+}
+
+func (p Property) GetName() string {
+	return p.name
 }
