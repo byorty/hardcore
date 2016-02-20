@@ -49,7 +49,11 @@ func (d *DBRowsImpl) All(models types.Model) {
 		for d.Rows.Next() && d.err == nil {
 			d.err = models.CommonDAO().ScanAll(d.Rows, models)
 		}
-		env.Me().GetLogger().Debug("db - exec rows query %s %v", d.sql, d.args)
+		if d.err == nil {
+			env.Me().GetLogger().Debug("db - exec rows query %s %v", d.sql, d.args)
+		} else {
+			env.Me().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
+		}
 	} else {
 		env.Me().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
 	}
