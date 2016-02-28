@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"unicode/utf8"
 	"strconv"
-	"github.com/byorty/hardcore/types"
 	"time"
 )
 
@@ -13,8 +12,7 @@ var (
 )
 
 type BaseImpl struct {
-	buf      *bytes.Buffer
-	exporter types.Exporter
+	buf *bytes.Buffer
 }
 
 func (b *BaseImpl) encodeString(value string) {

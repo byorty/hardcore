@@ -36,26 +36,25 @@ func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
 	jsonMutex.Lock()
 	defer jsonMutex.Unlock()
 
-	j.exporter = exporter
 	j.buf.Reset()
-	j.encodeExporter(j.exporter)
+	j.encodeExporter(exporter)
 	return j.buf.Bytes()
 }
 
 func (j JsonImpl) encodeExporter(exporter types.Exporter) {
 	switch exportable := exporter.GetExportable().(type) {
-	case types.Slice: j.encodeSlice(exportable)
-	case types.Model, types.FormError: j.encodeStruct(exportable)
+	case types.Slice: j.encodeSlice(exporter, exportable)
+	case types.Model, types.FormError: j.encodeStruct(exporter, exportable)
 	default: j.buf.Write(null)
 	}
 }
 
-func (j *JsonImpl) encodeSlice(slice types.Slice) {
+func (j *JsonImpl) encodeSlice(exporter types.Exporter, slice types.Slice) {
 	sliceLen := slice.Len()
 	lastIndex := sliceLen - 1
 	j.buf.Write(startSquareBracket)
 	for i := 0; i < slice.Len(); i++ {
-		j.encode(slice.GetRaw(i))
+		j.encode(exporter, slice.GetRaw(i))
 		if i < lastIndex {
 			j.buf.Write(comma)
 		}
@@ -63,17 +62,17 @@ func (j *JsonImpl) encodeSlice(slice types.Slice) {
 	j.buf.Write(endSquareBracket)
 }
 
-func (j *JsonImpl) encodeStruct(model interface{}) {
-	propsLen := j.exporter.Len()
+func (j *JsonImpl) encodeStruct(exporter types.Exporter, model interface{}) {
+	propsLen := exporter.Len()
 	lastIndex := propsLen - 1
 	j.buf.Write(startBrace)
 	for i := 0; i < propsLen; i++ {
-		prop := j.exporter.Get(i)
+		prop := exporter.Get(i)
 		j.buf.Write(quotes)
 		j.buf.WriteString(prop.GetName())
 		j.buf.Write(quotes)
 		j.buf.Write(colon)
-		j.encode(prop.GetValue(model))
+		j.encode(exporter, prop.GetValue(model))
 		if i < lastIndex {
 			j.buf.Write(comma)
 		}
@@ -81,7 +80,7 @@ func (j *JsonImpl) encodeStruct(model interface{}) {
 	j.buf.Write(endBrace)
 }
 
-func (j *JsonImpl) encode(exportable interface{}) {
+func (j *JsonImpl) encode(exporter types.Exporter, exportable interface{}) {
 	switch value := exportable.(type) {
 	case int: j.encodeInt64(int64(value))
 	case int8: j.encodeInt64(int64(value))
@@ -104,9 +103,10 @@ func (j *JsonImpl) encode(exportable interface{}) {
 		j.buf.Write(quotes)
 		j.encodeTime(value)
 		j.buf.Write(quotes)
-	case types.Slice: j.encodeSlice(value)
-	case types.Model, types.FormError: j.encodeStruct(value)
-	case types.Named: j.encode(value.GetRawId())
+	case types.Exporter: j.encodeExporter(value)
+	case types.Slice: j.encodeSlice(exporter, value)
+	case types.Model, types.FormError: j.encodeStruct(exporter, value)
+	case types.Named: j.encode(exporter, value.GetRawId())
 	case nil: j.buf.Write(null)
 	}
 }
