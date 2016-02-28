@@ -23,7 +23,6 @@ type {{.Name}} struct { {{range .Extends}}
 func New{{.Name}}() types.ActionController {
     return nil
 }
-
 {{range .Actions}}
 func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn}} {
 

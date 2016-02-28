@@ -219,7 +219,7 @@ func (t *Type) initExporters() {
 						modelEntity := existsEntity.(types.ModelEntity)
 						for _, prop := range exporter.GetProperties() {
 							for _, modelProp := range modelEntity.GetProperties() {
-								if prop.GetName() == modelProp.GetName() {
+								if prop.GetName() == modelProp.GetName() && modelProp.GetRelation().IsNone() {
 									prop.SetHasGetter(true)
 									break
 								}

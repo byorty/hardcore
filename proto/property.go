@@ -1,6 +1,9 @@
 package proto
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+	"fmt"
+)
 
 type Property struct {
 	name     string
@@ -35,7 +38,11 @@ func NewRelationProperty(field string, kind types.ProtoKind, relation types.Prot
 }
 
 func (p Property) GetField() string {
-	return p.field
+	if p.relation == types.ProtoOneToOneRelation {
+		return fmt.Sprintf("%s_id", p.field)
+	} else {
+		return p.field
+	}
 }
 
 func (p Property) GetKind() types.ProtoKind {

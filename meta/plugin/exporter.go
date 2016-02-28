@@ -21,7 +21,7 @@ type {{$name}}PropertyImpl struct {
 	closure func({{$sourceName}}) interface{}
 }
 
-func New{{$name}}Property(name string, closure func({{$sourceVarName}} {{$sourceName}}) interface{}) types.ExportableProperty {
+func new{{$name}}Property(name string, closure func({{$sourceVarName}} {{$sourceName}}) interface{}) types.ExportableProperty {
 	return &{{$name}}PropertyImpl{
 		exporter.NewProperty(name),
 		closure,
@@ -41,7 +41,7 @@ func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
 
 var (
 	{{.VarName}}Properties = []types.ExportableProperty{ {{range .Properties}}
-		New{{$name}}Property("{{.GetName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
+		new{{$name}}Property("{{.GetName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
 			return {{if .HasGetter}}{{$sourceVarName}}.{{.GetGetterName}}(){{else}}nil{{end}}
 		}),{{end}}
 	}
