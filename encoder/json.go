@@ -34,11 +34,11 @@ func NewJson() types.Encoder {
 
 func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
 	jsonMutex.Lock()
-	defer jsonMutex.Unlock()
-
-	j.buf.Reset()
 	j.encodeExporter(exporter)
-	return j.buf.Bytes()
+	buf := j.buf.Bytes()
+	j.buf.Reset()
+	jsonMutex.Unlock()
+	return buf
 }
 
 func (j JsonImpl) encodeExporter(exporter types.Exporter) {

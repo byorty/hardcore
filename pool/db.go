@@ -15,11 +15,7 @@ func DB() types.DBPool {
 }
 
 func (p DBPoolImpl) Add(name string, db types.DB) types.DBPool {
-	if db == nil {
-//		logger.Err(`pool - can't add disconnected db`)
-	} else {
-		p[name] = db
-	}
+	p[name] = db
 	return p
 }
 
