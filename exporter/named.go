@@ -27,11 +27,11 @@ func NewNamed(named types.Named) types.Exporter {
 
 var (
 	namedProperties = []types.ExportableProperty{
-		newLimitProperty("id", func(limit types.Named) interface{} {
-			return limit.GetRawId()
+		newLimitProperty("id", func(named types.Named) interface{} {
+			return named.GetRawId()
 		}),
-		newLimitProperty("name", func(limit types.Named) interface{} {
-			return limit.GetName()
+		newLimitProperty("name", func(named types.Named) interface{} {
+			return named.GetName()
 		}),
 	}
 )
