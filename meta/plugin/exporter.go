@@ -31,7 +31,14 @@ func new{{$name}}Property(name string, closure func({{$sourceVarName}} {{$source
 func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model interface{}) interface{} {
 	return {{.ShortName}}.closure(model.({{$sourceName}}))
 }
-
+{{if .IsMutiple}}
+func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties({{.VarName}}Properties)
+	exp.SetExportable({{.ExportableVarName}})
+	return exp
+}
+{{else}}
 func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
 	exp := new(exporter.BaseImpl)
 	exp.SetProperties({{.VarName}}Properties)
@@ -39,6 +46,13 @@ func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
 	return exp
 }
 
+func New{{.MultipleName}}({{.ExportablesVarName}} {{.ExportablesName}}) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties({{.VarName}}Properties)
+	exp.SetExportable({{.ExportablesVarName}})
+	return exp
+}
+{{end}}
 var (
 	{{.VarName}}Properties = []types.ExportableProperty{ {{range .Properties}}
 		new{{$name}}Property("{{.GetName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
@@ -59,7 +73,8 @@ func (e *Exporter) Do(env types.Environment) {
 				expEntity := entity.(types.ExporterEntity)
 				entity := expEntity.GetSourceEntity()
 				var exportableName, exportableVarName string
-				if expEntity.GetSource() == entity.GetFullMultipleName() {
+				isMutiple := expEntity.GetSource() == entity.GetFullMultipleName()
+				if isMutiple {
 					exportableName = entity.GetFullMultipleName()
 					exportableVarName = utils.LowerFirst(entity.GetMultipleName())
 				} else {
@@ -68,6 +83,7 @@ func (e *Exporter) Do(env types.Environment) {
 				}
 				tplParams := map[string]interface{}{
 					"Name": expEntity.GetName(),
+					"MultipleName": expEntity.GetMultipleName(),
 					"ShortName": strings.ToLower(expEntity.GetName()[0:1]),
 					"Package": container.GetShortPackage(),
 					"Imports": append([]string{
@@ -78,8 +94,11 @@ func (e *Exporter) Do(env types.Environment) {
 					"VarName": utils.LowerFirst(expEntity.GetName()),
 					"ExportableName": exportableName,
 					"ExportableVarName": exportableVarName,
+					"ExportablesName": entity.GetFullMultipleName(),
+					"ExportablesVarName": utils.LowerFirst(entity.GetMultipleName()),
 					"SourceName": entity.GetPointerFullName(),
 					"SourceVarName": utils.LowerFirst(entity.GetName()),
+					"IsMutiple": isMutiple,
 				}
 
 				env.GetConfiguration().AddFile(expEntity.GetFilename(), tpl, tplParams)
