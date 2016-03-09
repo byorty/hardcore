@@ -2,10 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"net/url"
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/orm/db/writer"
-	"github.com/byorty/hardcore/env"
+	"github.com/byorty/hardcore/scope"
+	"github.com/byorty/hardcore/types"
+	"net/url"
 )
 
 var (
@@ -30,15 +30,15 @@ type SqlDBImpl struct {
 func NewSqlDB(uri string) types.DB {
 	configUrl, err := url.Parse(uri)
 	if err != nil {
-		env.Me().GetLogger().Error("db - can't parse %s, detail - %v", uri, err)
+		scope.App().GetLogger().Error("db - can't parse %s, detail - %v", uri, err)
 		return nil
 	}
 	db, err := sql.Open(configUrl.Scheme, configUrl.String())
 	if err != nil {
-		env.Me().GetLogger().Error("db - can't connect to %s, detail - %v", uri, err)
+		scope.App().GetLogger().Error("db - can't connect to %s, detail - %v", uri, err)
 		return nil
 	}
-	env.Me().GetLogger().Info("db - connect to %s success", uri)
+	scope.App().GetLogger().Info("db - connect to %s success", uri)
 	return &SqlDBImpl{
 		db,
 		writers[configUrl.Scheme],
@@ -62,9 +62,9 @@ func (s SqlDBImpl) Exec(query types.Query) types.DBResult {
 	result, err := s.db.Exec(sql, query.GetArgs()...)
 	return &DBResult{
 		Result: result,
-		err: err,
-		sql: sql,
-		args: query.GetArgs(),
+		err:    err,
+		sql:    sql,
+		args:   query.GetArgs(),
 	}
 }
 
@@ -73,8 +73,8 @@ func (s SqlDBImpl) Query(query types.Query) types.DBRows {
 	rows, err := s.db.Query(sql, query.GetArgs()...)
 	return &DBRowsImpl{
 		Rows: rows,
-		err: err,
-		sql: sql,
+		err:  err,
+		sql:  sql,
 		args: query.GetArgs(),
 	}
 }
@@ -83,8 +83,8 @@ func (s SqlDBImpl) QueryRow(query types.Query) types.DBRow {
 	sql := query.ToNative().(string)
 	row := s.db.QueryRow(sql, query.GetArgs()...)
 	return &DBRowImpl{
-		Row: row,
-		sql: sql,
+		Row:  row,
+		sql:  sql,
 		args: query.GetArgs(),
 	}
 }
@@ -93,8 +93,8 @@ func (s SqlDBImpl) Custom(query types.Query) types.DBCustomRow {
 	sql := query.ToNative().(string)
 	row := s.db.QueryRow(sql, query.GetArgs()...)
 	return &DBCustomRowImpl{
-		Row: row,
-		sql: sql,
+		Row:  row,
+		sql:  sql,
 		args: query.GetArgs(),
 	}
 }
@@ -102,7 +102,7 @@ func (s SqlDBImpl) Custom(query types.Query) types.DBCustomRow {
 func (s *SqlDBImpl) Close() {
 	err := s.db.Close()
 	if err != nil {
-		env.Me().GetLogger().Error("db - can't close connection, detail - %v", err)
+		scope.App().GetLogger().Error("db - can't close connection, detail - %v", err)
 	}
 }
 
@@ -126,13 +126,13 @@ func (s SqlDBImpl) Prepare(query types.Query) types.DBStatement {
 	sql := query.ToNative().(string)
 	stmt, err := s.db.Prepare(sql)
 	if err == nil {
-		env.Me().GetLogger().Debug("db - prepare query %s success", sql)
+		scope.App().GetLogger().Debug("db - prepare query %s success", sql)
 		return &DBStatementImpl{
 			Stmt: stmt,
-			sql: sql,
+			sql:  sql,
 		}
 	} else {
-		env.Me().GetLogger().Error("db - can't prepare query %s, detail - %v", sql, err)
+		scope.App().GetLogger().Error("db - can't prepare query %s, detail - %v", sql, err)
 		return nil
 	}
 }

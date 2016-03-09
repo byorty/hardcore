@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
+	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/env"
 )
 
 type DBRowImpl struct {
@@ -15,9 +15,9 @@ type DBRowImpl struct {
 func (d *DBRowImpl) One(model types.Model) {
 	err := model.CommonDAO().Scan(d, model)
 	if err == nil {
-		env.Me().GetLogger().Debug("db - exec row query %s %v", d.sql, d.args)
+		scope.App().GetLogger().Debug("db - exec row query %s %v", d.sql, d.args)
 	} else {
-		env.Me().GetLogger().Error("db - can`t exec row query %s %v, detail - %v", d.sql, d.args, err)
+		scope.App().GetLogger().Error("db - can`t exec row query %s %v, detail - %v", d.sql, d.args, err)
 	}
 }
 
@@ -30,9 +30,9 @@ type DBCustomRowImpl struct {
 func (d *DBCustomRowImpl) One(items ...interface{}) {
 	err := d.Scan(items...)
 	if err == nil {
-		env.Me().GetLogger().Debug("db - exec custom query %s %v", d.sql, d.args)
+		scope.App().GetLogger().Debug("db - exec custom query %s %v", d.sql, d.args)
 	} else {
-		env.Me().GetLogger().Error("db -  can`t exec custom query %s %v, detail - %v", d.sql, d.args, err)
+		scope.App().GetLogger().Error("db -  can`t exec custom query %s %v, detail - %v", d.sql, d.args, err)
 	}
 }
 
@@ -50,12 +50,12 @@ func (d *DBRowsImpl) All(models types.Model) {
 			d.err = models.CommonDAO().ScanAll(d.Rows, models)
 		}
 		if d.err == nil {
-			env.Me().GetLogger().Debug("db - exec rows query %s %v", d.sql, d.args)
+			scope.App().GetLogger().Debug("db - exec rows query %s %v", d.sql, d.args)
 		} else {
-			env.Me().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
+			scope.App().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
 		}
 	} else {
-		env.Me().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
+		scope.App().GetLogger().Error("db - can`t exec rows query %s %v, detail - %v", d.sql, d.args, d.err)
 	}
 }
 
@@ -73,8 +73,8 @@ func (d *DBResult) One(model types.Model) {
 			setter := model.Proto().GetByName("id").GetSetter()
 			setter(model, id)
 		}
-		env.Me().GetLogger().Debug("db - exec result query %s %v", d.sql, d.args)
+		scope.App().GetLogger().Debug("db - exec result query %s %v", d.sql, d.args)
 	} else {
-		env.Me().GetLogger().Error("db - can't exec %s %v, detail - %v", d.sql, d.args, d.err)
+		scope.App().GetLogger().Error("db - can't exec %s %v, detail - %v", d.sql, d.args, d.err)
 	}
 }

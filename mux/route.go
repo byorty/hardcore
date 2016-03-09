@@ -1,9 +1,10 @@
 package mux
 
 import (
-	"strings"
 	"fmt"
+	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"strings"
 )
 
 const (
@@ -21,22 +22,22 @@ const (
 type kindRoute int
 
 const (
-	kindAction           kindRoute = iota
+	kindAction kindRoute = iota
 	kindPath
 	kindController
 	kindControllerAction
 )
 
 type Route struct {
-	kind              kindRoute
-	parent            *Route
+	kind   kindRoute
+	parent *Route
 
-	method            string
-	schemeTpl         string
-	hostTpl           string
-	portTpl           string
-	tpl               string
-	headerTpls        map[string]string
+	method     string
+	schemeTpl  string
+	hostTpl    string
+	portTpl    string
+	tpl        string
+	headerTpls map[string]string
 
 	scopeConstruct    types.RequestScopeConstructor
 	beforeMiddlewares []types.MiddlewareFunc
@@ -48,10 +49,10 @@ type Route struct {
 
 func newRoute() *Route {
 	return &Route{
-		headerTpls       : make(map[string]string),
+		headerTpls:        make(map[string]string),
 		beforeMiddlewares: make([]types.MiddlewareFunc, 0),
-		afterMiddlewares : make([]types.MiddlewareFunc, 0),
-		scopeConstruct   : NewRequestScope,
+		afterMiddlewares:  make([]types.MiddlewareFunc, 0),
+		scopeConstruct:    scope.NewRequest,
 	}
 }
 
@@ -134,7 +135,7 @@ func (r *Route) Header(key, value string) *Route {
 	return r
 }
 
-func (r *Route) Before(middleware func (types.RequestScope)) *Route {
+func (r *Route) Before(middleware func(types.RequestScope)) *Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
@@ -147,7 +148,7 @@ func (r *Route) Post(tpl string, handler interface{}) *Route {
 	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPost, tpl, handler))
 }
 
-func (r *Route) Put(tpl string, handler interface{})*Route {
+func (r *Route) Put(tpl string, handler interface{}) *Route {
 	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPut, tpl, handler))
 }
 
@@ -155,7 +156,7 @@ func (r *Route) Delete(tpl string, handler interface{}) *Route {
 	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodDelete, tpl, handler))
 }
 
-func (r *Route) After(middleware func (types.RequestScope)) *Route {
+func (r *Route) After(middleware func(types.RequestScope)) *Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }

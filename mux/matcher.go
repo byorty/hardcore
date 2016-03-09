@@ -1,12 +1,13 @@
 package mux
 
 import (
-	"regexp"
-	"fmt"
-	"strings"
 	"bytes"
-	"net/http"
+	"fmt"
+	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"net/http"
+	"regexp"
+	"strings"
 )
 
 type ParamMatcher struct {
@@ -18,7 +19,7 @@ func newParamMatcher(str string) *ParamMatcher {
 	tpl, vars := parseTpl(str)
 	return &ParamMatcher{
 		regexp: regexp.MustCompile(tpl),
-		vars  : vars,
+		vars:   vars,
 	}
 }
 
@@ -27,10 +28,10 @@ func (p *ParamMatcher) Match(url string) (bool, types.RequestScopeParams) {
 	matches := p.regexp.FindStringSubmatch(url)
 	match := len(matches) > 0
 	if match {
-		params = make(RequestScopeParamsImpl)
+		params = scope.NewRequestScopeParams()
 		for i, match := range matches {
 			if i > 0 {
-				params.Set(p.vars[i - 1], match)
+				params.Set(p.vars[i-1], match)
 			}
 		}
 	}
@@ -50,7 +51,7 @@ func parseTpl(tpl string) (string, []string) {
 			break
 		case '}':
 			if level--; level == 0 {
-				parts := strings.SplitN(tpl[start + 1:i], ":", 2)
+				parts := strings.SplitN(tpl[start+1:i], ":", 2)
 				if len(parts) == 2 {
 					vars = append(vars, parts[0])
 					subTpl, subVars := parseTpl(parts[1])
@@ -88,23 +89,22 @@ type HeaderMatcher struct {
 func newHeaderMatcher(key, value string) *HeaderMatcher {
 	tpl, vars := parseTpl(value)
 	return &HeaderMatcher{
-		key   : key,
+		key:    key,
 		regexp: regexp.MustCompile(tpl),
-		vars  : vars,
+		vars:   vars,
 	}
 }
 
-func (h *HeaderMatcher) Match(scope types.RequestScope) bool {
-	matches := h.regexp.FindStringSubmatch(scope.GetRequest().Header.Get(h.key))
+func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
+	matches := h.regexp.FindStringSubmatch(requestScope.GetRequest().Header.Get(h.key))
 	match := len(matches) > 0
 	if match {
-		if scope.GetHeaderParams() == nil {
-			var params types.RequestScopeParams = make(RequestScopeParamsImpl)
-			scope.SetHeaderParams(params)
+		if requestScope.GetHeaderParams() == nil {
+			requestScope.SetHeaderParams(scope.NewRequestScopeParams())
 		}
 		for i, match := range matches {
 			if i > 0 {
-				scope.SetHeaderParam(h.vars[i - 1], match)
+				requestScope.SetHeaderParam(h.vars[i-1], match)
 			}
 		}
 	}

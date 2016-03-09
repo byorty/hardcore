@@ -1,8 +1,9 @@
 package mux
 
 import (
-	"net/http"
+	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"net/http"
 )
 
 type Router struct {
@@ -16,11 +17,11 @@ type Router struct {
 
 func NewRouter(routes ...*Route) *Router {
 	router := &Router{
-		gets        : make(Matchers, 0),
-		posts       : make(Matchers, 0),
-		puts        : make(Matchers, 0),
-		deletes     : make(Matchers, 0),
-		notFoundFunc: func (scope types.RequestScope) {
+		gets:    make(Matchers, 0),
+		posts:   make(Matchers, 0),
+		puts:    make(Matchers, 0),
+		deletes: make(Matchers, 0),
+		notFoundFunc: func(scope types.RequestScope) {
 			scope.GetWriter().WriteHeader(http.StatusNotFound)
 			scope.GetWriter().Write([]byte("not found"))
 		},
@@ -38,7 +39,7 @@ func (r *Router) Add(route *Route) *Router {
 	return r
 }
 
-func (r *Router) NotFound(handler func (types.RequestScope)) *Router {
+func (r *Router) NotFound(handler func(types.RequestScope)) *Router {
 	r.notFoundFunc = handler
 	return r
 }
@@ -50,11 +51,16 @@ func (r *Router) addMatcher(method string, matcher *Matcher) {
 
 func (r *Router) getMatchersByMethod(method string) *Matchers {
 	switch method {
-	case methodGet   : return &r.gets
-	case methodPost  : return &r.posts
-	case methodPut   : return &r.puts
-	case methodDelete: return &r.deletes
-	default: return nil
+	case methodGet:
+		return &r.gets
+	case methodPost:
+		return &r.posts
+	case methodPut:
+		return &r.puts
+	case methodDelete:
+		return &r.deletes
+	default:
+		return nil
 	}
 }
 
@@ -103,9 +109,8 @@ func (r *Router) doMiddlewares(middlewares []types.MiddlewareFunc, scope types.R
 }
 
 func (r *Router) callNotFoundFunc(rw http.ResponseWriter, req *http.Request) {
-	scope := NewRequestScope()
-	scope.SetRequest(req)
-	scope.SetWriter(rw)
-	r.notFoundFunc(scope)
+	requestScope := scope.NewRequest()
+	requestScope.SetRequest(req)
+	requestScope.SetWriter(rw)
+	r.notFoundFunc(requestScope)
 }
-

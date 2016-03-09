@@ -1,24 +1,24 @@
 package current
 
 import (
-	_ "github.com/lib/pq"
-	"github.com/byorty/hardcore/test/configs"
+	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/orm/db"
 	"github.com/byorty/hardcore/pool"
-	"github.com/byorty/hardcore/env"
-	"github.com/byorty/hardcore/log"
+	"github.com/byorty/hardcore/scope"
+	"github.com/byorty/hardcore/test/configs"
+	_ "github.com/lib/pq"
 )
 
-func init()  {
-	env.Me().
+func init() {
+	scope.App().
 		SetProjectName("Test").
 		SetRouter(configs.Router()).
 		SetLogger(log.NewDefaultLogger(log.ERROR))
 
 	pool.DB().
 		Add(
-			"default",
-			db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8"),
-		)
+		"default",
+		db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8"),
+	)
 
 }

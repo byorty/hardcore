@@ -13,7 +13,7 @@ type EncodeView interface {
 
 type HtmlView interface {
 	View
-	SetTemplate(string)
+	SetTemplate(string) HtmlView
 }
 
 type RawView interface {
