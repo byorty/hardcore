@@ -17,6 +17,8 @@ type AppImpl struct {
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 	rootPath     string
+	tmplPath     string
+	tmplExt      string
 	logger       types.Logger
 	daos         []types.ModelDAO
 }
@@ -29,6 +31,7 @@ func New() types.ApplicationScope {
 		writeTimeout: 10 * time.Second,
 		rootPath:     utils.Pwd(),
 		logger:       log.NewDefaultLogger(log.FINEST),
+		tmplExt:      "html",
 	}
 }
 
@@ -110,6 +113,24 @@ func (a AppImpl) GetDAOs() []types.ModelDAO {
 
 func (a *AppImpl) SetDAOs(daos []types.ModelDAO) types.ApplicationScope {
 	a.daos = daos
+	return a
+}
+
+func (a AppImpl) GetTmplPath() string {
+	return a.tmplPath
+}
+
+func (a *AppImpl) SetTmplPath(tmplPath string) types.ApplicationScope {
+	a.tmplPath = tmplPath
+	return a
+}
+
+func (a AppImpl) GetTmplExt() string {
+	return a.tmplExt
+}
+
+func (a *AppImpl) SetTmplExt(tmplExt string) types.ApplicationScope {
+	a.tmplExt = tmplExt
 	return a
 }
 

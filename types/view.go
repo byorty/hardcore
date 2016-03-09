@@ -11,9 +11,10 @@ type EncodeView interface {
 	SetEncoder(Encoder) EncodeView
 }
 
-type HtmlView interface {
+type TmplView interface {
 	View
-	SetTemplate(string) HtmlView
+	Set(string, interface{}) TmplView
+	SetTemplate(string) TmplView
 }
 
 type RawView interface {

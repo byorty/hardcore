@@ -24,6 +24,10 @@ type ApplicationScope interface {
 	SetLogger(Logger) ApplicationScope
 	GetDAOs() []ModelDAO
 	SetDAOs([]ModelDAO) ApplicationScope
+	GetTmplPath() string
+	SetTmplPath(string) ApplicationScope
+	GetTmplExt() string
+	SetTmplExt(string) ApplicationScope
 }
 
 type SessionScope interface {

@@ -1,9 +1,9 @@
 package plugin
 
 import (
+	"github.com/byorty/hardcore/meta/controller"
 	"github.com/byorty/hardcore/meta/types"
 	"path/filepath"
-	"github.com/byorty/hardcore/meta/controller"
 )
 
 var (
@@ -24,7 +24,7 @@ import ({{range .AutoImports}}
 )
 
 var (
-	Router = mux.NewRouter(){{if .Containers}}.Add({{range .Containers}}{{$package := .GetShortPackage}}
+	Router = mux.NewRouter(){{if .Containers}}.Batch({{range .Containers}}{{$package := .GetShortPackage}}
 		mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
 			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
@@ -37,7 +37,7 @@ var (
 `
 )
 
-type Router struct {}
+type Router struct{}
 
 func (r *Router) Do(env types.Environment) {
 	autoImports := make([]string, 0)
@@ -74,6 +74,6 @@ func (r *Router) Do(env types.Environment) {
 	}
 
 	filename := filepath.Join(env.GetAbsPath(), "configs", "router")
-	env.GetConfiguration().AddAutoFile(filename + "_auto", autoRouterTpl, tplParams)
+	env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
 	env.GetConfiguration().AddFile(filename, routerTpl, tplParams)
 }
