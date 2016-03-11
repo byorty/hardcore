@@ -29,5 +29,6 @@ func (a Application) Run() {
 func NewHttpServer() types.Application {
 	return New().
 		AddPlugin(new(plugin.DAOImpl)).
+		AddPlugin(new(plugin.TmplImpl)).
 		AddPlugin(new(plugin.HttpImpl))
 }

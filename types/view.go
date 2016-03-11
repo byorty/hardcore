@@ -1,6 +1,7 @@
 package types
 
 type View interface {
+	SetController(ActionController)
 	SetScope(RequestScope)
 	Render()
 }

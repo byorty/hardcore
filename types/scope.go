@@ -1,6 +1,7 @@
 package types
 
 import (
+	"html/template"
 	"net/http"
 	"time"
 )
@@ -26,8 +27,8 @@ type ApplicationScope interface {
 	SetDAOs([]ModelDAO) ApplicationScope
 	GetTmplPath() string
 	SetTmplPath(string) ApplicationScope
-	GetTmplExt() string
-	SetTmplExt(string) ApplicationScope
+	GetTmplCache() map[string]*template.Template
+	SetTmplCache(map[string]*template.Template) ApplicationScope
 }
 
 type SessionScope interface {

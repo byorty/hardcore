@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/utils"
+	"html/template"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type AppImpl struct {
 	writeTimeout time.Duration
 	rootPath     string
 	tmplPath     string
-	tmplExt      string
+	tmplCache    map[string]*template.Template
 	logger       types.Logger
 	daos         []types.ModelDAO
 }
@@ -31,7 +32,6 @@ func New() types.ApplicationScope {
 		writeTimeout: 10 * time.Second,
 		rootPath:     utils.Pwd(),
 		logger:       log.NewDefaultLogger(log.FINEST),
-		tmplExt:      "html",
 	}
 }
 
@@ -125,12 +125,12 @@ func (a *AppImpl) SetTmplPath(tmplPath string) types.ApplicationScope {
 	return a
 }
 
-func (a AppImpl) GetTmplExt() string {
-	return a.tmplExt
+func (a AppImpl) GetTmplCache() map[string]*template.Template {
+	return a.tmplCache
 }
 
-func (a *AppImpl) SetTmplExt(tmplExt string) types.ApplicationScope {
-	a.tmplExt = tmplExt
+func (a *AppImpl) SetTmplCache(tmplCache map[string]*template.Template) types.ApplicationScope {
+	a.tmplCache = tmplCache
 	return a
 }
 

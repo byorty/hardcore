@@ -1,16 +1,16 @@
 package plugin
 
 import (
-	"github.com/byorty/hardcore/meta/types"
-	"strings"
 	"github.com/byorty/hardcore/meta/controller"
+	"github.com/byorty/hardcore/meta/types"
 	"sort"
+	"strings"
 )
 
 var (
 	controllerTpl = `{{$name := .Name}}` +
-`{{$shortName := .ShortName}}` +
-`package {{.Package}}
+		`{{$shortName := .ShortName}}` +
+		`package {{.Package}}
 
 import ({{range .Imports}}
     "{{.}}"{{end}}
@@ -31,8 +31,8 @@ func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn
 {{end}}
 `
 	autoControllerTpl = `{{$name := .Name}}` +
-`{{$shortName := .ShortName}}` +
-`package {{.Package}}
+		`{{$shortName := .ShortName}}` +
+		`package {{.Package}}
 
 import ({{range .AutoImports}}
     "{{.}}"{{end}}
@@ -43,6 +43,7 @@ func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.Requ
 		callable.Call({{.ShortName}}, scope)
 	} else {
 		v := action.(func(*{{.Name}}, types.RequestScope) types.View)({{.ShortName}}, scope)
+		v.SetController({{.ShortName}})
 		v.SetScope(scope)
 		v.Render()
 	}
@@ -64,6 +65,7 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*{{$name}})
 		v = {{$shortName}}(ctrl, {{.GetDefineVars}})
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
@@ -82,7 +84,7 @@ var ({{range .Actions}}{{if .HasForm}}
 `
 )
 
-type Controller struct {}
+type Controller struct{}
 
 func (c *Controller) Do(env types.Environment) {
 	container := new(controller.Container)
@@ -118,7 +120,7 @@ func (c *Controller) Do(env types.Environment) {
 
 				imports := append(
 					[]string{types.DefaultImport},
-					controllerEntity.GetImports()...
+					controllerEntity.GetImports()...,
 				)
 				autoImports := []string{types.DefaultImport}
 				if hasForm {
@@ -130,21 +132,21 @@ func (c *Controller) Do(env types.Environment) {
 					)
 					autoImports = append(
 						autoImports,
-						controllerEntity.GetImports()...
+						controllerEntity.GetImports()...,
 					)
 					autoImports = append(
 						autoImports,
-						autoInjectionImports...
+						autoInjectionImports...,
 					)
 				}
 				tplParams := map[string]interface{}{
-					"Extends": controllerEntity.GetExtends(),
-					"ShortName": strings.ToLower(controllerEntity.GetName()[0:1]),
-					"Name": controllerEntity.GetName(),
-					"Package": container.GetShortPackage(),
-					"Imports": imports,
+					"Extends":     controllerEntity.GetExtends(),
+					"ShortName":   strings.ToLower(controllerEntity.GetName()[0:1]),
+					"Name":        controllerEntity.GetName(),
+					"Package":     container.GetShortPackage(),
+					"Imports":     imports,
 					"AutoImports": autoImports,
-					"Actions": controllerEntity.GetActions(),
+					"Actions":     controllerEntity.GetActions(),
 				}
 
 				env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)
