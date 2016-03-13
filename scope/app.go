@@ -22,6 +22,7 @@ type AppImpl struct {
 	tmplCache    map[string]*template.Template
 	logger       types.Logger
 	daos         []types.ModelDAO
+	cookieName   string
 }
 
 func New() types.ApplicationScope {
@@ -131,6 +132,15 @@ func (a AppImpl) GetTmplCache() map[string]*template.Template {
 
 func (a *AppImpl) SetTmplCache(tmplCache map[string]*template.Template) types.ApplicationScope {
 	a.tmplCache = tmplCache
+	return a
+}
+
+func (a AppImpl) GetCookieName() string {
+	return a.cookieName
+}
+
+func (a *AppImpl) SetCookieName(cookieName string) types.ApplicationScope {
+	a.cookieName = cookieName
 	return a
 }
 

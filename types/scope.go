@@ -29,11 +29,16 @@ type ApplicationScope interface {
 	SetTmplPath(string) ApplicationScope
 	GetTmplCache() map[string]*template.Template
 	SetTmplCache(map[string]*template.Template) ApplicationScope
+	GetCookieName() string
+	SetCookieName(string) ApplicationScope
 }
 
 type SessionScope interface {
-	Cache
+	Get(string) interface{}
 	GetId() string
+	Has(string) bool
+	Remove(string) SessionScope
+	Set(string, interface{}) SessionScope
 }
 
 type RequestScopeParams interface {

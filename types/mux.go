@@ -8,6 +8,11 @@ type ActionController interface {
 	CallAction(interface{}, RequestScope)
 }
 
+type ExtendedViewer interface {
+	GetHeaderTmpls() []string
+	GetFooterTmpls() []string
+}
+
 type CallableAction interface {
 	Call(interface{}, RequestScope)
 }

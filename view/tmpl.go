@@ -29,18 +29,32 @@ func (t *TmplImpl) Set(key string, value interface{}) types.TmplView {
 }
 
 func (t *TmplImpl) Render() {
+	if viewer, ok := t.ctrl.(types.ExtendedViewer); ok {
+		for _, tmpl := range viewer.GetHeaderTmpls() {
+			t.render(tmpl)
+		}
+		t.render(t.filename)
+		for _, tmpl := range viewer.GetFooterTmpls() {
+			t.render(tmpl)
+		}
+	} else {
+		t.render(t.filename)
+	}
+}
+
+func (t *TmplImpl) render(tmplName string) {
 	tmplCache := scope.App().GetTmplCache()
-	if tmpl, ok := tmplCache[t.filename]; ok {
+	if tmpl, ok := tmplCache[tmplName]; ok {
 		clonedTmpl, err := tmpl.Clone()
 		if err == nil {
 			err = clonedTmpl.Execute(t.scope.GetWriter(), t.vars)
 			if err != nil {
-				scope.App().GetLogger().Error("tmpl - can't exec template %s, details - %v", t.filename, err)
+				scope.App().GetLogger().Error("tmpl - can't exec template %s, details - %v", tmplName, err)
 			}
 		} else {
-			scope.App().GetLogger().Error("tmpl - can't clone template %s, details - %v", t.filename, err)
+			scope.App().GetLogger().Error("tmpl - can't clone template %s, details - %v", tmplName, err)
 		}
 	} else {
-		scope.App().GetLogger().Error("tmpl - template %s not found", t.filename)
+		scope.App().GetLogger().Error("tmpl - template %s not found", tmplName)
 	}
 }

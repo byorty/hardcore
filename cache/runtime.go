@@ -1,36 +1,68 @@
 package cache
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+	"sync"
+)
 
 var runtime types.Cache
 
 func Runtime() types.Cache {
 	if runtime == nil {
-		runtime = make(RuntimeImpl)
+		runtime = &RuntimeImpl{
+			mtx:  new(sync.Mutex),
+			data: make(map[string]interface{}),
+		}
 	}
 	return runtime
 }
 
-type RuntimeImpl map[string]interface{}
+type RuntimeImpl struct {
+	mtx  *sync.Mutex
+	data map[string]interface{}
+}
 
 func (r RuntimeImpl) Get(key string) interface{} {
-	if value, ok := r.has(key); ok {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+	if value, ok := r.get(key); ok {
 		return value
 	} else {
 		return nil
 	}
 }
 
-func (r RuntimeImpl) has(key string) (interface{}, bool) {
-	return r[key]
+func (r RuntimeImpl) get(key string) (interface{}, bool) {
+	return r.data[key]
 }
 
 func (r RuntimeImpl) Has(key string) bool {
-	_, ok := r.has(key)
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+	_, ok := r.get(key)
 	return ok
 }
 
 func (r *RuntimeImpl) Set(key string, value interface{}) types.Cache {
-	r[key] = value
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+	r.data[key] = value
 	return r
+}
+
+func (r *RuntimeImpl) Remove(key string) types.Cache {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+	delete(r.data, key)
+	return r
+}
+
+func (r RuntimeImpl) GetKeys() []string {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+	keys := make([]string, 0)
+	for key, _ := range r.data {
+		keys = append(keys, key)
+	}
+	return keys
 }

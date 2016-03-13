@@ -11,5 +11,11 @@ type Paginator interface {
 }
 
 type Sorter interface {
+}
 
+type SessionManager interface {
+	Create(RequestScope) SessionScope
+	Get(RequestScope) SessionScope
+	Remove(RequestScope)
+	SetStorage(Cache) SessionManager
 }
