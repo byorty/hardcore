@@ -17,5 +17,5 @@ type SessionManager interface {
 	Create(RequestScope) SessionScope
 	Get(RequestScope) SessionScope
 	Remove(RequestScope)
-	SetStorage(Cache) SessionManager
+	SetProvider(Cache) SessionManager
 }

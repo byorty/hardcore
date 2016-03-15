@@ -1,13 +1,15 @@
 package helper
 
 import (
+	"crypto/md5"
 	"crypto/rand"
-	"encoding/base64"
+	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"io"
 	"net/http"
 	"sync"
+	"time"
 )
 
 var sessionManager types.SessionManager
@@ -23,9 +25,9 @@ func SessionManager() types.SessionManager {
 }
 
 type SessionManagerImpl struct {
-	mtx    *sync.Mutex
-	cache  types.Cache
-	maxAge int
+	mtx      *sync.Mutex
+	provider types.Cache
+	maxAge   int
 }
 
 func (s *SessionManagerImpl) Create(rs types.RequestScope) types.SessionScope {
@@ -35,28 +37,55 @@ func (s *SessionManagerImpl) Create(rs types.RequestScope) types.SessionScope {
 	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
 		scope.App().GetLogger().Error("session - can't make session id")
 	}
-	id := base64.URLEncoding.EncodeToString(buf)
+	h := md5.New()
+	io.WriteString(h, string(buf))
+	io.WriteString(h, time.Now().String())
 
-	s.cache.Set(id)
-	cookie := &http.Cookie{
+	session := scope.NewSession(fmt.Sprintf("%x", h.Sum(nil)))
+	s.provider.Set(session.GetId(), session)
+	cookie := http.Cookie{
 		Name:   scope.App().GetCookieName(),
-		Value:  id,
+		Value:  session.GetId(),
 		Domain: scope.App().GetHostname(),
 		Path:   "/",
 		MaxAge: s.maxAge,
 	}
-	http.SetCookie(rs.GetWriter(), cookie)
+	http.SetCookie(rs.GetWriter(), &cookie)
+	return session
 }
 
 func (s *SessionManagerImpl) Get(rs types.RequestScope) types.SessionScope {
-
+	id, err := rs.GetRequest().Cookie(scope.App().GetCookieName())
+	if err == nil && id.Value != "" {
+		session := s.provider.Get(id.Value)
+		if session == nil {
+			return s.Create(rs)
+		} else {
+			return session.(types.SessionScope)
+		}
+	} else {
+		return s.Create(rs)
+	}
 }
 
 func (s *SessionManagerImpl) Remove(rs types.RequestScope) {
-
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+	id, err := rs.GetRequest().Cookie(scope.App().GetCookieName())
+	if err == nil && id.Value != "" {
+		s.provider.Remove(id.Value)
+	}
+	cookie := http.Cookie{
+		Name:     scope.App().GetCookieName(),
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Now(),
+		MaxAge:   -1,
+	}
+	http.SetCookie(rs.GetWriter(), &cookie)
 }
 
-func (s *SessionManagerImpl) SetStorage(cache types.Cache) types.SessionManager {
-	s.cache = cache
+func (s *SessionManagerImpl) SetProvider(cache types.Cache) types.SessionManager {
+	s.provider = cache
 	return s
 }

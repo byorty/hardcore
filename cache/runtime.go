@@ -33,7 +33,8 @@ func (r RuntimeImpl) Get(key string) interface{} {
 }
 
 func (r RuntimeImpl) get(key string) (interface{}, bool) {
-	return r.data[key]
+	value, ok := r.data[key]
+	return value, ok
 }
 
 func (r RuntimeImpl) Has(key string) bool {

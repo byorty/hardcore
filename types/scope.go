@@ -31,6 +31,10 @@ type ApplicationScope interface {
 	SetTmplCache(map[string]*template.Template) ApplicationScope
 	GetCookieName() string
 	SetCookieName(string) ApplicationScope
+	GetEnableSession() bool
+	SetEnableSession(bool) ApplicationScope
+	GetSessionProvider() Cache
+	SetSessionProvider(Cache) ApplicationScope
 }
 
 type SessionScope interface {
@@ -72,4 +76,6 @@ type RequestScope interface {
 	GetHeaderParams() RequestScopeParams
 	SetHeaderParams(params RequestScopeParams)
 	SetHeaderParam(key, value string)
+	GetSession() SessionScope
+	SetSession(SessionScope)
 }

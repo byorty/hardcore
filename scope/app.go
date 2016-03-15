@@ -11,18 +11,20 @@ import (
 var app types.ApplicationScope
 
 type AppImpl struct {
-	projectName  string
-	router       types.Router
-	hostname     string
-	port         int
-	readTimeout  time.Duration
-	writeTimeout time.Duration
-	rootPath     string
-	tmplPath     string
-	tmplCache    map[string]*template.Template
-	logger       types.Logger
-	daos         []types.ModelDAO
-	cookieName   string
+	projectName     string
+	router          types.Router
+	hostname        string
+	port            int
+	readTimeout     time.Duration
+	writeTimeout    time.Duration
+	rootPath        string
+	tmplPath        string
+	tmplCache       map[string]*template.Template
+	logger          types.Logger
+	daos            []types.ModelDAO
+	cookieName      string
+	enableSession   bool
+	sessionProvider types.Cache
 }
 
 func New() types.ApplicationScope {
@@ -141,6 +143,24 @@ func (a AppImpl) GetCookieName() string {
 
 func (a *AppImpl) SetCookieName(cookieName string) types.ApplicationScope {
 	a.cookieName = cookieName
+	return a
+}
+
+func (a AppImpl) GetEnableSession() bool {
+	return a.enableSession
+}
+
+func (a *AppImpl) SetEnableSession(enableSession bool) types.ApplicationScope {
+	a.enableSession = enableSession
+	return a
+}
+
+func (a AppImpl) GetSessionProvider() types.Cache {
+	return a.sessionProvider
+}
+
+func (a *AppImpl) SetSessionProvider(sessionProvider types.Cache) types.ApplicationScope {
+	a.sessionProvider = sessionProvider
 	return a
 }
 

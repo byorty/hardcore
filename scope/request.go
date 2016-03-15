@@ -10,6 +10,7 @@ type RequestImpl struct {
 	request      *http.Request
 	pathParams   types.RequestScopeParams
 	headerParams types.RequestScopeParams
+	session      types.SessionScope
 }
 
 func NewRequest() types.RequestScope {
@@ -50,6 +51,14 @@ func (r *RequestImpl) SetHeaderParams(params types.RequestScopeParams) {
 
 func (r *RequestImpl) SetHeaderParam(key, value string) {
 	r.headerParams.Set(key, value)
+}
+
+func (r RequestImpl) GetSession() types.SessionScope {
+	return r.session
+}
+
+func (r *RequestImpl) SetSession(session types.SessionScope) {
+	r.session = session
 }
 
 func (r RequestImpl) Verify(form types.Form, primitive types.Primitive) {

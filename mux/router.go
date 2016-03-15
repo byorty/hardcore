@@ -1,6 +1,7 @@
 package mux
 
 import (
+	"github.com/byorty/hardcore/helper"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
@@ -78,29 +79,32 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if len(req.URL.Host) == 0 {
 		req.URL.Host = req.Host
 	}
-	var scope types.RequestScope
+	var rs types.RequestScope
 	var match bool
 	var existsMatcher *Matcher
 	matchers := r.getMatchersByMethod(req.Method)
 	for _, matcher := range *matchers {
-		match, scope = matcher.Match(req.URL.Path, req, rw)
+		match, rs = matcher.Match(req.URL.Path, req, rw)
 		if match {
 			existsMatcher = matcher
 			break
 		}
 	}
+	if scope.App().GetEnableSession() {
+		rs.SetSession(helper.SessionManager().Get(rs))
+	}
 	if existsMatcher != nil {
 		hasConstruct := existsMatcher.construct != nil
 		hasHandler := existsMatcher.handler != nil
 		if hasConstruct && hasHandler {
-			r.doMiddlewares(existsMatcher.beforeMiddlewares, scope)
+			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
 			controller := existsMatcher.construct()
-			controller.CallAction(existsMatcher.handler, scope)
-			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
+			controller.CallAction(existsMatcher.handler, rs)
+			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
 		} else if !hasConstruct && hasHandler {
-			r.doMiddlewares(existsMatcher.beforeMiddlewares, scope)
-			existsMatcher.handler.(func(types.RequestScope))(scope)
-			r.doMiddlewares(existsMatcher.afterMiddlewares, scope)
+			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
+			existsMatcher.handler.(func(types.RequestScope))(rs)
+			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
 		} else {
 			r.callNotFoundFunc(rw, req)
 		}
