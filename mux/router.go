@@ -90,18 +90,17 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			break
 		}
 	}
-	if scope.App().GetEnableSession() {
-		rs.SetSession(helper.SessionManager().Get(rs))
-	}
 	if existsMatcher != nil {
 		hasConstruct := existsMatcher.construct != nil
 		hasHandler := existsMatcher.handler != nil
 		if hasConstruct && hasHandler {
+			r.fetchSession(rs)
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
 			controller := existsMatcher.construct()
 			controller.CallAction(existsMatcher.handler, rs)
 			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
 		} else if !hasConstruct && hasHandler {
+			r.fetchSession(rs)
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
 			existsMatcher.handler.(func(types.RequestScope))(rs)
 			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
@@ -110,6 +109,12 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		r.callNotFoundFunc(rw, req)
+	}
+}
+
+func (r *Router) fetchSession(rs types.RequestScope) {
+	if scope.App().GetEnableSession() {
+		rs.SetSession(helper.SessionManager().Get(rs))
 	}
 }
 
