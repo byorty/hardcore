@@ -22,3 +22,8 @@ type RawView interface {
 	View
 	SetStatus(int) RawView
 }
+
+type RedirectView interface {
+	View
+	SetStatus(int) RedirectView
+}

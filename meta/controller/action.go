@@ -1,17 +1,17 @@
 package controller
 
 import (
-	"github.com/byorty/hardcore/meta/types"
-	"strings"
 	"fmt"
+	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
+	"strings"
 )
 
 type Action struct {
-	Name string `xml:"name,attr"`
-	Route string `xml:"path,attr"`
-	Method string `xml:"method,attr"`
-	Return string `xml:"return"`
+	Name   string   `xml:"name,attr"`
+	Route  string   `xml:"path,attr"`
+	Method string   `xml:"method,attr"`
+	Return string   `xml:"return"`
 	Params []*Param `xml:"params>param"`
 	params []types.ActionParam
 }
@@ -86,7 +86,9 @@ func (a Action) GetReturn() string {
 			a.Return = "types.EncodeView"
 		}
 	} else {
-		a.Return = "types.View"
+		if len(a.Return) == 0 {
+			a.Return = "types.View"
+		}
 	}
 	return a.Return
 }
