@@ -1,27 +1,27 @@
 package controller
 
 import (
-	"github.com/byorty/hardcore/meta/types"
 	"fmt"
-	"github.com/byorty/hardcore/utils"
 	"github.com/byorty/hardcore/meta/model"
+	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
 )
 
 const RequestScopeKind = "types.RequestScope"
 const FormScopeKind = "types.Form"
 
-var injections = map[string]func() types.Injection {
-	"scope": NewRequestScopeInjection,
-	"form": NewFormInjection,
+var injections = map[string]func() types.Injection{
+	"rs":        NewRequestScopeInjection,
+	"form":      NewFormInjection,
 	"paginator": NewPaginatorInjection,
 }
 
 type Param struct {
-	Name string `xml:"name,attr"`
-	Required bool `xml:"required,attr"`
-	Source string `xml:"from,attr"`
-	Kind string `xml:"type,attr"`
-	entity types.Entity
+	Name      string `xml:"name,attr"`
+	Required  bool   `xml:"required,attr"`
+	Source    string `xml:"from,attr"`
+	Kind      string `xml:"type,attr"`
+	entity    types.Entity
 	injection types.Injection
 }
 
@@ -35,9 +35,12 @@ func (p Param) IsRequired() bool {
 
 func (p Param) GetSource() string {
 	switch p.Source {
-	case "path": return "types.PathPrimitiveSource"
-	case "form": return "types.PostPrimitiveSource"
-	default: return "types.GetPrimitiveSource"
+	case "path":
+		return "types.PathPrimitiveSource"
+	case "form":
+		return "types.PostPrimitiveSource"
+	default:
+		return "types.GetPrimitiveSource"
 	}
 }
 
@@ -106,7 +109,7 @@ func (p Param) GetDefineVarName() string {
 }
 
 func (p Param) IsInjection() bool {
-	_, ok := injections[p.Name];
+	_, ok := injections[p.Name]
 	return ok
 }
 
