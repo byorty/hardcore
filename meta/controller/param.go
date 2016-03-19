@@ -11,7 +11,7 @@ const RequestScopeKind = "types.RequestScope"
 const FormScopeKind = "types.Form"
 
 var injections = map[string]func() types.Injection{
-	"rs":        NewRequestScopeInjection,
+	"scope":     NewRequestScopeInjection,
 	"form":      NewFormInjection,
 	"paginator": NewPaginatorInjection,
 }
