@@ -1,11 +1,10 @@
 package helper
 
 import (
-	"crypto/md5"
 	"crypto/rand"
-	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/utils"
 	"io"
 	"net/http"
 	"sync"
@@ -37,11 +36,7 @@ func (s *SessionManagerImpl) Create(rs types.RequestScope) types.SessionScope {
 	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
 		scope.App().GetLogger().Error("session - can't make session id")
 	}
-	h := md5.New()
-	io.WriteString(h, string(buf))
-	io.WriteString(h, time.Now().String())
-
-	session := scope.NewSession(fmt.Sprintf("%x", h.Sum(nil)))
+	session := scope.NewSession(utils.Md5(string(buf) + time.Now().String()))
 	s.provider.Set(session.GetId(), session)
 	cookie := http.Cookie{
 		Name:   scope.App().GetCookieName(),
