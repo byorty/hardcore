@@ -1,12 +1,12 @@
 package plugin
 
 import (
-	"github.com/byorty/hardcore/log"
-	"github.com/byorty/hardcore/meta/types"
-	"github.com/byorty/hardcore/meta/model"
-	"strings"
-	"github.com/byorty/hardcore/utils"
 	"fmt"
+	"github.com/byorty/hardcore/log"
+	"github.com/byorty/hardcore/meta/model"
+	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
+	"strings"
 )
 
 var (
@@ -16,7 +16,7 @@ type {{.Name}} {{.Kind}}
 `
 
 	autoEnumTpl = `{{$name := .Name}}` +
-`package {{.Package}}
+		`package {{.Package}}
 
 import ({{range .AutoImports}}
 	"{{.}}"{{end}}
@@ -118,7 +118,7 @@ func (e Enum) Do(env types.Environment) {
 					if !hasIota {
 						for _, constant := range enum.Constants {
 							if !constant.HasValue() {
-								constant.Value = "iota"
+								constant.Value = "iota + 1"
 								break
 							}
 						}
@@ -127,19 +127,19 @@ func (e Enum) Do(env types.Environment) {
 					varName := utils.LowerFirst(enum.Name)
 					tmplParams := map[string]interface{}{
 						"ShortName": strings.ToLower(enum.Name[0:1]),
-						"Name": enum.Name,
-						"DaoName": fmt.Sprintf("%sDao", enum.Name),
-						"Package": container.GetShortPackage(),
+						"Name":      enum.Name,
+						"DaoName":   fmt.Sprintf("%sDao", enum.Name),
+						"Package":   container.GetShortPackage(),
 						"SliceName": fmt.Sprintf("%sList", varName),
-						"MapName": fmt.Sprintf("%sNames", varName),
+						"MapName":   fmt.Sprintf("%sNames", varName),
 						"Constants": enum.Constants,
-						"Kind": enum.GetKind(),
+						"Kind":      enum.GetKind(),
 						"AutoImports": []string{
 							types.DefaultImport,
 							types.DaoImport,
 						},
 						"MultipleName": entity.GetMultipleName(),
-						"VarDaoName": fmt.Sprintf("%sDao", varName),
+						"VarDaoName":   fmt.Sprintf("%sDao", varName),
 					}
 
 					env.GetConfiguration().AddAutoFile(enum.GetAutoFilename(), autoEnumTpl, tmplParams)
