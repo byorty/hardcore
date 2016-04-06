@@ -33,16 +33,16 @@ func NewRouter(routes ...*Route) *Router {
 	return router
 }
 
-func (r *Router) Batch(routes ...*Route) *Router {
+func (r *Router) Batch(routes ...types.Route) *Router {
 	for _, route := range routes {
 		r.Add(route)
 	}
 	return r
 }
 
-func (r *Router) Add(route *Route) *Router {
-	if route != nil {
-		route.toMatcher(r)
+func (r *Router) Add(route types.Route) *Router {
+	if castedRoute, ok := route.(*Route); ok {
+		castedRoute.toMatcher(r)
 	}
 	return r
 }

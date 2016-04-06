@@ -11,6 +11,8 @@ type ApplicationScope interface {
 	SetProjectName(string) ApplicationScope
 	GetRouter() Router
 	SetRouter(Router) ApplicationScope
+	//GetRoutes() Routes
+	//SetRoutes
 	GetHostname() string
 	SetHostname(string) ApplicationScope
 	GetPort() int

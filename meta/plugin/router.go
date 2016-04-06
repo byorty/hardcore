@@ -7,16 +7,6 @@ import (
 )
 
 var (
-	routerTpl = `package configs
-
-import ({{range .Imports}}
-	"{{.}}"{{end}}
-)
-
-func makeRouter() *mux.Route {
-	return nil
-}
-`
 	autoRouterTpl = `package configs
 
 import ({{range .AutoImports}}
@@ -75,5 +65,4 @@ func (r *Router) Do(env types.Environment) {
 
 	filename := filepath.Join(env.GetAbsPath(), "configs", "router")
 	env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
-	env.GetConfiguration().AddFile(filename, routerTpl, tplParams)
 }

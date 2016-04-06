@@ -19,17 +19,8 @@ const (
 	defaultHost   = "localhost"
 )
 
-type kindRoute int
-
-const (
-	kindAction kindRoute = iota
-	kindPath
-	kindController
-	kindControllerAction
-)
-
 type Route struct {
-	kind   kindRoute
+	kind   types.RouteKind
 	parent *Route
 
 	method     string
@@ -58,14 +49,14 @@ func newRoute() *Route {
 
 func newActionRoute(method, tpl string, handler interface{}) *Route {
 	route := newRoute()
-	route.kind = kindAction
+	route.kind = types.ActionRouteKind
 	route.method = method
 	route.tpl = tpl
 	route.handler = handler
 	return route
 }
 
-func newRouteByKindAndMethod(kind kindRoute, method, tpl string, handler interface{}) *Route {
+func newRouteByKindAndMethod(kind types.RouteKind, method, tpl string, handler interface{}) *Route {
 	route := newRoute()
 	route.kind = kind
 	route.method = method
@@ -74,109 +65,117 @@ func newRouteByKindAndMethod(kind kindRoute, method, tpl string, handler interfa
 	return route
 }
 
-func Get(tpl string, handler interface{}) *Route {
-	return newRouteByKindAndMethod(kindAction, methodGet, tpl, handler)
+func Get(tpl string, handler interface{}) types.Route {
+	return newRouteByKindAndMethod(types.ActionRouteKind, methodGet, tpl, handler)
 }
 
-func Post(tpl string, handler interface{}) *Route {
-	return newRouteByKindAndMethod(kindAction, methodPost, tpl, handler)
+func Post(tpl string, handler interface{}) types.Route {
+	return newRouteByKindAndMethod(types.ActionRouteKind, methodPost, tpl, handler)
 }
 
-func Put(tpl string, handler interface{}) *Route {
-	return newRouteByKindAndMethod(kindAction, methodPut, tpl, handler)
+func Put(tpl string, handler interface{}) types.Route {
+	return newRouteByKindAndMethod(types.ActionRouteKind, methodPut, tpl, handler)
 }
 
-func Delete(tpl string, handler interface{}) *Route {
-	return newRouteByKindAndMethod(kindAction, methodDelete, tpl, handler)
+func Delete(tpl string, handler interface{}) types.Route {
+	return newRouteByKindAndMethod(types.ActionRouteKind, methodDelete, tpl, handler)
 }
 
-func Path(tpl string, subRoutes ...*Route) *Route {
+func Path(tpl string, subRoutes ...types.Route) types.Route {
 	route := newRoute()
-	route.kind = kindPath
+	route.kind = types.PathRouteKind
 	route.tpl = tpl
 	route.routes = make([]*Route, len(subRoutes))
 	for i, subRoute := range subRoutes {
-		subRoute.parent = route
-		route.routes[i] = subRoute
+		subRoute.SetParent(route)
+		route.routes[i] = subRoute.(*Route)
 	}
 	return route
 }
 
-func Controller(tpl string, construct types.ControllerConstructor) *Route {
+func Controller(tpl string, construct types.ControllerConstructor) types.Route {
 	route := newRoute()
-	route.kind = kindController
+	route.kind = types.ControllerRouteKind
 	route.tpl = tpl
 	route.construct = construct
 	return route
 }
 
-func (r *Route) Scope(scopeConstruct types.RequestScopeConstructor) *Route {
+func (r *Route) Scope(scopeConstruct types.RequestScopeConstructor) types.Route {
 	r.scopeConstruct = scopeConstruct
 	return r
 }
 
-func (r *Route) Scheme(tpl string) *Route {
+func (r *Route) Scheme(tpl string) types.Route {
 	r.schemeTpl = fmt.Sprintf("{scheme:(%s)+}", tpl)
 	return r
 }
 
-func (r *Route) Host(tpl string) *Route {
+func (r *Route) Host(tpl string) types.Route {
 	r.hostTpl = fmt.Sprintf("{host:(%s)+}", tpl)
 	return r
 }
 
-func (r *Route) Port(tpl string) *Route {
+func (r *Route) Port(tpl string) types.Route {
 	r.portTpl = fmt.Sprintf("{port:(:%s)+}", tpl)
 	return r
 }
 
-func (r *Route) Header(key, value string) *Route {
+func (r *Route) Header(key, value string) types.Route {
 	r.headerTpls[key] = value
 	return r
 }
 
-func (r *Route) Before(middleware func(types.RequestScope)) *Route {
+func (r *Route) Before(middleware types.MiddlewareFunc) types.Route {
 	r.beforeMiddlewares = append(r.beforeMiddlewares, middleware)
 	return r
 }
 
-func (r *Route) Get(tpl string, handler interface{}) *Route {
-	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodGet, tpl, handler))
+func (r *Route) Get(tpl string, handler interface{}) types.Route {
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodGet, tpl, handler))
 }
 
-func (r *Route) Post(tpl string, handler interface{}) *Route {
-	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPost, tpl, handler))
+func (r *Route) Post(tpl string, handler interface{}) types.Route {
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPost, tpl, handler))
 }
 
-func (r *Route) Put(tpl string, handler interface{}) *Route {
-	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodPut, tpl, handler))
+func (r *Route) Put(tpl string, handler interface{}) types.Route {
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPut, tpl, handler))
 }
 
-func (r *Route) Delete(tpl string, handler interface{}) *Route {
-	return r.Add(newRouteByKindAndMethod(kindControllerAction, methodDelete, tpl, handler))
+func (r *Route) Delete(tpl string, handler interface{}) types.Route {
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodDelete, tpl, handler))
 }
 
-func (r *Route) After(middleware func(types.RequestScope)) *Route {
+func (r *Route) After(middleware types.MiddlewareFunc) types.Route {
 	r.afterMiddlewares = append(r.afterMiddlewares, middleware)
 	return r
 }
 
-func (r *Route) Add(route *Route) *Route {
+func (r *Route) Add(route types.Route) types.Route {
 	if route != nil {
-		route.parent = r
-		route.kind = kindControllerAction
-		r.routes = append(r.routes, route)
+		route.SetParent(route)
+		route.SetKind(types.ControllerActionRouteKind)
+		r.routes = append(r.routes, route.(*Route))
 	}
 	return r
 }
 
-func (r *Route) Batch(routes ...*Route) *Route {
+func (r *Route) Batch(routes ...types.Route) types.Route {
 	if routes != nil {
 		for _, route := range routes {
 			r.Add(route)
 		}
 	}
 	return r
+}
+
+func (r *Route) SetKind(kind types.RouteKind) {
+	r.kind = kind
+}
+
+func (r *Route) SetParent(parent types.Route) {
+	r.parent = parent.(*Route)
 }
 
 func (r *Route) toMatcher(router *Router) {
@@ -207,13 +206,13 @@ func (r *Route) toMatcher(router *Router) {
 			middlewares := append([]types.MiddlewareFunc{}, r.parent.afterMiddlewares...)
 			r.afterMiddlewares = append(middlewares, r.afterMiddlewares...)
 		}
-		if r.kind == kindControllerAction {
+		if r.kind == types.ControllerActionRouteKind {
 			r.construct = r.parent.construct
 		}
 	}
 
 	switch r.kind {
-	case kindAction, kindControllerAction:
+	case types.ActionRouteKind, types.ControllerActionRouteKind:
 		matcher := new(Matcher)
 
 		if len(r.schemeTpl) == 0 {
@@ -248,7 +247,7 @@ func (r *Route) toMatcher(router *Router) {
 
 		router.addMatcher(r.method, matcher)
 		break
-	case kindPath, kindController:
+	case types.PathRouteKind, types.ControllerRouteKind:
 		for _, route := range r.routes {
 			route.toMatcher(router)
 		}
