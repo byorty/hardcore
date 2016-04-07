@@ -38,7 +38,7 @@ type DBResult interface {
 type DBKind int
 
 const (
-	SqlDB   DBKind = iota
+	SqlDB DBKind = iota
 	NoSqlDB
 )
 
@@ -72,9 +72,12 @@ type QueryWriter interface {
 	SetTable(string)
 	SetLogicChain([]LogicChain)
 	SetProjections([]Projection)
+	SetOrders([]Order)
 	GetArgs() []interface{}
 	SetArgs([]interface{})
 	AddArg(interface{})
+	SetLimit(int)
+	SetOffset(int)
 	WriteSelect() interface{}
 	WriteInsert() interface{}
 	WriteUpdate() interface{}

@@ -1,9 +1,9 @@
 package criteria
 
 import (
+	"github.com/byorty/hardcore/pool"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/pool"
 )
 
 type SelectCriteriaImpl struct {
@@ -11,7 +11,10 @@ type SelectCriteriaImpl struct {
 	proto       types.Proto
 	chains      []types.LogicChain
 	projections []types.Projection
+	orders      []types.Order
 	args        []interface{}
+	limit       int
+	offset      int
 }
 
 func Select() types.SelectCriteria {
@@ -22,6 +25,7 @@ func newSelect() *SelectCriteriaImpl {
 	return &SelectCriteriaImpl{
 		chains:      make([]types.LogicChain, 0),
 		projections: make([]types.Projection, 0),
+		orders:      make([]types.Order, 0),
 		args:        make([]interface{}, 0),
 	}
 }
@@ -71,7 +75,10 @@ func (s *SelectCriteriaImpl) ToNative() interface{} {
 	writer.SetTable(s.dao.GetTable())
 	writer.SetLogicChain(s.chains)
 	writer.SetProjections(s.projections)
+	writer.SetOrders(s.orders)
 	writer.SetArgs(s.args)
+	writer.SetLimit(s.limit)
+	writer.SetOffset(s.offset)
 	return writer.WriteSelect()
 }
 
@@ -83,11 +90,22 @@ func (s *SelectCriteriaImpl) Custom(items ...interface{}) {
 	s.dao.Custom(s.dao, s, items...)
 }
 
-//func (s *SelectCriteriaImpl) Customs(items ...[]interface{}) {
-//
-//}
-
 func (s *SelectCriteriaImpl) Add(projection types.Projection) types.SelectCriteria {
 	s.projections = append(s.projections, projection)
+	return s
+}
+
+func (s *SelectCriteriaImpl) Limit(limit int) types.SelectCriteria {
+	s.limit = limit
+	return s
+}
+
+func (s *SelectCriteriaImpl) Offset(offset int) types.SelectCriteria {
+	s.offset = offset
+	return s
+}
+
+func (s *SelectCriteriaImpl) Order(order types.Order) types.SelectCriteria {
+	s.orders = append(s.orders, order)
 	return s
 }

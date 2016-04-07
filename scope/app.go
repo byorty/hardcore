@@ -25,6 +25,7 @@ type AppImpl struct {
 	cookieName      string
 	enableSession   bool
 	sessionProvider types.Cache
+	routes          []types.Route
 }
 
 func New() types.ApplicationScope {
@@ -161,6 +162,15 @@ func (a AppImpl) GetSessionProvider() types.Cache {
 
 func (a *AppImpl) SetSessionProvider(sessionProvider types.Cache) types.ApplicationScope {
 	a.sessionProvider = sessionProvider
+	return a
+}
+
+func (a AppImpl) GetRoutes() []types.Route {
+	return a.routes
+}
+
+func (a *AppImpl) SetRoutes(routes []types.Route) types.ApplicationScope {
+	a.routes = routes
 	return a
 }
 

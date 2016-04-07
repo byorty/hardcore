@@ -14,15 +14,15 @@ import ({{range .AutoImports}}
 )
 
 var (
-	Router = mux.NewRouter(){{if .Containers}}.Batch({{range .Containers}}{{$package := .GetShortPackage}}
-		mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
+	Routers = []types.Route{
+		{{if .Containers}}{{range .Containers}}{{$package := .GetShortPackage}}mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
 			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", (*{{$package}}.{{$ctrlName}}).{{.GetName}}),
 			{{end}}{{end}}
 			),{{end}}
-		),
-	{{end}}){{end}}.Add(makeRouter())
+		),{{end}}
+	}{{end}}
 )
 `
 )
@@ -54,10 +54,8 @@ func (r *Router) Do(env types.Environment) {
 		}
 	}
 	tplParams := map[string]interface{}{
-		"Imports": []string{
-			types.MuxImport,
-		},
 		"AutoImports": append([]string{
+			types.DefaultImport,
 			types.MuxImport,
 		}, autoImports...),
 		"Containers": containers,

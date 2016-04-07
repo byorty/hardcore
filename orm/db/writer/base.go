@@ -3,11 +3,14 @@ package writer
 import "github.com/byorty/hardcore/types"
 
 type BaseImpl struct {
-	proto types.Proto
-	table string
-	chains []types.LogicChain
+	proto       types.Proto
+	table       string
+	chains      []types.LogicChain
 	projections []types.Projection
-	args []interface{}
+	orders      []types.Order
+	args        []interface{}
+	limit       int
+	offset      int
 }
 
 func (b *BaseImpl) SetProto(proto types.Proto) {
@@ -26,6 +29,10 @@ func (b *BaseImpl) SetProjections(projections []types.Projection) {
 	b.projections = projections
 }
 
+func (b *BaseImpl) SetOrders(orders []types.Order) {
+	b.orders = orders
+}
+
 func (b *BaseImpl) SetArgs(args []interface{}) {
 	b.args = args
 }
@@ -36,4 +43,12 @@ func (b *BaseImpl) AddArg(arg interface{}) {
 
 func (b *BaseImpl) GetArgs() []interface{} {
 	return b.args
+}
+
+func (b *BaseImpl) SetLimit(limit int) {
+	b.limit = limit
+}
+
+func (b *BaseImpl) SetOffset(offset int) {
+	b.offset = offset
 }

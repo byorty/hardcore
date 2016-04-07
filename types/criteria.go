@@ -24,6 +24,10 @@ type Logic interface {
 	GetName() string
 }
 
+type Order interface {
+	SqlPartWriter
+}
+
 type Criteria interface {
 	Query
 	ModelScanner
@@ -40,6 +44,9 @@ type SelectCriteria interface {
 	Add(Projection) SelectCriteria
 	And(Logic) SelectCriteria
 	Or(Logic) SelectCriteria
+	Order(Order) SelectCriteria
+	Limit(int) SelectCriteria
+	Offset(int) SelectCriteria
 }
 
 type UpdateCriteria interface {

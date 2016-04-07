@@ -6,11 +6,11 @@ import (
 )
 
 type Exporter struct {
-	Source string `xml:"source,attr"`
+	Source     string      `xml:"source,attr"`
 	Properties []*Property `xml:"properties>property"`
 	common.Entity
 	entity types.Entity
-	props []types.ExportableProperty
+	props  []types.ExportableProperty
 }
 
 func (e Exporter) GetEntityKind() types.EntityKind {
@@ -35,4 +35,14 @@ func (e *Exporter) SetProperties(props []types.ExportableProperty) {
 
 func (e Exporter) GetProperties() []types.ExportableProperty {
 	return e.props
+}
+
+type Exporters []*Exporter
+
+func (e Exporters) Len() int {
+	return len(e)
+}
+
+func (e Exporters) Get(i int) types.Entity {
+	return e[i]
 }

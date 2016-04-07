@@ -2,9 +2,9 @@ package writer
 
 import (
 	"bytes"
-	"strings"
 	"fmt"
 	"github.com/byorty/hardcore/types"
+	"strings"
 )
 
 type SqlImpl struct {
@@ -56,6 +56,24 @@ func (s SqlImpl) writeSelect(writer types.SqlQueryWriter) string {
 	args := make([]interface{}, len(s.args))
 	for i, arg := range s.args {
 		args[i] = writer.WriteArg(i, arg)
+	}
+
+	ordersLen := len(s.orders)
+	if ordersLen > 0 {
+		parts := make([]string, ordersLen)
+		buf.WriteString(" ORDER BY ")
+		for i, order := range s.orders {
+			parts[i] = order.WriteSqlPart(writer, s.proto, s.table, i)
+		}
+		buf.WriteString(strings.Join(parts, ", "))
+	}
+
+	if s.limit > 0 {
+		buf.WriteString(fmt.Sprintf(" LIMIT %d ", s.limit))
+	}
+
+	if s.offset > 0 {
+		buf.WriteString(fmt.Sprintf(" OFFSET %d ", s.offset))
 	}
 
 	return fmt.Sprintf(buf.String(), args...)
