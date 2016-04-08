@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/meta/common"
 	"github.com/byorty/hardcore/meta/controller"
 	"github.com/byorty/hardcore/meta/exporter"
+	"github.com/byorty/hardcore/meta/middleware"
 	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
 )
@@ -13,6 +14,7 @@ type Configuration struct {
 	ControllerContainers controller.Containers `xml:"controllers"`
 	ModelContainers      model.Containers      `xml:"models"`
 	ExporterContainers   exporter.Containers   `xml:"exporters"`
+	MiddlewareContainers middleware.Containers `xml:"widdlewares"`
 	Files                []types.File
 	containers           []types.Container
 }
@@ -22,6 +24,7 @@ func (c *Configuration) Init() {
 	c.addContainers(c.ControllerContainers)
 	c.addContainers(c.ModelContainers)
 	c.addContainers(c.ExporterContainers)
+	c.addContainers(c.MiddlewareContainers)
 }
 
 func (c *Configuration) addContainers(slice types.ContainerSlice) {

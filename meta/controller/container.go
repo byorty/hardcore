@@ -42,10 +42,6 @@ func (c *Container) Init(env types.Environment) {
 
 type Containers []*Container
 
-func (c *Containers) Add(container types.Container) {
-	(*c) = append((*c), container.(*Container))
-}
-
 func (c Containers) Get(i int) types.Container {
 	return c[i]
 }

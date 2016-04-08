@@ -15,6 +15,7 @@ const (
 	ModelEntityKind
 	EnumEntityKind
 	ExporterEntityKind
+	MiddlewareEntityKind
 )
 
 type EntitySlice interface {

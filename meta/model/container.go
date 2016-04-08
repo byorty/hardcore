@@ -41,10 +41,6 @@ func (c *Container) merge(slice types.EntitySlice) {
 
 type Containers []*Container
 
-func (c *Containers) Add(container types.Container) {
-	(*c) = append((*c), container.(*Container))
-}
-
 func (c Containers) Get(i int) types.Container {
 	return c[i]
 }

@@ -9,7 +9,6 @@ const (
 )
 
 type ContainerSlice interface {
-	//Add(Container)
 	Get(int) Container
 	Len() int
 }

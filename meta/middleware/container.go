@@ -1,4 +1,4 @@
-package exporter
+package middleware
 
 import (
 	"github.com/byorty/hardcore/meta/common"
@@ -7,26 +7,26 @@ import (
 
 type Container struct {
 	common.Container
-	Exporters Exporters `xml:"exporter"`
+	Middlewares Middlewares `xml:"middleware"`
 }
 
 func (c Container) GetContainerKind() types.ContainerKind {
-	return types.ExporterContainerKind
+	return types.EntityContainerKind
 }
 
 func (c Container) Len() int {
-	return len(c.Exporters)
+	return len(c.GetEntities())
 }
 
 func (c Container) Get(i int) types.Entity {
-	return c.Exporters[i]
+	return c.GetEntities()[i]
 }
 
 func (c *Container) Init(env types.Environment) {
 	c.Container.Init(env)
 
-	entities := make([]types.Entity, len(c.Exporters))
-	for i, entity := range c.Exporters {
+	entities := make([]types.Entity, len(c.Middlewares))
+	for i, entity := range c.Middlewares {
 		entities[i] = entity
 	}
 	c.SetEntities(entities)

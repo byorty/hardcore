@@ -22,6 +22,7 @@ var (
 		new(plugin.Enum),
 		new(plugin.Model),
 		new(plugin.Exporter),
+		new(plugin.Middleware),
 		new(plugin.Controller),
 		new(plugin.Router),
 		new(plugin.DAOs),
