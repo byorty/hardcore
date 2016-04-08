@@ -21,7 +21,6 @@ func (i *Init) Do(env types.Environment) {
 	config.Init()
 
 	containers := config.GetContainers()
-	i.init(env, config.GetContainers())
 
 	for _, include := range config.Includes {
 		i.logger.Debug("find include %s", include.File)
@@ -47,7 +46,10 @@ func (i *Init) Do(env types.Environment) {
 			i.logger.Error("include file %s not found", include.File)
 		}
 	}
+	i.init(env, containers)
 	config.SetContainers(containers)
+	i.postInit(env, containers)
+
 }
 
 func (i *Init) init(env types.Environment, containers []types.Container) {
@@ -60,9 +62,18 @@ func (i *Init) init(env types.Environment, containers []types.Container) {
 	}
 }
 
+func (i *Init) postInit(env types.Environment, containers []types.Container) {
+	for _, container := range containers {
+		for y := 0; y < container.Len(); y++ {
+			if postEntity, ok := container.Get(y).(types.PostEntity); ok {
+				postEntity.PostInit(env)
+			}
+		}
+	}
+}
+
 func (i *Init) merge(env types.Environment, srcContainers []types.Container, ptrDestContainers *[]types.Container) {
 	destContainers := *ptrDestContainers
-	i.init(env, srcContainers)
 	for _, srcContainer := range srcContainers {
 		isExists := false
 		for _, destContainer := range destContainers {

@@ -11,6 +11,7 @@ type RequestImpl struct {
 	pathParams   types.RequestScopeParams
 	headerParams types.RequestScopeParams
 	session      types.SessionScope
+	isPrevent    bool
 }
 
 func NewRequest() types.RequestScope {
@@ -76,4 +77,16 @@ func (r RequestImpl) Verify(form types.Form, primitive types.Primitive) {
 	if !primitive.Import(value) {
 		form.AddErrorMessage(primitive.GetName(), primitive.GetError())
 	}
+}
+
+func (r *RequestImpl) Prevent() {
+	r.isPrevent = true
+}
+
+func (r RequestImpl) IsPrevented() bool {
+	return r.isPrevent
+}
+
+func (r RequestImpl) NotPrevented() bool {
+	return !r.isPrevent
 }

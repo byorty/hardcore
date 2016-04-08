@@ -18,14 +18,14 @@ var (
 	plugins = []types.Plugin{
 		new(plugin.Init),
 		new(plugin.Directory),
-		//new(plugin.Type),
-		//new(plugin.Enum),
-		//new(plugin.Model),
-		//new(plugin.Exporter),
-		//new(plugin.Controller),
-		//new(plugin.Router),
-		//new(plugin.DAOs),
-		//new(plugin.File),
+		new(plugin.Extend),
+		new(plugin.Enum),
+		new(plugin.Model),
+		new(plugin.Exporter),
+		new(plugin.Controller),
+		new(plugin.Router),
+		new(plugin.DAOs),
+		new(plugin.File),
 	}
 )
 

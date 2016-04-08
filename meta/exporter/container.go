@@ -22,6 +22,16 @@ func (c Container) Get(i int) types.Entity {
 	return c.Exporters[i]
 }
 
+func (c *Container) Init(env types.Environment) {
+	c.Container.Init(env)
+
+	entities := make([]types.Entity, len(c.Exporters))
+	for i, entity := range c.Exporters {
+		entities[i] = entity
+	}
+	c.SetEntities(entities)
+}
+
 type Containers []*Container
 
 func (c *Containers) Add(container types.Container) {

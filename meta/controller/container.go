@@ -23,11 +23,21 @@ func (c Container) GetRoute() string {
 }
 
 func (c Container) Len() int {
-	return len(c.Controllers)
+	return len(c.GetEntities())
 }
 
 func (c Container) Get(i int) types.Entity {
-	return c.Controllers[i]
+	return c.GetEntities()[i]
+}
+
+func (c *Container) Init(env types.Environment) {
+	c.Container.Init(env)
+
+	entities := make([]types.Entity, len(c.Controllers))
+	for i, entity := range c.Controllers {
+		entities[i] = entity
+	}
+	c.SetEntities(entities)
 }
 
 type Containers []*Container

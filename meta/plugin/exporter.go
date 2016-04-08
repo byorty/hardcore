@@ -8,9 +8,9 @@ import (
 
 var (
 	tpl = `{{$name := .Name}}` +
-`{{$sourceName := .SourceName}}` +
-`{{$sourceVarName := .SourceVarName}}` +
-`package {{.Package}}
+		`{{$sourceName := .SourceName}}` +
+		`{{$sourceVarName := .SourceVarName}}` +
+		`package {{.Package}}
 
 import ({{range .Imports}}
 	"{{.}}"{{end}}
@@ -63,42 +63,68 @@ var (
 `
 )
 
-type Exporter struct {}
+type Exporter struct{}
 
 func (e *Exporter) Do(env types.Environment) {
-	for _, container := range env.GetConfiguration().GetContainers() {
+	logger := env.GetLogger()
+	config := env.GetConfiguration()
+	for _, container := range config.GetContainers() {
 		if container.GetContainerKind() == types.ExporterContainerKind {
 			for _, entity := range container.GetEntities() {
-
 				expEntity := entity.(types.ExporterEntity)
-				entity := expEntity.GetSourceEntity()
-				var exportableName, exportableVarName string
-				isMutiple := expEntity.GetSource() == entity.GetFullMultipleName()
-				if isMutiple {
-					exportableName = entity.GetFullMultipleName()
-					exportableVarName = utils.LowerFirst(entity.GetMultipleName())
+
+				srcEntity := config.GetEntity(expEntity.GetSource())
+				if srcEntity == nil {
+					logger.Error("source %s for %s not found", expEntity.GetSource(), expEntity.GetName())
 				} else {
-					exportableName = entity.GetPointerFullName()
-					exportableVarName = utils.LowerFirst(entity.GetName())
+					expEntity.AddImport(srcEntity.GetContainer().GetImport())
+					if srcEntity.GetEntityKind() == types.ModelEntityKind {
+						modelEntity := srcEntity.(types.ModelEntity)
+						for _, prop := range expEntity.GetProperties() {
+							for _, modelProp := range modelEntity.GetProperties() {
+								if prop.GetName() == modelProp.GetName() && modelProp.GetRelation().IsNone() {
+									prop.SetHasGetter(true)
+									break
+								}
+							}
+						}
+					} else if srcEntity.GetEntityKind() == types.EnumEntityKind {
+						for _, prop := range expEntity.GetProperties() {
+							if prop.GetName() == "id" || prop.GetName() == "name" {
+								prop.SetHasGetter(true)
+								break
+							}
+						}
+					}
+				}
+
+				var exportableName, exportableVarName string
+				isMutiple := expEntity.GetSource() == srcEntity.GetFullMultipleName()
+				if isMutiple {
+					exportableName = srcEntity.GetFullMultipleName()
+					exportableVarName = utils.LowerFirst(srcEntity.GetMultipleName())
+				} else {
+					exportableName = srcEntity.GetPointerFullName()
+					exportableVarName = utils.LowerFirst(srcEntity.GetName())
 				}
 				tplParams := map[string]interface{}{
-					"Name": expEntity.GetName(),
+					"Name":         expEntity.GetName(),
 					"MultipleName": expEntity.GetMultipleName(),
-					"ShortName": strings.ToLower(expEntity.GetName()[0:1]),
-					"Package": container.GetShortPackage(),
+					"ShortName":    strings.ToLower(expEntity.GetName()[0:1]),
+					"Package":      container.GetShortPackage(),
 					"Imports": append([]string{
 						types.DefaultImport,
 						types.ExporterImport,
 					}, expEntity.GetImports()...),
-					"Properties": expEntity.GetProperties(),
-					"VarName": utils.LowerFirst(expEntity.GetName()),
-					"ExportableName": exportableName,
-					"ExportableVarName": exportableVarName,
-					"ExportablesName": entity.GetFullMultipleName(),
-					"ExportablesVarName": utils.LowerFirst(entity.GetMultipleName()),
-					"SourceName": entity.GetPointerFullName(),
-					"SourceVarName": utils.LowerFirst(entity.GetName()),
-					"IsMutiple": isMutiple,
+					"Properties":         expEntity.GetProperties(),
+					"VarName":            utils.LowerFirst(expEntity.GetName()),
+					"ExportableName":     exportableName,
+					"ExportableVarName":  exportableVarName,
+					"ExportablesName":    srcEntity.GetFullMultipleName(),
+					"ExportablesVarName": utils.LowerFirst(srcEntity.GetMultipleName()),
+					"SourceName":         srcEntity.GetPointerFullName(),
+					"SourceVarName":      utils.LowerFirst(srcEntity.GetName()),
+					"IsMutiple":          isMutiple,
 				}
 
 				env.GetConfiguration().AddFile(expEntity.GetFilename(), tpl, tplParams)

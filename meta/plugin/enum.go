@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"fmt"
-	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
@@ -95,13 +94,9 @@ var (
 	`
 )
 
-type Enum struct {
-	logger log.Logger
-}
+type Enum struct{}
 
 func (e Enum) Do(env types.Environment) {
-	e.logger = env.GetLogger()
-
 	for _, container := range env.GetConfiguration().GetContainers() {
 		if container.GetContainerKind() == types.EntityContainerKind {
 			for _, entity := range container.GetEntities() {

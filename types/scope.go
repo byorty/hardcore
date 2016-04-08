@@ -80,4 +80,7 @@ type RequestScope interface {
 	SetHeaderParam(key, value string)
 	GetSession() SessionScope
 	SetSession(SessionScope)
+	Prevent()
+	IsPrevented() bool
+	NotPrevented() bool
 }

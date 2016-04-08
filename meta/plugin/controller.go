@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"github.com/byorty/hardcore/meta/controller"
 	"github.com/byorty/hardcore/meta/types"
 	"sort"
 	"strings"
@@ -87,18 +86,23 @@ var ({{range .Actions}}{{if .HasForm}}
 type Controller struct{}
 
 func (c *Controller) Do(env types.Environment) {
-	container := new(controller.Container)
-	container.SetShortPackage("mux")
-	parent := new(controller.Controller)
-	parent.Name = "ControllerImpl"
-	parent.SetContainer(container)
-
-	for _, container := range env.GetConfiguration().GetContainers() {
+	config := env.GetConfiguration()
+	for _, container := range config.GetContainers() {
 		if container.GetContainerKind() == types.ControllerContainerKind {
 			for _, entity := range container.GetEntities() {
 
-				var autoInjectionImports sort.StringSlice
 				controllerEntity := entity.(types.ControllerEntity)
+				for _, action := range controllerEntity.GetActions() {
+					for _, param := range action.GetParams() {
+						existsEntity := config.GetEntity(param.GetKind())
+						if existsEntity != nil {
+							param.SetEntity(existsEntity)
+							controllerEntity.AddImport(existsEntity.GetContainer().GetImport())
+						}
+					}
+				}
+
+				var autoInjectionImports sort.StringSlice
 				hasForm := false
 				for _, action := range controllerEntity.GetActions() {
 					if action.HasForm() {

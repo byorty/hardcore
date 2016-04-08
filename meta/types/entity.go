@@ -45,3 +45,7 @@ type Entity interface {
 	GetFullMultipleName() string
 	Init(Container)
 }
+
+type PostEntity interface {
+	PostInit(Environment)
+}

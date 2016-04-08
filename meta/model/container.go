@@ -7,9 +7,8 @@ import (
 
 type Container struct {
 	common.Container
-	Enums    Enums  `xml:"enum"`
-	Models   Models `xml:"model"`
-	entities []types.Entity
+	Enums  Enums  `xml:"enum"`
+	Models Models `xml:"model"`
 }
 
 func (c Container) GetContainerKind() types.ContainerKind {
@@ -17,24 +16,27 @@ func (c Container) GetContainerKind() types.ContainerKind {
 }
 
 func (c Container) Len() int {
-	return len(c.entities)
+	return len(c.GetEntities())
 }
 
 func (c Container) Get(i int) types.Entity {
-	return c.entities[i]
+	return c.GetEntities()[i]
 }
 
 func (c *Container) Init(env types.Environment) {
 	c.Container.Init(env)
-	c.entities = make([]types.Entity, 0)
+
+	c.SetEntities(make([]types.Entity, 0))
 	c.merge(c.Models)
 	c.merge(c.Enums)
 }
 
 func (c *Container) merge(slice types.EntitySlice) {
+	entities := c.GetEntities()
 	for i := 0; i < slice.Len(); i++ {
-		c.entities = append(c.entities, slice.Get(i))
+		entities = append(entities, slice.Get(i))
 	}
+	c.SetEntities(entities)
 }
 
 type Containers []*Container

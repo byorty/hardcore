@@ -1,10 +1,10 @@
 package plugin
 
 import (
+	"fmt"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
 	"strings"
-	"fmt"
 )
 
 var (
@@ -28,20 +28,20 @@ func ({{.ShortName}} *{{.DaoName}}) Init(db types.DB) {}
 `
 
 	autoModelTpl = `{{$name := .Name}}` +
-`{{$shortName := .ShortName}}` +
-`{{$varName := .VarName}}` +
-`{{$lastPropertyIndex := .LastPropertyIndex}}` +
-`{{$upperIdentifierKind := .UpperIdentifierKind}}` +
-`package {{.Package}}
+		`{{$shortName := .ShortName}}` +
+		`{{$varName := .VarName}}` +
+		`{{$lastPropertyIndex := .LastPropertyIndex}}` +
+		`{{$upperIdentifierKind := .UpperIdentifierKind}}` +
+		`package {{.Package}}
 
 import ({{range .AutoImports}}
 	"{{.}}"{{end}}
 )
 
 type {{.AutoName}} struct {` +
-`
+		`
 {{range .Properties}}` +
-`	{{.GetName}} {{.GetDefineKind}}
+		`	{{.GetName}} {{.GetDefineKind}}
 {{end}}}
 {{range .Properties}}
 func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
@@ -65,8 +65,8 @@ func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodD
 	{{if .GetRelation.IsOneToOne}}{{$shortName}}.{{.GetName}} = {{if .GetEntity.GetEntityKind.IsEnum}}&{{end}}{{.GetName}}
 	{{$shortName}}.Set{{.GetUpperName}}Id({{.GetName}}.GetId()){{else}}{{$shortName}}.{{.GetName}} = {{.GetName}}{{end}}
 	return {{$shortName}}
-}{{end}}
-
+}
+{{end}}
 func({{.ShortName}} *{{.Name}}) CommonDAO() types.ModelDAO {
 	return {{.ShortName}}.DAO()
 }
@@ -225,17 +225,17 @@ type {{.Name}} struct {
 type {{.MultipleName}} []*{{.Name}}
 `
 	autoValueTpl = `{{$name := .Name}}` +
-`{{$shortName := .ShortName}}` +
-`package {{.Package}}
+		`{{$shortName := .ShortName}}` +
+		`package {{.Package}}
 
 import ({{range .AutoImports}}
 	"{{.}}"{{end}}
 )
 
 type {{.AutoName}} struct {` +
-`
+		`
 {{range .Properties}}` +
-`	{{.GetName}} {{.GetDefineKind}}
+		`	{{.GetName}} {{.GetDefineKind}}
 {{end}}}
 {{range .Properties}}
 func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
@@ -271,22 +271,44 @@ func ({{.ShortName}} {{.MultipleName}}) Get(x int) *{{.Name}} {
 `
 )
 
-type Model struct {}
+type Model struct{}
 
 func (m *Model) Do(env types.Environment) {
-	for _, container := range env.GetConfiguration().GetContainers() {
+	config := env.GetConfiguration()
+	for _, container := range config.GetContainers() {
 		if container.GetContainerKind() == types.EntityContainerKind {
 			for _, entity := range container.GetEntities() {
 				if entity.GetEntityKind() == types.ModelEntityKind {
 
 					modelEntity := entity.(types.ModelEntity)
+
+					if modelEntity.GetPattern() == types.StraightMappingPattern {
+						for _, property := range modelEntity.GetProperties() {
+							relation := property.GetRelation()
+							hasMany := relation.IsOneToMany() || relation.IsManyToMany()
+							isModel := property.GetEntity() != nil && property.GetEntity().GetEntityKind() == types.ModelEntityKind
+							if hasMany && isModel {
+								relModel := property.GetEntity().(types.ModelEntity)
+								for _, relProp := range relModel.GetProperties() {
+									relPropRelation := relProp.GetRelation()
+									hasRelMany := relPropRelation.IsOneToOne() || relPropRelation.IsManyToMany()
+									equalKind := entity.GetFullName() == relProp.GetKind()
+									if hasRelMany && equalKind {
+										property.SetRelationProperty(relProp)
+										break
+									}
+								}
+							}
+						}
+					}
+
 					varName := utils.LowerFirst(entity.GetName())
 					tplParams := map[string]interface{}{
-						"ShortName": strings.ToLower(entity.GetName()[0:1]),
-						"Name": entity.GetName(),
+						"ShortName":    strings.ToLower(entity.GetName()[0:1]),
+						"Name":         entity.GetName(),
 						"MultipleName": modelEntity.GetMultipleName(),
-						"AutoName": fmt.Sprintf("Auto%s", entity.GetName()),
-						"Package": container.GetShortPackage(),
+						"AutoName":     fmt.Sprintf("Auto%s", entity.GetName()),
+						"Package":      container.GetShortPackage(),
 						"AutoImports": append([]string{
 							types.DefaultImport,
 							types.DaoImport,
@@ -294,7 +316,7 @@ func (m *Model) Do(env types.Environment) {
 							types.CriteriaImport,
 							types.ExprImport,
 							types.PoolImport,
-						}, entity.GetImports()...),
+						}, modelEntity.GetImports()...),
 						"Properties": modelEntity.GetProperties(),
 					}
 

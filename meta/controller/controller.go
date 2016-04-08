@@ -34,18 +34,27 @@ func (c *Controller) SetActions(actions []types.Action) {
 func (c *Controller) Init(container types.Container) {
 	c.Entity.Init(container)
 
+	actions := make([]types.Action, 0)
 	for _, action := range c.Actions {
-		if len(action.Params) == 0 {
-			action.Params = []*Param{
-				&Param{
-					Name:     "scope",
-					Required: true,
-					Source:   "",
-					Kind:     RequestScopeKind,
-				},
-			}
+		params := make([]types.ActionParam, 0)
+		for _, param := range action.Params {
+			params = append(params, param)
 		}
+		if len(params) == 0 {
+			param := &Param{
+				Name:     "scope",
+				Required: true,
+				Source:   "",
+				Kind:     RequestScopeKind,
+			}
+			params = append(params, param)
+		}
+		action.SetParams(params)
+		actions = append(actions, action)
+		action.Params = nil
 	}
+	c.SetActions(actions)
+	c.Actions = nil
 }
 
 type Controllers []*Controller

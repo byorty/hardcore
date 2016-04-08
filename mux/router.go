@@ -96,13 +96,17 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		if hasConstruct && hasHandler {
 			r.fetchSession(rs)
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
-			controller := existsMatcher.construct()
-			controller.CallAction(existsMatcher.handler, rs)
+			if rs.NotPrevented() {
+				controller := existsMatcher.construct()
+				controller.CallAction(existsMatcher.handler, rs)
+			}
 			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
 		} else if !hasConstruct && hasHandler {
 			r.fetchSession(rs)
 			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
-			existsMatcher.handler.(func(types.RequestScope))(rs)
+			if rs.NotPrevented() {
+				existsMatcher.handler.(func(types.RequestScope))(rs)
+			}
 			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
 		} else {
 			r.callNotFoundFunc(rw, req)
@@ -118,9 +122,13 @@ func (r *Router) fetchSession(rs types.RequestScope) {
 	}
 }
 
-func (r *Router) doMiddlewares(middlewares []types.MiddlewareFunc, scope types.RequestScope) {
-	for _, middleware := range middlewares {
-		middleware(scope)
+func (r *Router) doMiddlewares(middlewares []types.MiddlewareFunc, rs types.RequestScope) {
+	if rs.NotPrevented() {
+		for _, middleware := range middlewares {
+			if rs.NotPrevented() {
+				middleware(rs)
+			}
+		}
 	}
 }
 

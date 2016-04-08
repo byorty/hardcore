@@ -37,6 +37,17 @@ func (e Exporter) GetProperties() []types.ExportableProperty {
 	return e.props
 }
 
+func (e *Exporter) Init(container types.Container) {
+	e.Entity.Init(container)
+
+	props := make([]types.ExportableProperty, 0)
+	for _, prop := range e.Properties {
+		props = append(props, prop)
+	}
+	e.SetProperties(props)
+	e.Properties = nil
+}
+
 type Exporters []*Exporter
 
 func (e Exporters) Len() int {
