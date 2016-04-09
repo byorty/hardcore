@@ -7,6 +7,7 @@ import (
 
 type Container struct {
 	common.Container
+	Initializer
 	Route       string      `xml:"path,attr"`
 	Controllers Controllers `xml:"controller"`
 }
@@ -33,11 +34,9 @@ func (c Container) Get(i int) types.Entity {
 func (c *Container) Init(env types.Environment) {
 	c.Container.Init(env)
 
-	entities := make([]types.Entity, len(c.Controllers))
-	for i, entity := range c.Controllers {
-		entities[i] = entity
-	}
-	c.SetEntities(entities)
+	c.Merge(c.Controllers)
+	c.Merge(c.Befores)
+	c.Merge(c.Afters)
 }
 
 type Containers []*Container

@@ -62,3 +62,11 @@ func (c *Container) Init(env types.Environment) {
 	pkgParts := strings.Split(c.GetPackage(), ".")
 	c.SetShortPackage(pkgParts[len(pkgParts)-1])
 }
+
+func (c *Container) Merge(slice types.EntitySlice) {
+	entities := c.GetEntities()
+	for i := 0; i < slice.Len(); i++ {
+		entities = append(entities, slice.Get(i))
+	}
+	c.SetEntities(entities)
+}

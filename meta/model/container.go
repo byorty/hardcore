@@ -26,17 +26,8 @@ func (c Container) Get(i int) types.Entity {
 func (c *Container) Init(env types.Environment) {
 	c.Container.Init(env)
 
-	c.SetEntities(make([]types.Entity, 0))
-	c.merge(c.Models)
-	c.merge(c.Enums)
-}
-
-func (c *Container) merge(slice types.EntitySlice) {
-	entities := c.GetEntities()
-	for i := 0; i < slice.Len(); i++ {
-		entities = append(entities, slice.Get(i))
-	}
-	c.SetEntities(entities)
+	c.Merge(c.Models)
+	c.Merge(c.Enums)
 }
 
 type Containers []*Container

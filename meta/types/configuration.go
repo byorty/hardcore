@@ -20,3 +20,7 @@ type Configuration interface {
 	GetFiles() []File
 	GetEntity(string) Entity
 }
+
+type PostInitializer interface {
+	PostInit(Environment)
+}

@@ -25,11 +25,7 @@ func (c Container) Get(i int) types.Entity {
 func (c *Container) Init(env types.Environment) {
 	c.Container.Init(env)
 
-	entities := make([]types.Entity, len(c.Exporters))
-	for i, entity := range c.Exporters {
-		entities[i] = entity
-	}
-	c.SetEntities(entities)
+	c.Merge(c.Exporters)
 }
 
 type Containers []*Container

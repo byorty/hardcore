@@ -20,47 +20,68 @@ var (
 				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
 				mux.{{.GetMethod}}("{{.GetRoute}}", (*{{$package}}.{{$ctrlName}}).{{.GetName}}),
 			{{end}}{{end}}
-			),{{end}}
-		),{{end}}
+			){{range .Befores}}.
+			Before({{.GetName}}){{end}}{{range .Afters}}.
+			After({{.GetName}}){{end}},{{end}}
+		){{range .Befores}}.
+		Before({{.GetName}}){{end}}{{range .Afters}}.
+		After({{.GetName}}){{end}},
+		{{end}}
 	}{{end}}
 )
 `
 )
 
-type Router struct{}
+type Router struct {
+	autoImports []string
+}
 
 func (r *Router) Do(env types.Environment) {
-	autoImports := make([]string, 0)
 	containers := make([]*controller.Container, 0)
 	for _, container := range env.GetConfiguration().GetContainers() {
 		if container.GetContainerKind() == types.ControllerContainerKind {
 			ctrlContainer := container.(*controller.Container)
-			ctrlContainer.Controllers = make([]*controller.Controller, 0)
-			for _, entity := range container.GetEntities() {
-				ctrlContainer.Controllers = append(ctrlContainer.Controllers, entity.(*controller.Controller))
-			}
 			containers = append(containers, ctrlContainer)
-
-			hasImport := false
-			for _, existsImport := range autoImports {
-				if existsImport == container.GetImport() {
-					hasImport = true
-					break
+			r.addImport(ctrlContainer.GetImport())
+			r.addMiddlewaresImports(ctrlContainer.Befores)
+			r.addMiddlewaresImports(ctrlContainer.Afters)
+			for _, entity := range container.GetEntities() {
+				if entity.GetEntityKind() == types.ControllerEntityKind {
+					ctrl := entity.(*controller.Controller)
+					r.addMiddlewaresImports(ctrl.Befores)
+					r.addMiddlewaresImports(ctrl.Afters)
 				}
 			}
-			if !hasImport {
-				autoImports = append(autoImports, container.GetImport())
-			}
+
 		}
 	}
 	tplParams := map[string]interface{}{
 		"AutoImports": append([]string{
 			types.DefaultImport,
 			types.MuxImport,
-		}, autoImports...),
+		}, r.autoImports...),
 		"Containers": containers,
 	}
 
 	filename := filepath.Join(env.GetAbsPath(), "configs", "router")
 	env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
+}
+
+func (r *Router) addImport(newImport string) {
+	hasImport := false
+	for _, existsImport := range r.autoImports {
+		if existsImport == newImport {
+			hasImport = true
+			break
+		}
+	}
+	if !hasImport {
+		r.autoImports = append(r.autoImports, newImport)
+	}
+}
+
+func (r *Router) addMiddlewaresImports(slice types.EntitySlice) {
+	for i := 0; i < slice.Len(); i++ {
+		r.addImport(slice.Get(i).(types.Middleware).GetEntity().GetContainer().GetImport())
+	}
 }

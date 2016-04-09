@@ -13,12 +13,6 @@ func (m Middleware) GetEntityKind() types.EntityKind {
 	return types.MiddlewareEntityKind
 }
 
-//func (m *Middleware) Init(container types.Container) {
-//	m.Entity.Init(container)
-//
-//
-//}
-
 type Middlewares []*Middleware
 
 func (m Middlewares) Len() int {

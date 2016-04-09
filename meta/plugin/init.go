@@ -64,8 +64,11 @@ func (i *Init) init(env types.Environment, containers []types.Container) {
 
 func (i *Init) postInit(env types.Environment, containers []types.Container) {
 	for _, container := range containers {
+		if postContainer, ok := container.(types.PostInitializer); ok {
+			postContainer.PostInit(env)
+		}
 		for y := 0; y < container.Len(); y++ {
-			if postEntity, ok := container.Get(y).(types.PostEntity); ok {
+			if postEntity, ok := container.Get(y).(types.PostInitializer); ok {
 				postEntity.PostInit(env)
 			}
 		}

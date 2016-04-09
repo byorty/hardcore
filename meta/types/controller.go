@@ -26,7 +26,7 @@ type ActionParam interface {
 	GetSource() string
 	GetKind() string
 	GetEntity() Entity
-	SetEntity(entity Entity)
+	SetEntity(Entity)
 	GetDefineKind() string
 	GetDefineVarKind() string
 	GetDefineVarName() string
@@ -42,4 +42,10 @@ type Injection interface {
 	GetBody() string
 	GetImports() []string
 	GetAutoImports() []string
+}
+
+type Middleware interface {
+	Entity
+	GetEntity() Entity
+	SetEntity(Entity)
 }

@@ -6,7 +6,8 @@ import (
 )
 
 type Controller struct {
-	*common.Entity
+	common.Entity
+	Initializer
 	Route   string    `xml:"path,attr"`
 	Actions []*Action `xml:"actions>action"`
 	actions []types.Action

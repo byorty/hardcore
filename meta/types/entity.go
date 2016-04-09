@@ -16,6 +16,8 @@ const (
 	EnumEntityKind
 	ExporterEntityKind
 	MiddlewareEntityKind
+	BeforeMiddlewareEntityKind
+	AfterMiddlewareEntityKind
 )
 
 type EntitySlice interface {
@@ -45,8 +47,4 @@ type Entity interface {
 	GetMultipleName() string
 	GetFullMultipleName() string
 	Init(Container)
-}
-
-type PostEntity interface {
-	PostInit(Environment)
 }

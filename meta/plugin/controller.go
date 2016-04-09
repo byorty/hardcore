@@ -90,71 +90,72 @@ func (c *Controller) Do(env types.Environment) {
 	for _, container := range config.GetContainers() {
 		if container.GetContainerKind() == types.ControllerContainerKind {
 			for _, entity := range container.GetEntities() {
-
-				controllerEntity := entity.(types.ControllerEntity)
-				for _, action := range controllerEntity.GetActions() {
-					for _, param := range action.GetParams() {
-						existsEntity := config.GetEntity(param.GetKind())
-						if existsEntity != nil {
-							param.SetEntity(existsEntity)
-							controllerEntity.AddImport(existsEntity.GetContainer().GetImport())
+				if entity.GetEntityKind() == types.ControllerEntityKind {
+					controllerEntity := entity.(types.ControllerEntity)
+					for _, action := range controllerEntity.GetActions() {
+						for _, param := range action.GetParams() {
+							existsEntity := config.GetEntity(param.GetKind())
+							if existsEntity != nil {
+								param.SetEntity(existsEntity)
+								controllerEntity.AddImport(existsEntity.GetContainer().GetImport())
+							}
 						}
 					}
-				}
 
-				var autoInjectionImports sort.StringSlice
-				hasForm := false
-				for _, action := range controllerEntity.GetActions() {
-					if action.HasForm() {
-						hasForm = true
-						for _, param := range action.GetParams() {
-							if param.IsInjection() {
-								for _, newImport := range param.GetInjection().GetAutoImports() {
-									autoInjectionImports.Sort()
-									i := autoInjectionImports.Search(newImport)
-									if i == autoInjectionImports.Len() {
-										autoInjectionImports = append(autoInjectionImports, newImport)
+					var autoInjectionImports sort.StringSlice
+					hasForm := false
+					for _, action := range controllerEntity.GetActions() {
+						if action.HasForm() {
+							hasForm = true
+							for _, param := range action.GetParams() {
+								if param.IsInjection() {
+									for _, newImport := range param.GetInjection().GetAutoImports() {
+										autoInjectionImports.Sort()
+										i := autoInjectionImports.Search(newImport)
+										if i == autoInjectionImports.Len() {
+											autoInjectionImports = append(autoInjectionImports, newImport)
+										}
 									}
 								}
 							}
+							break
 						}
-						break
 					}
-				}
 
-				imports := append(
-					[]string{types.DefaultImport},
-					controllerEntity.GetImports()...,
-				)
-				autoImports := []string{types.DefaultImport}
-				if hasForm {
-					autoImports = append(
-						autoImports,
-						"github.com/byorty/hardcore/form",
-						"github.com/byorty/hardcore/form/prim",
-						"github.com/byorty/hardcore/view",
-					)
-					autoImports = append(
-						autoImports,
+					imports := append(
+						[]string{types.DefaultImport},
 						controllerEntity.GetImports()...,
 					)
-					autoImports = append(
-						autoImports,
-						autoInjectionImports...,
-					)
-				}
-				tplParams := map[string]interface{}{
-					"Extends":     controllerEntity.GetExtends(),
-					"ShortName":   strings.ToLower(controllerEntity.GetName()[0:1]),
-					"Name":        controllerEntity.GetName(),
-					"Package":     container.GetShortPackage(),
-					"Imports":     imports,
-					"AutoImports": autoImports,
-					"Actions":     controllerEntity.GetActions(),
-				}
+					autoImports := []string{types.DefaultImport}
+					if hasForm {
+						autoImports = append(
+							autoImports,
+							"github.com/byorty/hardcore/form",
+							"github.com/byorty/hardcore/form/prim",
+							"github.com/byorty/hardcore/view",
+						)
+						autoImports = append(
+							autoImports,
+							controllerEntity.GetImports()...,
+						)
+						autoImports = append(
+							autoImports,
+							autoInjectionImports...,
+						)
+					}
+					tplParams := map[string]interface{}{
+						"Extends":     controllerEntity.GetExtends(),
+						"ShortName":   strings.ToLower(controllerEntity.GetName()[0:1]),
+						"Name":        controllerEntity.GetName(),
+						"Package":     container.GetShortPackage(),
+						"Imports":     imports,
+						"AutoImports": autoImports,
+						"Actions":     controllerEntity.GetActions(),
+					}
 
-				env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)
-				env.GetConfiguration().AddFile(controllerEntity.GetFilename(), controllerTpl, tplParams)
+					env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)
+					env.GetConfiguration().AddFile(controllerEntity.GetFilename(), controllerTpl, tplParams)
+				}
 			}
 		}
 	}
