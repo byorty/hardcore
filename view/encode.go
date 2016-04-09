@@ -1,15 +1,13 @@
 package view
 
 import (
-	"github.com/byorty/hardcore/types"
-	"net/http"
 	"github.com/byorty/hardcore/encoder"
+	"github.com/byorty/hardcore/types"
 )
 
 type EncodeImpl struct {
 	BaseImpl
-	status int
-	encoder types.Encoder
+	encoder  types.Encoder
 	exporter types.Exporter
 }
 
@@ -36,14 +34,13 @@ func (e EncodeImpl) Render() {
 	if e.encoder == nil {
 		switch req.Header.Get("Content-Type") {
 		case "application/xml", "text/xml":
-		case "application/json": e.encoder = encoder.NewJson()
-		default: e.encoder = encoder.NewJson()
+		case "application/json":
+			e.encoder = encoder.NewJson()
+		default:
+			e.encoder = encoder.NewJson()
 		}
 	}
-	if e.status == 0 {
-		e.status = http.StatusOK
-	}
-//	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
-	rw.WriteHeader(e.status)
+	//	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+	e.BaseImpl.Render()
 	rw.Write(e.encoder.Encode(e.exporter))
 }

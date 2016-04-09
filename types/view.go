@@ -1,8 +1,8 @@
 package types
 
 type View interface {
-	SetController(ActionController)
-	SetScope(RequestScope)
+	SetController(ActionController) View
+	SetScope(RequestScope) View
 	Render()
 }
 
@@ -14,6 +14,7 @@ type EncodeView interface {
 
 type TmplView interface {
 	View
+	SetStatus(int) TmplView
 	Set(string, interface{}) TmplView
 	SetTemplate(string) TmplView
 }
@@ -23,7 +24,11 @@ type RawView interface {
 	SetStatus(int) RawView
 }
 
+type StringView interface {
+	View
+	SetStatus(int) StringView
+}
+
 type RedirectView interface {
 	View
-	SetStatus(int) RedirectView
 }

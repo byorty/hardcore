@@ -7,13 +7,13 @@ import (
 
 type RedirectImpl struct {
 	BaseImpl
-	url    string
-	status int
+	url string
 }
 
 func Redirect(url string) types.RedirectView {
 	redirect := new(RedirectImpl)
 	redirect.url = url
+	redirect.status = http.StatusMovedPermanently
 	return redirect
 }
 
@@ -22,14 +22,6 @@ func (r *RedirectImpl) SetUrl(url string) types.RedirectView {
 	return r
 }
 
-func (r *RedirectImpl) SetStatus(status int) types.RedirectView {
-	r.status = status
-	return r
-}
-
 func (r RedirectImpl) Render() {
-	if r.status == 0 {
-		r.status = http.StatusMovedPermanently
-	}
 	http.Redirect(r.scope.GetWriter(), r.scope.GetRequest(), r.url, r.status)
 }

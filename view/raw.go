@@ -12,7 +12,6 @@ var (
 type RawImpl struct {
 	BaseImpl
 	bytes []byte
-	status int
 }
 
 func Raw(bytes []byte) types.RawView {
@@ -28,14 +27,12 @@ func (r *RawImpl) SetStatus(status int) types.RawView {
 
 func (r *RawImpl) Render() {
 	rw := r.scope.GetWriter()
-	if r.status == 0 {
-		r.status = http.StatusOK
-	}
-	rw.WriteHeader(r.status)
+	r.BaseImpl.Render()
 	rw.Write(r.bytes)
 }
 
 func BadRequest() types.RawView {
-	return Raw(badRequest).SetStatus(http.StatusBadRequest)
+	r := Raw(badRequest)
+	r.SetStatus(http.StatusBadRequest)
+	return r
 }
-

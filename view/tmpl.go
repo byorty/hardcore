@@ -18,6 +18,11 @@ func Tmpl(filename string) types.TmplView {
 	return tmpl
 }
 
+func (t *TmplImpl) SetStatus(status int) types.TmplView {
+	t.status = status
+	return t
+}
+
 func (t *TmplImpl) SetTemplate(template string) types.TmplView {
 	t.filename = template
 	return t
@@ -29,6 +34,7 @@ func (t *TmplImpl) Set(key string, value interface{}) types.TmplView {
 }
 
 func (t *TmplImpl) Render() {
+	t.BaseImpl.Render()
 	if viewer, ok := t.ctrl.(types.ExtendedViewer); ok {
 		for _, tmpl := range viewer.GetHeaderTmpls() {
 			t.render(tmpl)
