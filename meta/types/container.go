@@ -6,6 +6,7 @@ const (
 	ControllerContainerKind ContainerKind = iota
 	EntityContainerKind
 	ExporterContainerKind
+	MiddlewaresContainerKind
 )
 
 type ContainerSlice interface {

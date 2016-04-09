@@ -11,7 +11,7 @@ type Container struct {
 }
 
 func (c Container) GetContainerKind() types.ContainerKind {
-	return types.EntityContainerKind
+	return types.MiddlewaresContainerKind
 }
 
 func (c Container) Len() int {

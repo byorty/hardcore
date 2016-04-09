@@ -33,7 +33,7 @@ var (
 )
 
 type Router struct {
-	autoImports []string
+	Importer
 }
 
 func (r *Router) Do(env types.Environment) {
@@ -59,25 +59,12 @@ func (r *Router) Do(env types.Environment) {
 		"AutoImports": append([]string{
 			types.DefaultImport,
 			types.MuxImport,
-		}, r.autoImports...),
+		}, r.imports...),
 		"Containers": containers,
 	}
 
 	filename := filepath.Join(env.GetAbsPath(), "configs", "router")
 	env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
-}
-
-func (r *Router) addImport(newImport string) {
-	hasImport := false
-	for _, existsImport := range r.autoImports {
-		if existsImport == newImport {
-			hasImport = true
-			break
-		}
-	}
-	if !hasImport {
-		r.autoImports = append(r.autoImports, newImport)
-	}
 }
 
 func (r *Router) addMiddlewaresImports(slice types.EntitySlice) {

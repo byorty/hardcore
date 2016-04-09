@@ -20,23 +20,16 @@ var (
 `
 )
 
-type DAOs struct {}
+type DAOs struct {
+	Importer
+}
 
 func (d *DAOs) Do(env types.Environment) {
-	imports := make([]string, 0)
 	entities := make([]types.Entity, 0)
 	for _, container := range env.GetConfiguration().GetContainers() {
 		if container.GetContainerKind() == types.EntityContainerKind {
-			hasImport := false
-			for _, existsImport := range imports {
-				if existsImport == container.GetImport() {
-					hasImport = true
-					break
-				}
-			}
-			if !hasImport {
-				imports = append(imports, container.GetImport())
-			}
+			d.addImport(container.GetImport())
+
 			for _, entity := range container.GetEntities() {
 				if entity.GetEntityKind() == types.ModelEntityKind {
 					entities = append(entities, entity)
@@ -47,7 +40,7 @@ func (d *DAOs) Do(env types.Environment) {
 	tplParams := map[string]interface{}{
 		"Imports": append([]string{
 			types.DefaultImport,
-		}, imports...),
+		}, d.imports...),
 		"Entities": entities,
 	}
 

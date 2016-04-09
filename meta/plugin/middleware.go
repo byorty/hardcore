@@ -22,7 +22,7 @@ type Middleware struct{}
 func (m *Middleware) Do(env types.Environment) {
 	config := env.GetConfiguration()
 	for _, container := range config.GetContainers() {
-		if container.GetContainerKind() == types.EntityContainerKind {
+		if container.GetContainerKind() == types.MiddlewaresContainerKind {
 			for _, entity := range container.GetEntities() {
 				if entity.GetEntityKind() == types.MiddlewareEntityKind {
 
