@@ -154,7 +154,7 @@ func (r *Route) After(middleware types.MiddlewareFunc) types.Route {
 
 func (r *Route) Add(route types.Route) types.Route {
 	if route != nil {
-		route.SetParent(route)
+		route.SetParent(r)
 		route.SetKind(types.ControllerActionRouteKind)
 		r.routes = append(r.routes, route.(*Route))
 	}
@@ -162,10 +162,8 @@ func (r *Route) Add(route types.Route) types.Route {
 }
 
 func (r *Route) Batch(routes ...types.Route) types.Route {
-	if routes != nil {
-		for _, route := range routes {
-			r.Add(route)
-		}
+	for _, route := range routes {
+		r.Add(route)
 	}
 	return r
 }

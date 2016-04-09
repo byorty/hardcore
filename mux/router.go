@@ -41,9 +41,7 @@ func (r *Router) Batch(routes ...types.Route) *Router {
 }
 
 func (r *Router) Add(route types.Route) *Router {
-	if castedRoute, ok := route.(*Route); ok {
-		castedRoute.toMatcher(r)
-	}
+	route.(*Route).toMatcher(r)
 	return r
 }
 
