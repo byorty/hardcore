@@ -1,20 +1,20 @@
 package models
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/orm/dao"
 	"github.com/byorty/hardcore/proto"
+	"github.com/byorty/hardcore/types"
 )
 
 type AutoPost struct {
-	id int64
-	user *User
-	userId int64
-	name string
+	id          int64
+	user        *User
+	userId      int64
+	name        string
 	description string
 }
 
-func (p Post) GetId() int64 { 
+func (p Post) GetId() int64 {
 	return p.id
 }
 
@@ -22,7 +22,7 @@ func (p *Post) SetId(id int64) *Post {
 	p.id = id
 	return p
 }
-func (p Post) GetUser() *User { 
+func (p Post) GetUser() *User {
 	if p.user == nil {
 		var user User
 		user.DAO().ById(p.userId).One(&user)
@@ -36,7 +36,7 @@ func (p *Post) SetUser(user *User) *Post {
 	p.SetUserId(user.GetId())
 	return p
 }
-func (p Post) GetUserId() int64 { 
+func (p Post) GetUserId() int64 {
 	return p.userId
 }
 
@@ -44,7 +44,7 @@ func (p *Post) SetUserId(userId int64) *Post {
 	p.userId = userId
 	return p
 }
-func (p Post) GetName() string { 
+func (p Post) GetName() string {
 	return p.name
 }
 
@@ -52,7 +52,7 @@ func (p *Post) SetName(name string) *Post {
 	p.name = name
 	return p
 }
-func (p Post) GetDescription() string { 
+func (p Post) GetDescription() string {
 	return p.description
 }
 
@@ -61,15 +61,15 @@ func (p *Post) SetDescription(description string) *Post {
 	return p
 }
 
-func(p *Post) CommonDAO() types.ModelDAO {
+func (p *Post) CommonDAO() types.ModelDAO {
 	return p.DAO()
 }
 
-func(p *Post) KindDAO() types.Int64ModelDAO {
+func (p *Post) KindDAO() types.Int64ModelDAO {
 	return p.DAO()
 }
 
-func(p *Post) DAO() *PostDao {
+func (p *Post) DAO() *PostDao {
 	return PostDaoInst()
 }
 
@@ -101,15 +101,15 @@ func (p Posts) Get(x int) *Post {
 	return p[x]
 }
 
-func(p *Posts) CommonDAO() types.ModelDAO {
+func (p *Posts) CommonDAO() types.ModelDAO {
 	return p.DAO()
 }
 
-func(p *Posts) KindDAO() types.Int64ModelDAO {
+func (p *Posts) KindDAO() types.Int64ModelDAO {
 	return p.DAO()
 }
 
-func(p *Posts) DAO() *PostDao {
+func (p *Posts) DAO() *PostDao {
 	return PostDaoInst()
 }
 
@@ -208,11 +208,11 @@ func postDescriptionGetter(model interface{}) interface{} {
 }
 
 var (
-	postDao *PostDao
+	postDao   *PostDao
 	postProto = proto.New().
-		Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postIdSetter, postIdGetter)).
-		Set("user", proto.NewProperty("user", types.ProtoModelKind, types.ProtoOneToOneRelation, true, postUserSetter, postUserGetter)).
-		Set("userId", proto.NewProperty("user_id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postUserIdSetter, postUserIdGetter)).
-		Set("name", proto.NewProperty("name", types.ProtoStringKind, types.ProtoNoneRelation, true, postNameSetter, postNameGetter)).
-		Set("description", proto.NewProperty("description", types.ProtoStringKind, types.ProtoNoneRelation, true, postDescriptionSetter, postDescriptionGetter))
+			Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postIdSetter, postIdGetter)).
+			Set("user", proto.NewProperty("user", types.ProtoModelKind, types.ProtoOneToOneRelation, true, postUserSetter, postUserGetter)).
+			Set("userId", proto.NewProperty("user_id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, postUserIdSetter, postUserIdGetter)).
+			Set("name", proto.NewProperty("name", types.ProtoStringKind, types.ProtoNoneRelation, true, postNameSetter, postNameGetter)).
+			Set("description", proto.NewProperty("description", types.ProtoStringKind, types.ProtoNoneRelation, true, postDescriptionSetter, postDescriptionGetter))
 )

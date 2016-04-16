@@ -11,16 +11,16 @@ import (
 
 var (
 	stdout io.Writer = os.Stdout
-    colors = map[Level]string {
-        FINEST: "\033[32m",
-        FINE: "\033[32m\033[2m",
-        DEBUG: "\033[37m\033[2m",
-        TRACE: "\033[36m",
-        INFO: "\033[37m",
-        WARNING: "\033[33m",
-        ERROR: "\033[31m",
-        CRITICAL: "\033[35m",
-    }
+	colors           = map[Level]string{
+		FINEST:   "\033[32m",
+		FINE:     "\033[32m\033[2m",
+		DEBUG:    "\033[37m\033[2m",
+		TRACE:    "\033[36m",
+		INFO:     "\033[37m",
+		WARNING:  "\033[33m",
+		ERROR:    "\033[31m",
+		CRITICAL: "\033[35m",
+	}
 )
 
 // This is the standard writer that prints to standard output.
@@ -43,7 +43,7 @@ func (c *ConsoleLogWriter) SetFormat(format string) {
 }
 func (c ConsoleLogWriter) run(out io.Writer) {
 	for rec := range c.w {
-		fmt.Fprint(out, FormatLogRecord(colors[rec.Level] + c.format, rec))
+		fmt.Fprint(out, FormatLogRecord(colors[rec.Level]+c.format, rec))
 	}
 }
 

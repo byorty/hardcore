@@ -5,14 +5,14 @@ import (
 )
 
 type BaseImpl struct {
-	name string
-	error string
-	missing string
-	wrong string
+	name     string
+	error    string
+	missing  string
+	wrong    string
 	required bool
-	customs map[int]string
-	dest interface{}
-	source types.PrimitiveSource
+	customs  map[int]string
+	dest     interface{}
+	source   types.PrimitiveSource
 }
 
 func (b *BaseImpl) init(name string) {

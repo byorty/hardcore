@@ -1,14 +1,13 @@
 package test
 
 import (
-	"testing"
-	"github.com/byorty/hardcore/query/criteria"
-	"time"
-	"github.com/byorty/hardcore/query/proj"
 	"fmt"
+	"github.com/byorty/hardcore/query/criteria"
+	"github.com/byorty/hardcore/query/proj"
 	"github.com/byorty/hardcore/test/models"
+	"testing"
+	"time"
 )
-
 
 func TestDB(t *testing.T) {
 	var user models.User
@@ -26,13 +25,13 @@ func TestDB(t *testing.T) {
 		t.Fail()
 	}
 
-//	existsUsers := Users{user}
-//	var users Users
-//	users.DAO().ByIds([]int64{1, 2, 3}).All(&users)
-//	t.Log(users)
-//	if len(users) > 0 && existsUsers[0].id != users[0].id {
-//		t.Fail()
-//	}
+	//	existsUsers := Users{user}
+	//	var users Users
+	//	users.DAO().ByIds([]int64{1, 2, 3}).All(&users)
+	//	t.Log(users)
+	//	if len(users) > 0 && existsUsers[0].id != users[0].id {
+	//		t.Fail()
+	//	}
 
 	var count int
 	criteria.SelectByDAO(user.DAO()).Add(proj.Count("id")).Custom(&count)

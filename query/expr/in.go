@@ -1,8 +1,8 @@
 package expr
 
 import (
-	"github.com/byorty/hardcore/types"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 	"strings"
 )
 
@@ -25,7 +25,7 @@ func (e ExprIn) GetArg() interface{} {
 
 func (e ExprIn) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, table string, i int) string {
 	argTpls := make([]string, e.args.Len())
-	for i := 0;i < e.args.Len();i++ {
+	for i := 0; i < e.args.Len(); i++ {
 		argTpls[i] = writer.GetArgTpl()
 	}
 	property := proto.GetByName(e.name)
@@ -37,8 +37,7 @@ func (e ExprIn) WriteSqlPart(writer types.SqlQueryWriter, proto types.Proto, tab
 }
 
 func (e ExprIn) AddArg(criteria types.Criteria) {
-	for i := 0;i < e.args.Len();i++ {
+	for i := 0; i < e.args.Len(); i++ {
 		criteria.AddArg(e.args.GetRaw(i))
 	}
 }
-

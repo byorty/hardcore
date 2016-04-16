@@ -1,8 +1,8 @@
 package proto
 
 import (
-	"github.com/byorty/hardcore/types"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 )
 
 type Property struct {
@@ -22,12 +22,12 @@ func NewProperty(field string, kind types.ProtoKind, relation types.ProtoRelatio
 
 func newProperty(field string, kind types.ProtoKind, relation types.ProtoRelation, required bool, setter types.Setter, getter types.Getter) *Property {
 	return &Property{
-		field   : field,
-		kind    : kind,
+		field:    field,
+		kind:     kind,
 		relation: relation,
 		required: required,
-		setter: setter,
-		getter: getter,
+		setter:   setter,
+		getter:   getter,
 	}
 }
 

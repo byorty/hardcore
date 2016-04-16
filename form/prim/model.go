@@ -1,8 +1,8 @@
 package prim
 
 import (
-	"strconv"
 	"github.com/byorty/hardcore/types"
+	"strconv"
 )
 
 type EntityImpl struct {
@@ -46,7 +46,8 @@ func (i *IntModelImpl) ImportFromString(strValue string) bool {
 		case types.Int64Model:
 			dest.KindDAO().ById(value).One(dest)
 			isReceived = i.isReceived(dest.GetId() != 0)
-		default: isReceived = false
+		default:
+			isReceived = false
 		}
 		if i.IsRequired() {
 			if isReceived {
@@ -130,7 +131,8 @@ func (u *UintModelImpl) ImportFromString(strValue string) bool {
 		case types.Uint64Model:
 			dest.KindDAO().ById(value).One(dest)
 			return u.isReceived(dest.GetId() != 0)
-		default: return false
+		default:
+			return false
 		}
 	} else {
 		u.error = u.wrong

@@ -11,7 +11,7 @@ func Router() *mux.Router {
 
 var (
 	router = mux.NewRouter().Add(
-		mux.Path("/api", 
+		mux.Path("/api",
 			mux.Controller("/post", api.NewPost).Batch(
 				mux.Get("/", api.PostListAction),
 				mux.Get("/{post:([0-9]+)}", api.PostViewAction),

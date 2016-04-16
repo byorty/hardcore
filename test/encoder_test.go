@@ -1,12 +1,12 @@
 package test
 
 import (
-	"testing"
-	"github.com/byorty/hardcore/encoder"
-	"github.com/byorty/hardcore/test/models"
-	"time"
-	"github.com/byorty/hardcore/test/exporters"
 	"fmt"
+	"github.com/byorty/hardcore/encoder"
+	"github.com/byorty/hardcore/test/exporters"
+	"github.com/byorty/hardcore/test/models"
+	"testing"
+	"time"
 )
 
 func TestEncoder(t *testing.T) {

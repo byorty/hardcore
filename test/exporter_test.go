@@ -1,10 +1,10 @@
 package test
 
 import (
-	"github.com/byorty/hardcore/test/models"
-	"time"
-	"testing"
 	"github.com/byorty/hardcore/test/exporters"
+	"github.com/byorty/hardcore/test/models"
+	"testing"
+	"time"
 )
 
 func TestExporter(t *testing.T) {
@@ -18,7 +18,7 @@ func TestExporter(t *testing.T) {
 
 	userExporter := exporters.NewUser(user)
 	exportable := userExporter.GetExportable()
-	for i := 0;i < userExporter.Len();i++ {
+	for i := 0; i < userExporter.Len(); i++ {
 		prop := userExporter.Get(i)
 		t.Log(prop.GetName(), prop.GetValue(exportable))
 		getter := user.Proto().GetByName(prop.GetName()).GetGetter()

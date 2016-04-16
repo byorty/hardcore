@@ -1,8 +1,8 @@
 package prim
 
 import (
-"strconv"
-"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/types"
+	"strconv"
 )
 
 type FloatImpl struct {
@@ -18,9 +18,12 @@ func (f *FloatImpl) ImportFromString(strValue string) bool {
 	value, err := strconv.ParseFloat(strValue, f.bitSize)
 	if err == nil {
 		switch dest := f.dest.(type) {
-		case *float32: (*dest) = float32(value)
-		case *float64: (*dest) = value
-		default: return false
+		case *float32:
+			(*dest) = float32(value)
+		case *float64:
+			(*dest) = value
+		default:
+			return false
 		}
 		return true
 	} else {

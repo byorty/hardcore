@@ -3,9 +3,9 @@ package form
 import "github.com/byorty/hardcore/types"
 
 type FormErrorImpl struct {
-	name string
+	name    string
 	message string
-	code int
+	code    int
 }
 
 func (f FormErrorImpl) GetName() string {
@@ -26,7 +26,7 @@ func NewError(name, message string) types.FormError {
 
 func newError(name, message string) *FormErrorImpl {
 	return &FormErrorImpl{
-		name: name,
+		name:    name,
 		message: message,
 	}
 }

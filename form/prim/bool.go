@@ -1,8 +1,8 @@
 package prim
 
 import (
-"strconv"
-"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/types"
+	"strconv"
 )
 
 type BoolImpl struct {

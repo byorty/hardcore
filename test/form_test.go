@@ -1,21 +1,21 @@
 package test
 
 import (
-	"testing"
+	"fmt"
+	"github.com/byorty/hardcore/form"
+	"github.com/byorty/hardcore/form/prim"
 	"github.com/byorty/hardcore/mux"
+	"github.com/byorty/hardcore/test/models"
+	"github.com/byorty/hardcore/types"
+	"io/ioutil"
+	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
-	"github.com/byorty/hardcore/types"
-	"net/http"
-	"io/ioutil"
-	"github.com/byorty/hardcore/form"
-	"github.com/byorty/hardcore/form/prim"
-	"fmt"
-	"github.com/byorty/hardcore/test/models"
+	"testing"
 )
 
-type FormCtrl struct {}
+type FormCtrl struct{}
 
 func NewFormCtrl() types.ActionController {
 	return new(FormCtrl)
@@ -35,7 +35,7 @@ func (f *FormCtrl) Get(search string, page int) string {
 
 type FormCtrlGet func(*FormCtrl, string, int) string
 
-func (f FormCtrlGet) Call(ctrl interface{}, scope types.RequestScope)  {
+func (f FormCtrlGet) Call(ctrl interface{}, scope types.RequestScope) {
 	var search string
 	var page int
 	strPrim := prim.String("search")
@@ -91,7 +91,7 @@ func TestForm(t *testing.T) {
 				if testForm.Check(scope) {
 					scope.GetWriter().Write([]byte(fmt.Sprintf("hello %s#%d", name, id)))
 				} else {
-					for i := 0;i < testForm.GetErrors().Len();i++ {
+					for i := 0; i < testForm.GetErrors().Len(); i++ {
 						scope.GetWriter().Write([]byte(testForm.GetErrors().Get(i).GetMessage()))
 					}
 				}
@@ -121,7 +121,7 @@ func TestForm(t *testing.T) {
 				if testForm.Check(scope) {
 					scope.GetWriter().Write([]byte(fmt.Sprintf("user#%d - email: %s, role: %s", user.GetId(), user.GetEmail(), role.GetName())))
 				} else {
-					for i := 0;i < testForm.GetErrors().Len();i++ {
+					for i := 0; i < testForm.GetErrors().Len(); i++ {
 						scope.GetWriter().Write([]byte(testForm.GetErrors().Get(i).GetMessage()))
 					}
 				}
@@ -129,8 +129,8 @@ func TestForm(t *testing.T) {
 			mux.Controller("/api/form", NewFormCtrl).
 				Get("/", formCtrlGet),
 		).
-		Host(host).
-		Port(port),
+			Host(host).
+			Port(port),
 	)
 
 	sendGet1(t, server, "/john?id=123", "hello john#123")

@@ -7,7 +7,7 @@ type Named interface {
 
 type IntEnum interface {
 	Named
-    IntIdentifiable
+	IntIdentifiable
 	DAO() IntEnumDAO
 }
 
@@ -84,73 +84,72 @@ type StringEnum interface {
 }
 
 type EnumDAO interface {
-    GetList() []Named
-    Eq(Named, interface{}) bool
-    Scan(src, dest Named)
+	GetList() []Named
+	Eq(Named, interface{}) bool
+	Scan(src, dest Named)
 }
 
 type IntEnumDAO interface {
-    EnumDAO
-    ById(int) EnumScanner
+	EnumDAO
+	ById(int) EnumScanner
 }
 
 type Int8EnumDAO interface {
-    EnumDAO
-    ById(int8) EnumScanner
+	EnumDAO
+	ById(int8) EnumScanner
 }
 
 type Int16EnumDAO interface {
-    EnumDAO
-    ById(int16) EnumScanner
+	EnumDAO
+	ById(int16) EnumScanner
 }
 
 type Int32EnumDAO interface {
-    EnumDAO
-    ById(int32) EnumScanner
+	EnumDAO
+	ById(int32) EnumScanner
 }
 
 type Int64EnumDAO interface {
-    EnumDAO
-    ById(int64) EnumScanner
+	EnumDAO
+	ById(int64) EnumScanner
 }
 
 type UintEnumDAO interface {
-    EnumDAO
-    ById(uint) EnumScanner
+	EnumDAO
+	ById(uint) EnumScanner
 }
 
 type Uint8EnumDAO interface {
-    EnumDAO
-    ById(uint8) EnumScanner
+	EnumDAO
+	ById(uint8) EnumScanner
 }
 
 type Uint16EnumDAO interface {
-    EnumDAO
-    ById(uint16) EnumScanner
+	EnumDAO
+	ById(uint16) EnumScanner
 }
 
 type Uint32EnumDAO interface {
-    EnumDAO
-    ById(uint32) EnumScanner
+	EnumDAO
+	ById(uint32) EnumScanner
 }
 
 type Uint64EnumDAO interface {
-    EnumDAO
-    ById(uint64) EnumScanner
+	EnumDAO
+	ById(uint64) EnumScanner
 }
 
 type Float32EnumDAO interface {
-    EnumDAO
-    ById(float32) EnumScanner
+	EnumDAO
+	ById(float32) EnumScanner
 }
 
 type Float64EnumDAO interface {
-    EnumDAO
-    ById(float64) EnumScanner
+	EnumDAO
+	ById(float64) EnumScanner
 }
 
 type StringEnumDAO interface {
-    EnumDAO
-    ById(string) EnumScanner
+	EnumDAO
+	ById(string) EnumScanner
 }
-

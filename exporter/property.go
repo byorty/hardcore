@@ -1,7 +1,7 @@
 package exporter
 
 type PropertyImpl struct {
-	name       string
+	name string
 }
 
 func NewProperty(name string) PropertyImpl {

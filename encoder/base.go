@@ -2,9 +2,9 @@ package encoder
 
 import (
 	"bytes"
-	"unicode/utf8"
 	"strconv"
 	"time"
+	"unicode/utf8"
 )
 
 var (
@@ -45,8 +45,8 @@ func (b *BaseImpl) encodeString(value string) {
 				// can lead to security holes when user-controlled strings
 				// are rendered into JSON and served to some browsers.
 				b.buf.WriteString(`\u00`)
-				b.buf.WriteByte(hex[j >> 4])
-				b.buf.WriteByte(hex[j & 0xF])
+				b.buf.WriteByte(hex[j>>4])
+				b.buf.WriteByte(hex[j&0xF])
 			}
 			i++
 			start = i
@@ -74,7 +74,7 @@ func (b *BaseImpl) encodeString(value string) {
 				b.buf.WriteString(value[start:i])
 			}
 			b.buf.WriteString(`\u202`)
-			b.buf.WriteByte(hex[c & 0xF])
+			b.buf.WriteByte(hex[c&0xF])
 			i += size
 			start = i
 			continue
@@ -113,6 +113,3 @@ func (b *BaseImpl) encodeBool(value bool) {
 func (b *BaseImpl) encodeTime(value time.Time) {
 	b.buf.WriteString(value.Format("2006-01-02 15:04:05"))
 }
-
-
-

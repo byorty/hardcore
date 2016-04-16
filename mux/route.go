@@ -1,9 +1,11 @@
 package mux
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"sort"
 	"strings"
 )
 
@@ -211,7 +213,10 @@ func (r *Route) toMatcher(router *Router) {
 
 	switch r.kind {
 	case types.ActionRouteKind, types.ControllerActionRouteKind:
-		matcher := new(Matcher)
+		matcher := &Matcher{
+			path:    r.tpl,
+			pathLen: len(r.tpl),
+		}
 
 		if len(r.schemeTpl) == 0 {
 			r.Scheme(defaultScheme)
@@ -221,8 +226,29 @@ func (r *Route) toMatcher(router *Router) {
 			r.Host(defaultHost)
 		}
 
-		tpl := fmt.Sprintf("^%s$", r.tpl)
-		matcher.urlParams = newParamMatcher(tpl)
+		var buf *bytes.Buffer
+		tplLen := len(r.tpl)
+		for i := 0; i < tplLen; i++ {
+			isSlash := '/' == r.tpl[i]
+			if buf != nil && !isSlash {
+				buf.WriteByte(r.tpl[i])
+			}
+			if r.tpl[i] == ':' {
+				buf = new(bytes.Buffer)
+			}
+			if isSlash || i == tplLen-1 {
+				if buf != nil {
+					name := buf.String()
+					matcher.params = append(matcher.params, &ParamMatcher{
+						name: name,
+						len:  len(name),
+					})
+					buf = nil
+				}
+			}
+		}
+
+		matcher.paramsLen = len(matcher.params)
 
 		if len(r.headerTpls) > 0 {
 			matcher.headers = make([]*HeaderMatcher, 0)
@@ -243,7 +269,11 @@ func (r *Route) toMatcher(router *Router) {
 			matcher.afterMiddlewares = r.afterMiddlewares
 		}
 
-		router.addMatcher(r.method, matcher)
+		if _, ok := router.matchers[r.method]; !ok {
+			router.matchers[r.method] = make(Matchers, 0)
+		}
+		router.matchers[r.method] = append(router.matchers[r.method], matcher)
+		sort.Sort(router.matchers[r.method])
 		break
 	case types.PathRouteKind, types.ControllerRouteKind:
 		for _, route := range r.routes {

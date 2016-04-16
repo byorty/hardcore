@@ -1,13 +1,13 @@
 package expr
 
 import (
-	"github.com/byorty/hardcore/types"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 	"strings"
 )
 
 type LogicChainImpl struct {
-	kind types.LogicChainKind
+	kind   types.LogicChainKind
 	logics []types.Logic
 }
 

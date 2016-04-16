@@ -1,19 +1,19 @@
 package helper
 
 import (
-	"math"
 	"github.com/byorty/hardcore/types"
+	"math"
 )
 
 type PaginatorImpl struct {
-	page int
+	page         int
 	itemsPerPage int
-	count int
+	count        int
 }
 
 func NewPaginator() types.Paginator {
 	return &PaginatorImpl{
-		page: 1,
+		page:         1,
 		itemsPerPage: 20,
 	}
 }

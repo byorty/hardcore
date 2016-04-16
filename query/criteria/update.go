@@ -1,10 +1,10 @@
 package criteria
 
 import (
-	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/pool"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/query/proj"
-	"github.com/byorty/hardcore/pool"
+	"github.com/byorty/hardcore/types"
 )
 
 type UpdateCriteriaImpl struct {
@@ -23,7 +23,7 @@ func newUpdate() *UpdateCriteriaImpl {
 	return &UpdateCriteriaImpl{
 		chains:      make([]types.LogicChain, 0),
 		projections: make([]types.Projection, 0),
-		args: make([]interface{}, 0),
+		args:        make([]interface{}, 0),
 	}
 }
 

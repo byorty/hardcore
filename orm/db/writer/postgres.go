@@ -1,8 +1,8 @@
 package writer
 
 import (
-	"github.com/byorty/hardcore/types"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 )
 
 type PostgresImpl struct {
@@ -40,7 +40,3 @@ func (p *PostgresImpl) WriteInsert() interface{} {
 func (p *PostgresImpl) WriteUpdate() interface{} {
 	return p.writeUpdate(p)
 }
-
-
-
-

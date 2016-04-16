@@ -43,7 +43,8 @@ func (e *EnumImpl) ImportFromString(strValue string) bool {
 		dest := e.dest.(types.StringEnum)
 		dest.DAO().ById(strValue).One(dest)
 		return e.isReceived(dest.GetId() != "")
-	default: return false
+	default:
+		return false
 	}
 }
 
@@ -64,7 +65,8 @@ func (e EnumImpl) importInt(value int64) bool {
 	case types.Int64Enum:
 		dest.DAO().ById(value).One(dest)
 		return e.isReceived(dest.GetId() != 0)
-	default: return false
+	default:
+		return false
 	}
 }
 
@@ -85,7 +87,8 @@ func (e EnumImpl) importUint(value uint64) bool {
 	case types.Uint64Enum:
 		dest.DAO().ById(value).One(dest)
 		return e.isReceived(dest.GetId() != 0)
-	default: return false
+	default:
+		return false
 	}
 }
 
@@ -97,7 +100,8 @@ func (e EnumImpl) importFloat(value float64) bool {
 	case types.Float64Enum:
 		dest.DAO().ById(value).One(dest)
 		return e.isReceived(dest.GetId() != 0)
-	default: return false
+	default:
+		return false
 	}
 }
 

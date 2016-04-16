@@ -11,31 +11,8 @@ import (
 )
 
 type ParamMatcher struct {
-	regexp *regexp.Regexp
-	vars   []string
-}
-
-func newParamMatcher(str string) *ParamMatcher {
-	tpl, vars := parseTpl(str)
-	return &ParamMatcher{
-		regexp: regexp.MustCompile(tpl),
-		vars:   vars,
-	}
-}
-
-func (p *ParamMatcher) Match(url string) (bool, types.RequestScopeParams) {
-	var params types.RequestScopeParams
-	matches := p.regexp.FindStringSubmatch(url)
-	match := len(matches) > 0
-	if match {
-		params = scope.NewRequestScopeParams()
-		for i, match := range matches {
-			if i > 0 {
-				params.Set(p.vars[i-1], match)
-			}
-		}
-	}
-	return match, params
+	name string
+	len  int
 }
 
 func parseTpl(tpl string) (string, []string) {
@@ -112,7 +89,11 @@ func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
 }
 
 type Matcher struct {
-	urlParams *ParamMatcher
+	path    string
+	pathLen int
+	//urlParams *ParamMatcher
+	params    []*ParamMatcher
+	paramsLen int
 	headers   []*HeaderMatcher
 
 	scopeConstruct    types.RequestScopeConstructor
@@ -122,27 +103,60 @@ type Matcher struct {
 	afterMiddlewares  []types.MiddlewareFunc
 }
 
-func (m *Matcher) Match(url string, req *http.Request, rw http.ResponseWriter) (bool, types.RequestScope) {
-	var scope types.RequestScope
-	matchHeaders := true
-	matchUrl, pathParams := m.urlParams.Match(url)
-	if matchUrl {
-		scope = m.scopeConstruct()
-		scope.SetRequest(req)
-		scope.SetWriter(rw)
-		scope.SetPathParams(pathParams)
+func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) (bool, types.RequestScope) {
+	pathLen := len(path)
+	var params types.RequestScopeParams
+	var i, j, x int
+	for j < pathLen {
+		switch {
+		case i >= m.pathLen:
+			return false, nil
 
-		for _, header := range m.headers {
-			if !header.Match(scope) {
-				matchHeaders = false
+		case m.path[i] == ':':
+			param := m.params[x]
+			i += param.len + 1
+			start := j
+			for j < pathLen && path[j] != '/' {
+				j++
 			}
+			if params == nil {
+				params = scope.NewRequestScopeParams()
+			}
+			params.Set(param.name, path[start:j])
+			x++
+
+		case m.path[i] == path[j]:
+			i++
+			j++
+
+		default:
+			return false, nil
 		}
 	}
-	return matchUrl && matchHeaders, scope
+	if i != m.pathLen {
+		return false, nil
+	}
+	rs := m.scopeConstruct()
+	rs.SetRequest(req)
+	rs.SetWriter(rw)
+	rs.SetPathParams(params)
+	return true, rs
 }
 
 type Matchers []*Matcher
 
 func (m *Matchers) Add(matcher *Matcher) {
 	*m = append(*m, matcher)
+}
+
+func (m Matchers) Len() int {
+	return len(m)
+}
+
+func (m Matchers) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func (m Matchers) Less(i, j int) bool {
+	return m[i].path < m[j].path
 }

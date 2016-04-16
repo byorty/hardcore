@@ -1,7 +1,7 @@
 package proj
 
 type BaseImpl struct {
-	name string
+	name  string
 	alias string
 }
 

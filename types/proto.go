@@ -50,7 +50,7 @@ const (
 type ProtoRelation int
 
 const (
-	ProtoNoneRelation       ProtoRelation = iota
+	ProtoNoneRelation ProtoRelation = iota
 	ProtoOneToOneRelation
 	ProtoOneToManyRelation
 	ProtoManyToManyRelation

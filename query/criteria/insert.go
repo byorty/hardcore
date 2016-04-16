@@ -1,14 +1,14 @@
 package criteria
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/pool"
+	"github.com/byorty/hardcore/types"
 )
 
 type InserCriteriaImpl struct {
-	dao         types.ModelDAO
-	proto       types.Proto
-	args        []interface{}
+	dao   types.ModelDAO
+	proto types.Proto
+	args  []interface{}
 }
 
 func Insert() types.Criteria {
@@ -52,9 +52,9 @@ func (i *InserCriteriaImpl) One(model types.Model) {
 }
 
 func (i *InserCriteriaImpl) All(models types.Model) {
-//	i.dao = models.DAO()
-//	i.proto = models.Proto()
-//	i.dao.All(i, models)
+	//	i.dao = models.DAO()
+	//	i.proto = models.Proto()
+	//	i.dao.All(i, models)
 }
 
 func (i *InserCriteriaImpl) GetArgs() []interface{} {

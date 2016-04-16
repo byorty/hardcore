@@ -5,14 +5,14 @@ import (
 )
 
 type FormImpl struct {
-	errors types.FormErrors
+	errors     types.FormErrors
 	primitives []types.Primitive
-	isValid bool
+	isValid    bool
 }
 
 func New() types.Form {
 	return &FormImpl{
-		errors: NewFormErrors(),
+		errors:     NewFormErrors(),
 		primitives: make([]types.Primitive, 0),
 	}
 }

@@ -1,9 +1,9 @@
 package exporters
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/exporter"
 	"github.com/byorty/hardcore/test/models"
+	"github.com/byorty/hardcore/types"
 )
 
 type UserPropertyImpl struct {
@@ -30,7 +30,7 @@ func NewUser(user *models.User) types.Exporter {
 }
 
 var (
-	userProperties = []types.ExportableProperty{ 
+	userProperties = []types.ExportableProperty{
 		NewUserProperty("id", func(user *models.User) interface{} {
 			return user.GetId()
 		}),

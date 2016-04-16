@@ -6,7 +6,7 @@ import (
 )
 
 type Property struct {
-	Name string `xml:"name,attr"`
+	Name      string `xml:"name,attr"`
 	hasGetter bool
 }
 

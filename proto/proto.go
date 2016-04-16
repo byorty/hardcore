@@ -10,7 +10,7 @@ type protoStruct struct {
 func New() types.Proto {
 	return &protoStruct{
 		propMap: make(protoMap),
-		props  : make(protoSlice, 0),
+		props:   make(protoSlice, 0),
 	}
 }
 

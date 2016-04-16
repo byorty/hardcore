@@ -1,7 +1,8 @@
 package proj
+
 import (
-	"github.com/byorty/hardcore/types"
 	"fmt"
+	"github.com/byorty/hardcore/types"
 )
 
 type PropImpl struct {

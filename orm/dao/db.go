@@ -1,16 +1,16 @@
 package dao
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/pool"
 	"github.com/byorty/hardcore/query/criteria"
 	"github.com/byorty/hardcore/query/expr"
 	"github.com/byorty/hardcore/slice"
+	"github.com/byorty/hardcore/types"
 )
 
 type BaseImpl struct {
-	ByIdStmt types.DBStatement
-	ByIdsStmt types.DBStatement
+	ByIdStmt   types.DBStatement
+	ByIdsStmt  types.DBStatement
 	InsertStmt types.DBStatement
 	UpdateStmt types.DBStatement
 }

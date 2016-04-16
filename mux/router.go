@@ -8,23 +8,17 @@ import (
 )
 
 type Router struct {
-	gets         Matchers
-	posts        Matchers
-	puts         Matchers
-	deletes      Matchers
+	matchers     map[string]Matchers
 	notFoundFunc types.MiddlewareFunc
 	routes       []*Route
 }
 
 func NewRouter(routes ...*Route) *Router {
 	router := &Router{
-		gets:    make(Matchers, 0),
-		posts:   make(Matchers, 0),
-		puts:    make(Matchers, 0),
-		deletes: make(Matchers, 0),
-		notFoundFunc: func(scope types.RequestScope) {
-			scope.GetWriter().WriteHeader(http.StatusNotFound)
-			scope.GetWriter().Write([]byte("not found"))
+		matchers: make(map[string]Matchers),
+		notFoundFunc: func(rs types.RequestScope) {
+			rs.GetWriter().WriteHeader(http.StatusNotFound)
+			rs.GetWriter().Write([]byte("not found"))
 		},
 	}
 	for _, route := range routes {
@@ -50,26 +44,6 @@ func (r *Router) NotFound(handler func(types.RequestScope)) *Router {
 	return r
 }
 
-func (r *Router) addMatcher(method string, matcher *Matcher) {
-	matchers := r.getMatchersByMethod(method)
-	matchers.Add(matcher)
-}
-
-func (r *Router) getMatchersByMethod(method string) *Matchers {
-	switch method {
-	case methodGet:
-		return &r.gets
-	case methodPost:
-		return &r.posts
-	case methodPut:
-		return &r.puts
-	case methodDelete:
-		return &r.deletes
-	default:
-		return nil
-	}
-}
-
 func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if len(req.URL.Scheme) == 0 {
 		req.URL.Scheme = defaultScheme
@@ -78,16 +52,15 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		req.URL.Host = req.Host
 	}
 	var rs types.RequestScope
-	var match bool
 	var existsMatcher *Matcher
-	matchers := r.getMatchersByMethod(req.Method)
-	for _, matcher := range *matchers {
-		match, rs = matcher.Match(req.URL.Path, req, rw)
-		if match {
+	for _, matcher := range r.matchers[req.Method] {
+		if ok, newScope := matcher.Match(req.URL.Path, req, rw); ok {
 			existsMatcher = matcher
+			rs = newScope
 			break
 		}
 	}
+
 	if existsMatcher != nil {
 		hasConstruct := existsMatcher.construct != nil
 		hasHandler := existsMatcher.handler != nil

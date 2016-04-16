@@ -1,8 +1,8 @@
 package prim
 
 import (
-"strconv"
-"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/types"
+	"strconv"
 )
 
 type UintImpl struct {
@@ -18,12 +18,18 @@ func (u *UintImpl) ImportFromString(strValue string) bool {
 	value, err := strconv.ParseUint(strValue, 10, u.bitSize)
 	if err == nil {
 		switch dest := u.dest.(type) {
-		case *uint: (*dest) = uint(value)
-		case *uint8: (*dest) = uint8(value)
-		case *uint16: (*dest) = uint16(value)
-		case *uint32: (*dest) = uint32(value)
-		case *uint64: (*dest) = value
-		default: return false
+		case *uint:
+			(*dest) = uint(value)
+		case *uint8:
+			(*dest) = uint8(value)
+		case *uint16:
+			(*dest) = uint16(value)
+		case *uint32:
+			(*dest) = uint32(value)
+		case *uint64:
+			(*dest) = value
+		default:
+			return false
 		}
 		return true
 	} else {

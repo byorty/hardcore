@@ -1,4 +1,5 @@
 package slice
+
 import "github.com/byorty/hardcore/types"
 
 type UintsImpl []uint

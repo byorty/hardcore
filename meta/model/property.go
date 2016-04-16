@@ -1,11 +1,11 @@
 package model
 
 import (
+	"fmt"
 	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
 	"regexp"
 	"strings"
-	"fmt"
-	"github.com/byorty/hardcore/utils"
 )
 
 var (
@@ -13,27 +13,27 @@ var (
 )
 
 type Property struct {
-    Name string `xml:"name,attr"`
-    Kind string `xml:"type,attr"`
-    Size int `xml:"size,attr"`
-    Required bool `xml:"required,attr"`
-    Relation types.Relation `xml:"relation,attr"`
-    upperName string
-    entity types.Entity
-	isSelfPackage bool
+	Name             string         `xml:"name,attr"`
+	Kind             string         `xml:"type,attr"`
+	Size             int            `xml:"size,attr"`
+	Required         bool           `xml:"required,attr"`
+	Relation         types.Relation `xml:"relation,attr"`
+	upperName        string
+	entity           types.Entity
+	isSelfPackage    bool
 	relationProperty types.Property
-	relationKind string
+	relationKind     string
 }
 
 func (p Property) GetName() string {
-    return p.Name
+	return p.Name
 }
 
 func (p Property) GetKind() string {
 	if len(p.Kind) == 0 {
 		p.Kind = DefaultPropertyKind
 	}
-    return p.Kind
+	return p.Kind
 }
 
 func (p Property) GetField() string {
@@ -41,31 +41,31 @@ func (p Property) GetField() string {
 }
 
 func (p Property) IsRequired() bool {
-    return p.Required
+	return p.Required
 }
 
 func (p Property) GetRelation() types.Relation {
-    return p.Relation
+	return p.Relation
 }
 
 func (p *Property) SetUpperName(upperName string) {
-    p.upperName = upperName
+	p.upperName = upperName
 }
 
 func (p Property) GetUpperName() string {
-    return p.upperName
+	return p.upperName
 }
 
 func (p *Property) SetEntity(entity types.Entity) {
-    p.entity = entity
+	p.entity = entity
 }
 
 func (p Property) GetEntity() types.Entity {
-    return p.entity
+	return p.entity
 }
 
 func (p Property) HasRelation() bool {
-    return p.Relation != types.NoneRelation
+	return p.Relation != types.NoneRelation
 }
 
 func (p *Property) SetSelfPackage(isSelfPackage bool) {
@@ -90,7 +90,8 @@ func (p Property) GetDefineKind() string {
 		} else {
 			return p.entity.GetFullMultipleName()
 		}
-	default: return p.GetKind()
+	default:
+		return p.GetKind()
 	}
 }
 
@@ -108,7 +109,8 @@ func (p Property) GetVariableKind() string {
 		} else {
 			return p.entity.GetFullMultipleName()
 		}
-	default: return p.GetKind()
+	default:
+		return p.GetKind()
 	}
 }
 
@@ -161,7 +163,8 @@ func (p Property) GetMethodDefineKind() string {
 		} else {
 			return p.entity.GetFullMultipleName()
 		}
-	default: return p.GetKind()
+	default:
+		return p.GetKind()
 	}
 }
 
