@@ -27,8 +27,8 @@ func TestRouter(t *testing.T) {
 			mux.Get("/hello", func(scope types.RequestScope) {
 				scope.GetWriter().Write([]byte("hello world"))
 			}),
-			mux.Get("/:hello/:world", func(scope types.RequestScope) {
-				scope.GetWriter().Write([]byte(fmt.Sprintf("%s %s2", scope.GetPathParams().GetString("hello"), scope.GetPathParams().GetString("world"))))
+			mux.Get("/hello/:world", func(scope types.RequestScope) {
+				scope.GetWriter().Write([]byte(fmt.Sprintf("hello %s2", scope.GetPathParams().GetString("world"))))
 			}),
 			//mux.Get("/:id(int)", func(scope types.RequestScope) {
 			//	scope.GetWriter().Write([]byte(fmt.Sprintf("id#%v", scope.GetPathParams().GetInt("id"))))
@@ -98,14 +98,14 @@ func TestRouter(t *testing.T) {
 
 	sendGet(t, server, "/hello", "hello world")
 	sendGet(t, server, "/hello/world", "hello world2")
-	//sendGet(t, server, "/1", "id#1")
-	//sendGet(t, server, "/qwerty/12", "qwerty:12")
+	sendGet(t, server, "/hello/", "hello 2")
+
 	sendGet(t, server, "/api/call/extra", "call")
 	sendGet(t, server, "/api/user/view/trololo", "view user trololo")
 	sendGet(t, server, "/with/middleware/func", "before#1, before#2, call func, after#1")
 	sendGet(t, server, "/with/middleware/ctrl/view/trololo", "before#0, before#1, before#2, view user trololo, after#0, after#1")
 	sendGet(t, server, "/with/middleware/ctrl/view2/trololo12", "before#0, view user trololo12, after#0")
-	//
+
 	//client := &http.Client{}
 	//req, _ := http.NewRequest("GET", server.URL+"/with/headers/func", nil)
 	//req.Header.Add("X-SOME-KEY", "some#123")

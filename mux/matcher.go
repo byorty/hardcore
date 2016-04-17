@@ -1,13 +1,10 @@
 package mux
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
 	"regexp"
-	"strings"
 )
 
 type ParamMatcher struct {
@@ -15,61 +12,10 @@ type ParamMatcher struct {
 	len  int
 }
 
-func parseTpl(tpl string) (string, []string) {
-	buf := new(bytes.Buffer)
-	var level, start int
-	vars := make([]string, 0)
-	for i := 0; i < len(tpl); i++ {
-		switch tpl[i] {
-		case '{':
-			if level++; level == 1 {
-				start = i
-			}
-			break
-		case '}':
-			if level--; level == 0 {
-				parts := strings.SplitN(tpl[start+1:i], ":", 2)
-				if len(parts) == 2 {
-					vars = append(vars, parts[0])
-					subTpl, subVars := parseTpl(parts[1])
-					if len(subVars) > 0 {
-						vars = append(vars, subVars...)
-						buf.WriteString(subTpl)
-					} else {
-						buf.WriteString(parts[1])
-					}
-				} else {
-					panic(fmt.Sprintf("mux: missing name or pattern in %q", tpl[start:i]))
-				}
-			} else if level < 0 {
-				panic(fmt.Sprintf("mux: unbalanced braces in %q", tpl))
-			}
-			break
-		default:
-			if level == 0 {
-				buf.WriteByte(tpl[i])
-			}
-		}
-	}
-	if level != 0 {
-		panic(fmt.Sprintf("mux: unbalanced braces in %q", tpl))
-	}
-	return buf.String(), vars
-}
-
 type HeaderMatcher struct {
 	key    string
 	regexp *regexp.Regexp
 	vars   []string
-}
-
-func newHeaderMatcher(key, value string) *HeaderMatcher {
-	tpl, vars := parseTpl(value)
-	return &HeaderMatcher{
-		key:    key,
-		regexp: regexp.MustCompile(tpl),
-		vars:   vars,
-	}
 }
 
 func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
@@ -89,9 +35,8 @@ func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
 }
 
 type Matcher struct {
-	path    string
-	pathLen int
-	//urlParams *ParamMatcher
+	path      string
+	pathLen   int
 	params    []*ParamMatcher
 	paramsLen int
 	headers   []*HeaderMatcher
@@ -105,16 +50,22 @@ type Matcher struct {
 
 func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) (bool, types.RequestScope) {
 	pathLen := len(path)
+	pathLastIndex := pathLen - 1
 	var params types.RequestScopeParams
 	var i, j, x int
-	for j < pathLen {
+	for j < pathLen && i < m.pathLen {
+		notRequiredPath := j == pathLastIndex && i < m.pathLen-1 && m.path[i+1] == ':'
 		switch {
-		case i >= m.pathLen:
-			return false, nil
-
-		case m.path[i] == ':':
+		case m.path[i] == ':', notRequiredPath:
+			i++
 			param := m.params[x]
-			i += param.len + 1
+			if notRequiredPath {
+				i++
+				j++
+				i += param.len
+			} else {
+				i += param.len
+			}
 			start := j
 			for j < pathLen && path[j] != '/' {
 				j++
@@ -133,7 +84,7 @@ func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) 
 			return false, nil
 		}
 	}
-	if i != m.pathLen {
+	if i != m.pathLen || j != pathLen {
 		return false, nil
 	}
 	rs := m.scopeConstruct()
