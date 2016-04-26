@@ -26,6 +26,8 @@ type AppImpl struct {
 	enableSession   bool
 	sessionProvider types.Cache
 	routes          []types.Route
+	staticDir       string
+	staticPath      string
 }
 
 func New() types.ApplicationScope {
@@ -171,6 +173,24 @@ func (a AppImpl) GetRoutes() []types.Route {
 
 func (a *AppImpl) SetRoutes(routes []types.Route) types.ApplicationScope {
 	a.routes = routes
+	return a
+}
+
+func (a AppImpl) GetStaticDir() string {
+	return a.staticDir
+}
+
+func (a *AppImpl) SetStaticDir(staticDir string) types.ApplicationScope {
+	a.staticDir = staticDir
+	return a
+}
+
+func (a AppImpl) GetStaticPath() string {
+	return a.staticPath
+}
+
+func (a *AppImpl) SetStaticPath(staticPath string) types.ApplicationScope {
+	a.staticPath = staticPath
 	return a
 }
 

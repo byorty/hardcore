@@ -18,6 +18,15 @@ type HeaderMatcher struct {
 	vars   []string
 }
 
+func newHeaderMatcher(key, value string) *HeaderMatcher {
+	//tpl, vars := parseTpl(value)
+	return &HeaderMatcher{
+		key: key,
+		//regexp: regexp.MustCompile(tpl),
+		//vars:   vars,
+	}
+}
+
 func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
 	matches := h.regexp.FindStringSubmatch(requestScope.GetRequest().Header.Get(h.key))
 	match := len(matches) > 0

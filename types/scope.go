@@ -37,6 +37,10 @@ type ApplicationScope interface {
 	SetEnableSession(bool) ApplicationScope
 	GetSessionProvider() Cache
 	SetSessionProvider(Cache) ApplicationScope
+	GetStaticDir() string
+	SetStaticDir(string) ApplicationScope
+	GetStaticPath() string
+	SetStaticPath(string) ApplicationScope
 }
 
 type SessionScope interface {
