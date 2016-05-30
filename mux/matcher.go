@@ -7,9 +7,26 @@ import (
 	"regexp"
 )
 
+type ParamMatcherKind int
+
+const (
+	RequireParamMatcherKind ParamMatcherKind = iota
+	OptionalParamMatcherKind
+	EndPathParamMatcherKind
+)
+
+var (
+	paramMatcherKindByByte = map[byte]ParamMatcherKind{
+		'?': OptionalParamMatcherKind,
+		'>': EndPathParamMatcherKind,
+	}
+)
+
 type ParamMatcher struct {
-	name string
-	len  int
+	name      string
+	len       int
+	lastIndex int
+	kind      ParamMatcherKind
 }
 
 type HeaderMatcher struct {
@@ -46,6 +63,7 @@ func (h *HeaderMatcher) Match(requestScope types.RequestScope) bool {
 type Matcher struct {
 	path      string
 	pathLen   int
+	lastIndex int
 	params    []*ParamMatcher
 	paramsLen int
 	headers   []*HeaderMatcher
@@ -63,26 +81,35 @@ func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) 
 	var params types.RequestScopeParams
 	var i, j, x int
 	for j < pathLen && i < m.pathLen {
-		notRequiredPath := j == pathLastIndex && i < m.pathLen-1 && m.path[i+1] == ':'
 		switch {
-		case m.path[i] == ':', notRequiredPath:
+		case m.path[i] == ':', j == pathLastIndex && i < m.lastIndex && m.path[i+1] == ':':
 			i++
 			param := m.params[x]
-			if notRequiredPath {
+			if param.kind == OptionalParamMatcherKind {
 				i++
-				j++
 				i += param.len
 			} else {
 				i += param.len
 			}
 			start := j
-			for j < pathLen && path[j] != '/' {
-				j++
+			if param.kind == EndPathParamMatcherKind {
+				i++
+				j = pathLen
+			} else {
+				for j < pathLen && path[j] != '/' {
+					j++
+				}
 			}
 			if params == nil {
 				params = scope.NewRequestScopeParams()
 			}
 			params.Set(param.name, path[start:j])
+			if param.kind == OptionalParamMatcherKind {
+				if start == j {
+					i++
+					j++
+				}
+			}
 			x++
 
 		case m.path[i] == path[j]:

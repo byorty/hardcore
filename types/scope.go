@@ -41,6 +41,8 @@ type ApplicationScope interface {
 	SetStaticDir(string) ApplicationScope
 	GetStaticPath() string
 	SetStaticPath(string) ApplicationScope
+	GetTmplDelims() (string, string)
+	SetTmplDelims(string, string) ApplicationScope
 }
 
 type SessionScope interface {

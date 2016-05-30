@@ -141,6 +141,11 @@ func (r *Route) Post(tpl string, handler interface{}) types.Route {
 	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPost, tpl, handler))
 }
 
+func (r *Route) GetOrPost(tpl string, handler interface{}) types.Route {
+	r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodGet, tpl, handler))
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPost, tpl, handler))
+}
+
 func (r *Route) Put(tpl string, handler interface{}) types.Route {
 	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPut, tpl, handler))
 }
@@ -214,8 +219,9 @@ func (r *Route) toMatcher(router *Router) {
 	switch r.kind {
 	case types.ActionRouteKind, types.ControllerActionRouteKind:
 		matcher := &Matcher{
-			path:    r.tpl,
-			pathLen: len(r.tpl),
+			path:      r.tpl,
+			pathLen:   len(r.tpl),
+			lastIndex: len(r.tpl) - 1,
 		}
 
 		if len(r.schemeTpl) == 0 {
@@ -239,9 +245,21 @@ func (r *Route) toMatcher(router *Router) {
 			if isSlash || i == tplLen-1 {
 				if buf != nil {
 					name := buf.String()
+					nameLen := len(name)
+					nameLastIndex := nameLen - 1
+					var kind ParamMatcherKind
+					if existsKind, ok := paramMatcherKindByByte[name[nameLastIndex]]; ok {
+						kind = existsKind
+						name = name[:nameLastIndex]
+						nameLen = len(name)
+					} else {
+						kind = RequireParamMatcherKind
+					}
 					matcher.params = append(matcher.params, &ParamMatcher{
-						name: name,
-						len:  len(name),
+						name:      name,
+						len:       nameLen,
+						lastIndex: nameLen - 1,
+						kind:      kind,
 					})
 					buf = nil
 				}

@@ -37,6 +37,7 @@ type Route interface {
 	Before(MiddlewareFunc) Route
 	Get(string, interface{}) Route
 	Post(string, interface{}) Route
+	GetOrPost(string, interface{}) Route
 	Put(string, interface{}) Route
 	Delete(string, interface{}) Route
 	After(MiddlewareFunc) Route

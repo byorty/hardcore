@@ -28,6 +28,8 @@ type AppImpl struct {
 	routes          []types.Route
 	staticDir       string
 	staticPath      string
+	startDelim      string
+	endDelim        string
 }
 
 func New() types.ApplicationScope {
@@ -38,6 +40,8 @@ func New() types.ApplicationScope {
 		writeTimeout: 10 * time.Second,
 		rootPath:     utils.Pwd(),
 		logger:       log.NewDefaultLogger(log.FINEST),
+		startDelim:   "{{",
+		endDelim:     "}}",
 	}
 }
 
@@ -191,6 +195,16 @@ func (a AppImpl) GetStaticPath() string {
 
 func (a *AppImpl) SetStaticPath(staticPath string) types.ApplicationScope {
 	a.staticPath = staticPath
+	return a
+}
+
+func (a AppImpl) GetTmplDelims() (string, string) {
+	return a.startDelim, a.endDelim
+}
+
+func (a *AppImpl) SetTmplDelims(startDelim, endDelim string) types.ApplicationScope {
+	a.startDelim = startDelim
+	a.endDelim = endDelim
 	return a
 }
 

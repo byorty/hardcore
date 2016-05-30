@@ -34,6 +34,7 @@ func (t *TmplImpl) Run() {
 			if len(relParts) == 2 {
 				tmplName := relParts[0]
 				tmpl := template.New(tmplName)
+				tmpl.Delims(scope.App().GetTmplDelims())
 				var buf []byte
 				buf, err = ioutil.ReadFile(tmplFile)
 				if err == nil {

@@ -27,8 +27,11 @@ func TestRouter(t *testing.T) {
 			mux.Get("/hello", func(scope types.RequestScope) {
 				scope.GetWriter().Write([]byte("hello world"))
 			}),
-			mux.Get("/hello/:world", func(scope types.RequestScope) {
+			mux.Get("/hello/:world?", func(scope types.RequestScope) {
 				scope.GetWriter().Write([]byte(fmt.Sprintf("hello %s2", scope.GetPathParams().GetString("world"))))
+			}),
+			mux.Get("/static/:filename>", func(scope types.RequestScope) {
+				scope.GetWriter().Write([]byte(fmt.Sprintf("/static/%s", scope.GetPathParams().GetString("filename"))))
 			}),
 			//mux.Get("/:id(int)", func(scope types.RequestScope) {
 			//	scope.GetWriter().Write([]byte(fmt.Sprintf("id#%v", scope.GetPathParams().GetInt("id"))))
@@ -67,7 +70,7 @@ func TestRouter(t *testing.T) {
 							scope.GetWriter().Write([]byte(", after#1"))
 						}),
 					).
-					Get("/view2/:name", testControllerActionView).
+					Get("/view2/:name", (*TestController).View).
 					After(func(scope types.RequestScope) {
 						scope.GetWriter().Write([]byte(", after#0"))
 					}),
@@ -99,6 +102,7 @@ func TestRouter(t *testing.T) {
 	sendGet(t, server, "/hello", "hello world")
 	sendGet(t, server, "/hello/world", "hello world2")
 	sendGet(t, server, "/hello/", "hello 2")
+	sendGet(t, server, "/static/some/dir/path.ext", "/static/some/dir/path.ext")
 
 	sendGet(t, server, "/api/call/extra", "call")
 	sendGet(t, server, "/api/user/view/trololo", "view user trololo")
@@ -149,24 +153,9 @@ func NewTestController() types.ActionController {
 }
 
 func (t *TestController) CallAction(action interface{}, scope types.RequestScope) {
-	typeAction, ok := action.(TestControllerActionView)
-	if ok {
-		typeAction(t, scope)
-	} else {
-		action.(func(*TestController, types.RequestScope))(t, scope)
-	}
+	action.(func(*TestController, types.RequestScope))(t, scope)
 }
 
 func (t *TestController) View(scope types.RequestScope) {
 	scope.GetWriter().Write([]byte("view user " + scope.GetPathParams().GetString("name")))
-}
-
-var (
-	testControllerActionView TestControllerActionView = (*TestController).View
-)
-
-type TestControllerActionView func(*TestController, types.RequestScope)
-
-func (a *TestControllerActionView) Form() {
-
 }

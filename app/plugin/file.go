@@ -6,6 +6,8 @@ import (
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
+	"path/filepath"
+	"strings"
 )
 
 type StaticFileImpl struct{}
@@ -16,17 +18,13 @@ func (f *StaticFileImpl) Run() {
 			append(
 				scope.App().GetRoutes(),
 				mux.Get(
-					fmt.Sprintf("%s/:dir/:filename", scope.App().GetStaticPath()),
+					fmt.Sprintf("%s/:filename>", scope.App().GetStaticPath()),
 					func(rs types.RequestScope) {
+						filename := filepath.Join(strings.Split(rs.GetPathParams().GetString("filename"), "/")...)
 						http.ServeFile(
 							rs.GetWriter(),
 							rs.GetRequest(),
-							fmt.Sprintf(
-								"%s/%s/%s",
-								scope.App().GetStaticDir(),
-								rs.GetPathParams().GetString("dir"),
-								rs.GetPathParams().GetString("filename"),
-							),
+							filepath.Join(scope.App().GetStaticDir(), filename),
 						)
 					},
 				),
