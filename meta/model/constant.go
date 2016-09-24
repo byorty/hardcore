@@ -7,7 +7,11 @@ type Constant struct {
 }
 
 func (c Constant) IsWriteKind(i int) bool {
-	return i == 0
+	if c.HasValue() {
+		return true
+	} else {
+		return i == 0
+	}
 }
 
 func (c Constant) HasValue() bool {
