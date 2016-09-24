@@ -1,15 +1,15 @@
 package configs
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/mux"
 	"github.com/byorty/hardcore/test/controllers/api"
 	"github.com/byorty/hardcore/test/controllers/ws"
+	"github.com/byorty/hardcore/types"
 )
 
 var (
 	Routers = []types.Route{
-		mux.Path("/api", 
+		mux.Path("/api",
 			mux.Controller("/post", api.NewPost).Batch(
 				mux.Get("/", api.PostListAction),
 				mux.Get("/{post:([0-9]+)}", api.PostViewAction),
@@ -23,12 +23,10 @@ var (
 				mux.Get("/", api.TestViewAction),
 			),
 		),
-		mux.Path("/api", 
+		mux.Path("/api",
 			mux.Controller("/ws", ws.NewHandler).Batch(
 				mux.Websocket("/", (*ws.Handler).OnMessage),
-			
 			),
 		),
-		
 	}
 )

@@ -6,6 +6,5 @@ type Application interface {
 }
 
 type ApplicationPlugin interface {
-	SetName(string)
 	Run()
 }

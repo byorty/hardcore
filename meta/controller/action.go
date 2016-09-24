@@ -8,12 +8,12 @@ import (
 )
 
 type Action struct {
-	Name   string   `xml:"name,attr"`
-	Route  string   `xml:"path,attr"`
-	Method string   `xml:"method,attr"`
-	Return string   `xml:"return"`
-	Params []*Param `xml:"params>param"`
-	params []types.ActionParam
+	Name       string   `xml:"name,attr"`
+	Route      string   `xml:"path,attr"`
+	Method     string   `xml:"method,attr"`
+	Return     string   `xml:"return"`
+	Params     []*Param `xml:"params>param"`
+	params     []types.ActionParam
 	controller *Controller
 }
 
@@ -45,10 +45,14 @@ func (a *Action) SetParams(params []types.ActionParam) {
 }
 
 func (a Action) HasForm() bool {
-	if len(a.params) == 1 && a.params[0].GetKind() == RequestScopeKind {
+	if a.controller.GetKind().IsWebsocket() {
 		return false
 	} else {
-		return true
+		if len(a.params) == 1 && a.params[0].GetKind() == RequestScopeKind {
+			return false
+		} else {
+			return true
+		}
 	}
 }
 
@@ -80,6 +84,14 @@ func (a Action) GetDefineVars() string {
 	}
 
 	return strings.Join(vars, ", ")
+}
+
+func (a Action) HasReturn() bool {
+	if a.controller.GetKind().IsWebsocket() {
+		return false
+	} else {
+		return true
+	}
 }
 
 func (a Action) GetReturn() string {

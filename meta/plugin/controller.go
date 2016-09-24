@@ -23,9 +23,9 @@ func New{{.Name}}() types.ActionController {
     return nil
 }
 {{range .Actions}}
-func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}) {{.GetReturn}} {
+func ({{$shortName}} *{{$name}}) {{.GetName}}({{.GetDefineParams}}){{if .HasReturn}} {{.GetReturn}}{{end}} {
 
-	return nil
+	{{if .HasReturn}}return nil{{end}}
 }
 {{end}}
 `
@@ -37,20 +37,21 @@ import ({{range .AutoImports}}
     "{{.}}"{{end}}
 )
 
-func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, scope types.RequestScope) {
+func ({{.ShortName}} *{{.Name}}) CallAction(action interface{}, rs types.RequestScope) { {{if .Kind.IsWebsocket}}
+	action.(func(*{{.Name}}, types.WebsocketScope))({{.ShortName}}, rs.(types.WebsocketScope)){{else}}
 	if callable, ok := action.(types.CallableAction); ok {
-		callable.Call({{.ShortName}}, scope)
+		callable.Call({{.ShortName}}, rs)
 	} else {
-		v := action.(func(*{{.Name}}, types.RequestScope) types.View)({{.ShortName}}, scope)
+		v := action.(func(*{{.Name}}, types.RequestScope) types.View)({{.ShortName}}, rs)
 		v.SetController({{.ShortName}})
-		v.SetScope(scope)
+		v.SetScope(rs)
 		v.Render()
-	}
+	}{{end}}
 }
 {{range .Actions}}{{if .HasForm}}
 type {{$name}}{{.GetName}} func(*{{$name}}, {{.GetDefineKinds}}) {{.GetReturn}}
 
-func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope types.RequestScope) {
+func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New(){{range .GetParams}}{{if .IsInjection}}{{if .GetInjection.IsMustWrite}}
 	{{.GetInjection.GetBody}}{{end}}{{else}}
 	var {{.GetName}} {{.GetDefineVarKind}}
@@ -61,7 +62,7 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 	form.Add({{.GetName}}Prim){{end}}{{end}}
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*{{$name}})
 		v = {{$shortName}}(ctrl, {{.GetDefineVars}})
 		v.SetController(ctrl)
@@ -73,14 +74,14 @@ func ({{$shortName}} {{$name}}{{.GetName}}) Call(rawCtrl interface{}, scope type
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
-{{end}}{{end}}
+{{end}}{{end}}{{if .HasActionWithForm}}
 var ({{range .Actions}}{{if .HasForm}}
 	{{$name}}{{.GetName}}Action {{$name}}{{.GetName}} = (*{{$name}}).{{.GetName}}{{end}}{{end}}
 )
-`
+{{end}}`
 )
 
 type Controller struct{}
@@ -144,13 +145,15 @@ func (c *Controller) Do(env types.Environment) {
 						)
 					}
 					tplParams := map[string]interface{}{
-						"Extends":     controllerEntity.GetExtends(),
-						"ShortName":   strings.ToLower(controllerEntity.GetName()[0:1]),
-						"Name":        controllerEntity.GetName(),
-						"Package":     container.GetShortPackage(),
-						"Imports":     imports,
-						"AutoImports": autoImports,
-						"Actions":     controllerEntity.GetActions(),
+						"Extends":           controllerEntity.GetExtends(),
+						"ShortName":         strings.ToLower(controllerEntity.GetName()[0:1]),
+						"Name":              controllerEntity.GetName(),
+						"Package":           container.GetShortPackage(),
+						"Imports":           imports,
+						"AutoImports":       autoImports,
+						"Actions":           controllerEntity.GetActions(),
+						"HasActionWithForm": hasForm,
+						"Kind":              controllerEntity.GetKind(),
 					}
 
 					env.GetConfiguration().AddAutoFile(controllerEntity.GetAutoFilename(), autoControllerTpl, tplParams)

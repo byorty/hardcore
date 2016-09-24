@@ -10,5 +10,5 @@ const (
 type Scheme string
 
 func (s Scheme) IsWebsocket() bool {
-	return  s == WsScheme || s == WssScheme
+	return s == WsScheme || s == WssScheme
 }

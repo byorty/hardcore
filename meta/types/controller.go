@@ -5,6 +5,7 @@ type ControllerEntity interface {
 	GetRoute() string
 	GetActions() []Action
 	SetActions([]Action)
+	GetKind() ControllerKind
 }
 
 type Action interface {
@@ -18,6 +19,7 @@ type Action interface {
 	GetDefineParams() string
 	GetDefineVars() string
 	GetReturn() string
+	HasReturn() bool
 }
 
 type ActionParam interface {
@@ -49,3 +51,29 @@ type Middleware interface {
 	GetEntity() Entity
 	SetEntity(Entity)
 }
+
+type ControllerKind string
+
+func (c ControllerKind) IsWebsocket() bool {
+	return c == WebsocketControllerKind
+}
+
+func (c ControllerKind) IsHttp() bool {
+	return c == HttpControllerKind
+}
+
+func (c ControllerKind) GetRouteMethod() string {
+	return defaultRouteMethods[c]
+}
+
+const (
+	HttpControllerKind      ControllerKind = "http"
+	WebsocketControllerKind ControllerKind = "websocket"
+)
+
+var (
+	defaultRouteMethods = map[ControllerKind]string{
+		HttpControllerKind:      "GET",
+		WebsocketControllerKind: "WEBSOCKET",
+	}
+)

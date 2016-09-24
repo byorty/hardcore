@@ -2,14 +2,14 @@ package importer
 
 import (
 	"fmt"
-	"github.com/byorty/hardcore/utils"
 	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
 )
 
 type Property struct {
-	Name      string                       `xml:"name,attr"`
-	Kind      types.ImportablePropertyKind `xml:"type,attr"`
-	prop      types.Property
+	Name string                       `xml:"name,attr"`
+	Kind types.ImportablePropertyKind `xml:"type,attr"`
+	prop types.Property
 }
 
 func (p Property) GetName() string {

@@ -7,17 +7,11 @@ import (
 )
 
 type Application struct {
-	name string
 	plugins []types.ApplicationPlugin
 }
 
 func New() types.Application {
-	return NewByName(scope.DefaultName)
-}
-
-func NewByName(name string) types.Application {
 	return &Application{
-		name: name,
 		plugins: make([]types.ApplicationPlugin, 0),
 	}
 }
@@ -31,7 +25,7 @@ func (a Application) Run() {
 	for _, plugin := range a.plugins {
 		plugin.Run()
 	}
-	<- scope.AppByName(a.name).IsExit()
+	<- scope.App().IsExit()
 }
 
 func NewHttpServer() types.Application {

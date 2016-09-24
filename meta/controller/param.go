@@ -7,11 +7,15 @@ import (
 	"github.com/byorty/hardcore/utils"
 )
 
-const RequestScopeKind = "types.RequestScope"
-const FormScopeKind = "types.Form"
+const (
+	RequestScopeKind = "types.RequestScope"
+	WebsocketScopeKind = "types.WebsocketScope"
+	FormScopeKind = "types.Form"
+)
 
 var injections = map[string]func() types.Injection{
-	"scope":     NewRequestScopeInjection,
+	"rs":        NewRequestScopeInjection,
+	"ws":        NewWebsocketScopeInjection,
 	"form":      NewFormInjection,
 	"paginator": NewPaginatorInjection,
 }

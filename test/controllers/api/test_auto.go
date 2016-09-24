@@ -1,10 +1,10 @@
 package api
 
 import (
-    "github.com/byorty/hardcore/types"
-    "github.com/byorty/hardcore/form"
-    "github.com/byorty/hardcore/form/prim"
-    "github.com/byorty/hardcore/view"
+	"github.com/byorty/hardcore/form"
+	"github.com/byorty/hardcore/form/prim"
+	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/view"
 )
 
 func (t *Test) CallAction(action interface{}, scope types.RequestScope) {

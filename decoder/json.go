@@ -2,8 +2,8 @@ package decoder
 
 import (
 	"github.com/byorty/hardcore/types"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -25,7 +25,7 @@ func (j *JsonImpl) Decode(data []byte, importer types.Importer) {
 
 func (j *JsonImpl) decodeObjectOrArray(data []byte, importer types.Importer) {
 	dataLen := len(data)
-	for i := 0;i < dataLen;i++ {
+	for i := 0; i < dataLen; i++ {
 		char := data[i]
 		switch char {
 		case '{':
@@ -44,7 +44,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 	start := invalidIndex
 	last := dataLen - 1
 
-	for i := 0;i < dataLen;i++ {
+	for i := 0; i < dataLen; i++ {
 		char := data[i]
 		if property == nil {
 			switch {
@@ -60,7 +60,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 			switch {
 			case start == invalidIndex:
 				start = i + 1
-			case (char == ',' && i < last && data[i + 1] == '"') || i == last:
+			case (char == ',' && i < last && data[i+1] == '"') || i == last:
 				var value string
 				if i == last {
 					value = string(data[start:])
@@ -77,26 +77,40 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 
 func (j *JsonImpl) decodeValue(importer types.Importer, property types.ImportableProperty, jsonValue string) {
 	switch property.GetKind() {
-	case types.ScalarImportablePropertyKind: j.decodeScalarValue(importer, property, jsonValue)
+	case types.ScalarImportablePropertyKind:
+		j.decodeScalarValue(importer, property, jsonValue)
 	}
 }
 
 func (j *JsonImpl) decodeScalarValue(importer types.Importer, property types.ImportableProperty, jsonValue string) {
 	jsonValue = strings.Trim(jsonValue, `"`)
 	switch property.GetProtoKind() {
-	case types.ProtoIntKind: j.decodeInt(importer, property, jsonValue, 0)
-	case types.ProtoInt8Kind: j.decodeInt(importer, property, jsonValue, 8)
-	case types.ProtoInt16Kind: j.decodeInt(importer, property, jsonValue, 16)
-	case types.ProtoInt32Kind: j.decodeInt(importer, property, jsonValue, 32)
-	case types.ProtoInt64Kind: j.decodeInt(importer, property, jsonValue, 64)
-	case types.ProtoUintKind: j.decodeUint(importer, property, jsonValue, 0)
-	case types.ProtoUint8Kind: j.decodeUint(importer, property, jsonValue, 8)
-	case types.ProtoUint16Kind: j.decodeUint(importer, property, jsonValue, 16)
-	case types.ProtoUint32Kind: j.decodeUint(importer, property, jsonValue, 32)
-	case types.ProtoUint64Kind: j.decodeUint(importer, property, jsonValue, 64)
-	case types.ProtoFloat32Kind: j.decodeFloat(importer, property, jsonValue, 32)
-	case types.ProtoFloat64Kind: j.decodeFloat(importer, property, jsonValue, 64)
-	case types.ProtoStringKind: property.SetValue(importer.GetImportable(), jsonValue)
+	case types.ProtoIntKind:
+		j.decodeInt(importer, property, jsonValue, 0)
+	case types.ProtoInt8Kind:
+		j.decodeInt(importer, property, jsonValue, 8)
+	case types.ProtoInt16Kind:
+		j.decodeInt(importer, property, jsonValue, 16)
+	case types.ProtoInt32Kind:
+		j.decodeInt(importer, property, jsonValue, 32)
+	case types.ProtoInt64Kind:
+		j.decodeInt(importer, property, jsonValue, 64)
+	case types.ProtoUintKind:
+		j.decodeUint(importer, property, jsonValue, 0)
+	case types.ProtoUint8Kind:
+		j.decodeUint(importer, property, jsonValue, 8)
+	case types.ProtoUint16Kind:
+		j.decodeUint(importer, property, jsonValue, 16)
+	case types.ProtoUint32Kind:
+		j.decodeUint(importer, property, jsonValue, 32)
+	case types.ProtoUint64Kind:
+		j.decodeUint(importer, property, jsonValue, 64)
+	case types.ProtoFloat32Kind:
+		j.decodeFloat(importer, property, jsonValue, 32)
+	case types.ProtoFloat64Kind:
+		j.decodeFloat(importer, property, jsonValue, 64)
+	case types.ProtoStringKind:
+		property.SetValue(importer.GetImportable(), jsonValue)
 	case types.ProtoBoolKind:
 		boolValue, _ := strconv.ParseBool(jsonValue)
 		property.SetValue(importer.GetImportable(), boolValue)

@@ -10,7 +10,7 @@ type Controller struct {
 	Initializer
 	Route   string         `xml:"path,attr"`
 	Scheme  Scheme         `xml:"scheme,attr"`
-	Kind    ControllerKind `xml:"type,attr"`
+	Kind    types.ControllerKind `xml:"type,attr"`
 	Actions []*Action      `xml:"actions>action"`
 	actions []types.Action
 }
@@ -44,11 +44,21 @@ func (c *Controller) Init(container types.Container) {
 			params = append(params, param)
 		}
 		if len(params) == 0 {
-			param := &Param{
-				Name:     "scope",
-				Required: true,
-				Source:   "",
-				Kind:     RequestScopeKind,
+			var param *Param
+			if c.Kind.IsWebsocket() {
+				param = &Param{
+					Name:     "ws",
+					Required: true,
+					Source:   "",
+					Kind:     WebsocketScopeKind,
+				}
+			} else {
+				param = &Param{
+					Name:     "rs",
+					Required: true,
+					Source:   "",
+					Kind:     RequestScopeKind,
+				}
 			}
 			params = append(params, param)
 		}
@@ -68,9 +78,9 @@ func (c Controller) GetScheme() Scheme {
 	return c.Scheme
 }
 
-func (c Controller) GetKind() ControllerKind {
+func (c Controller) GetKind() types.ControllerKind {
 	if len(c.Kind) == 0 {
-		c.Kind = HttpControllerKind
+		c.Kind = types.HttpControllerKind
 	}
 	return c.Kind
 }
@@ -84,23 +94,3 @@ func (c Controllers) Len() int {
 func (c Controllers) Get(i int) types.Entity {
 	return c[i]
 }
-
-type ControllerKind string
-
-func (c ControllerKind) GetRouteMethod() string {
-	return defaultRouteMethods[c]
-}
-
-const(
-	HttpControllerKind      ControllerKind = "http"
-	WebsocketControllerKind ControllerKind = "websocket"
-)
-
-var (
-	defaultRouteMethods = map[ControllerKind]string{
-		HttpControllerKind:      "GET",
-		WebsocketControllerKind: "WEBSOCKET",
-	}
-)
-
-

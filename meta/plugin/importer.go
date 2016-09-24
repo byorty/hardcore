@@ -1,16 +1,16 @@
 package plugin
 
 import (
-	"github.com/byorty/hardcore/utils"
 	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
 	"strings"
 )
 
 var (
 	importerTpl = `{{$name := .Name}}` +
-	`{{$sourceName := .SourceName}}` +
-	`{{$sourceVarName := .SourceVarName}}` +
-	`package {{.Package}}
+		`{{$sourceName := .SourceName}}` +
+		`{{$sourceVarName := .SourceVarName}}` +
+		`package {{.Package}}
 
 import ({{range .Imports}}
 	"{{.}}"{{end}}

@@ -4,10 +4,10 @@ import (
 	"github.com/byorty/hardcore/meta/common"
 	"github.com/byorty/hardcore/meta/controller"
 	"github.com/byorty/hardcore/meta/exporter"
+	"github.com/byorty/hardcore/meta/importer"
 	"github.com/byorty/hardcore/meta/middleware"
 	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
-	"github.com/byorty/hardcore/meta/importer"
 )
 
 type Configuration struct {

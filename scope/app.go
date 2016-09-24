@@ -8,13 +8,6 @@ import (
 	"time"
 )
 
-const (
-	DefaultName string = "default"
-)
-
-var (
-	scopes = map[string]types.ApplicationScope{}
-)
 var app types.ApplicationScope
 
 type AppImpl struct {
@@ -238,23 +231,12 @@ func (a *AppImpl) Exit(message string) {
 }
 
 func App() types.ApplicationScope {
-	return AppByName(DefaultName)
-}
-
-func AppByName(name string) types.ApplicationScope {
-	if existsAppScope, ok := scopes[name]; ok {
-		newAppScope := New()
-		scopes[name] = newAppScope
-		return newAppScope
-	} else {
-		return existsAppScope
+	if app == nil {
+		app = New()
 	}
+	return app
 }
 
-func Set(appScope types.ApplicationScope) {
-	SetByName(DefaultName, appScope)
-}
-
-func SetByName(name string, appScope types.ApplicationScope) {
-	scopes[name] = appScope
+func Set(a types.ApplicationScope) {
+	app = a
 }

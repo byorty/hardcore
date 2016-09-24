@@ -36,7 +36,7 @@ func (r *RequestScopeInjection) IsMustWrite() bool {
 }
 
 func (r *RequestScopeInjection) GetKind() string {
-	return "types.RequestScope"
+	return RequestScopeKind
 }
 
 type FormInjection struct {
@@ -53,7 +53,7 @@ func (f *FormInjection) IsMustWrite() bool {
 }
 
 func (f *FormInjection) GetKind() string {
-	return "types.Form"
+	return FormScopeKind
 }
 
 type PaginatorInjection struct {
@@ -85,4 +85,21 @@ func (p PaginatorInjection) GetAutoImports() []string {
 	return []string{
 		types.HelperImport,
 	}
+}
+
+type WebsocketScopeInjection struct {
+	BaseInjection
+}
+
+func NewWebsocketScopeInjection() types.Injection {
+	var inject WebsocketScopeInjection
+	return &inject
+}
+
+func (r *WebsocketScopeInjection) IsMustWrite() bool {
+	return false
+}
+
+func (r *WebsocketScopeInjection) GetKind() string {
+	return WebsocketScopeKind
 }

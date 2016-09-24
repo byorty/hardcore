@@ -6,20 +6,14 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
+type DAOImpl struct{}
+
 func NewDAO() types.ApplicationPlugin {
-	return NewDAOByName(scope.DefaultName)
-}
-
-func NewDAOByName(name string) types.ApplicationPlugin {
-	return newByName(new(DAOImpl), name)
-}
-
-type DAOImpl struct{
-	BaseImpl
+	return new(DAOImpl)
 }
 
 func (d *DAOImpl) Run() {
-	for _, dao := range scope.AppByName(d.name).GetDAOs() {
+	for _, dao := range scope.App().GetDAOs() {
 		db := pool.DB().ByDAO(dao)
 		dao.AutoInit(db)
 		dao.Init(db)

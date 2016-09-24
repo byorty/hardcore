@@ -1,9 +1,9 @@
 package exporters
 
 import (
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/exporter"
 	"github.com/byorty/hardcore/test/models"
+	"github.com/byorty/hardcore/types"
 )
 
 type PostPropertyImpl struct {
@@ -37,7 +37,7 @@ func NewPosts(posts models.Posts) types.Exporter {
 }
 
 var (
-	postProperties = []types.ExportableProperty{ 
+	postProperties = []types.ExportableProperty{
 		newPostProperty("id", func(post *models.Post) interface{} {
 			return post.GetId()
 		}),

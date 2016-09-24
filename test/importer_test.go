@@ -1,10 +1,10 @@
 package test
 
 import (
-	"testing"
 	"github.com/byorty/hardcore/decoder"
-	"github.com/byorty/hardcore/test/models"
 	"github.com/byorty/hardcore/test/importers"
+	"github.com/byorty/hardcore/test/models"
+	"testing"
 )
 
 func TestImporter(t *testing.T) {

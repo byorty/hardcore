@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	"golang.org/x/net/websocket"
 )
 
 type ApplicationScope interface {
@@ -93,4 +94,9 @@ type RequestScope interface {
 	Prevent()
 	IsPrevented() bool
 	NotPrevented() bool
+}
+
+type WebsocketScope interface {
+	RequestScope
+	GetConnection() *websocket.Conn
 }

@@ -6,20 +6,14 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
+type SessionImpl struct{}
+
 func NewSession() types.ApplicationPlugin {
-	return NewSessionByName(scope.DefaultName)
-}
-
-func NewSessionByName(name string) types.ApplicationPlugin {
-	return newByName(new(SessionImpl), name)
-}
-
-type SessionImpl struct{
-	BaseImpl
+	return new(SessionImpl)
 }
 
 func (s *SessionImpl) Run() {
-	if scope.AppByName(s.name).GetSessionProvider() != nil {
-		helper.SessionManager().SetProvider(scope.AppByName(s.name).GetSessionProvider())
+	if scope.App().GetSessionProvider() != nil {
+		helper.SessionManager().SetProvider(scope.App().GetSessionProvider())
 	}
 }

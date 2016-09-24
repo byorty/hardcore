@@ -1,7 +1,7 @@
 package ws
 
 import (
-    "github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/types"
 )
 
 func (h *Handler) CallAction(action interface{}, scope types.RequestScope) {
@@ -15,5 +15,4 @@ func (h *Handler) CallAction(action interface{}, scope types.RequestScope) {
 	}
 }
 
-var (
-)
+var ()

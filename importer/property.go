@@ -3,14 +3,14 @@ package importer
 import "github.com/byorty/hardcore/types"
 
 type PropertyImpl struct {
-	kind types.ImportablePropertyKind
+	kind      types.ImportablePropertyKind
 	protoKind types.ProtoKind
 	importer  types.Importer
 }
 
 func NewProperty(kind types.ImportablePropertyKind, protoKind types.ProtoKind) PropertyImpl {
 	return PropertyImpl{
-		kind: kind,
+		kind:      kind,
 		protoKind: protoKind,
 	}
 }

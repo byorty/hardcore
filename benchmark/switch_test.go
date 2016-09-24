@@ -1,11 +1,11 @@
 package benchmark
 
 import (
-	"testing"
-	"github.com/byorty/hardcore/types"
 	"bytes"
-	"strconv"
 	"fmt"
+	"github.com/byorty/hardcore/types"
+	"strconv"
+	"testing"
 )
 
 type Property struct {
@@ -20,7 +20,7 @@ var (
 		Property{123.456, types.ProtoFloat32Kind},
 		Property{true, types.ProtoBoolKind},
 	}
-	marshals = map[types.ProtoKind]func(*bytes.Buffer, interface{}) {
+	marshals = map[types.ProtoKind]func(*bytes.Buffer, interface{}){
 		types.ProtoIntKind: func(buf *bytes.Buffer, value interface{}) {
 			buf.WriteString(strconv.FormatInt(int64(value.(int)), 10))
 		},
@@ -39,7 +39,7 @@ var (
 func BenchmarkSwitchType(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		for j := 0;j < len(props);j++ {
+		for j := 0; j < len(props); j++ {
 			prop := props[j]
 			switch value := prop.value.(type) {
 			case int:
@@ -60,7 +60,7 @@ func BenchmarkSwitchType(b *testing.B) {
 func BenchmarkSwitchProto(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		for j := 0;j < len(props);j++ {
+		for j := 0; j < len(props); j++ {
 			prop := props[j]
 			switch prop.kind {
 			case types.ProtoIntKind:
@@ -81,7 +81,7 @@ func BenchmarkSwitchProto(b *testing.B) {
 func BenchmarkSwitchFrint(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		for j := 0;j < len(props);j++ {
+		for j := 0; j < len(props); j++ {
 			prop := props[j]
 			fmt.Fprint(buf, prop.value)
 			//switch prop.kind {
@@ -101,7 +101,7 @@ func BenchmarkSwitchFrint(b *testing.B) {
 func BenchmarkMarchal(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		for j := 0;j < len(props);j++ {
+		for j := 0; j < len(props); j++ {
 			prop := props[j]
 			m, _ := marshals[prop.kind]
 			m(buf, prop.value)

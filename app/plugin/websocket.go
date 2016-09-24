@@ -5,32 +5,24 @@ import (
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
-	"golang.org/x/net/websocket"
 )
 
+type WebsocketImpl struct {}
+
 func NewWebsocket() types.ApplicationPlugin {
-	return NewWebsocketByName(scope.DefaultName)
-}
-
-func NewWebsocketByName(name string) types.ApplicationPlugin {
-	return newByName(new(WebsocketImpl), name)
-}
-
-type WebsocketImpl struct{
-	BaseImpl
+	return new(WebsocketImpl)
 }
 
 func (w *WebsocketImpl) Run() {
-	app := &websocket.Server{
-		Handler: scope.AppByName(w.name).GetRouter(),
+	scope.App().SetEnableWebsocket(true)
+	app := &http.Server{
+		Addr:         fmt.Sprintf("%s:%d", scope.App().GetHostname(), scope.App().GetPort()),
+		Handler:      scope.App().GetRouter(),
+		ReadTimeout:  scope.App().GetReadTimeout(),
+		WriteTimeout: scope.App().GetWriteTimeout(),
 	}
-	scope.AppByName(w.name).GetLogger().Info("websocket server - run on %s:%d", scope.AppByName(w.name).GetHostname(), scope.AppByName(w.name).GetPort())
+	scope.App().GetLogger().Info("websocket server - run on %s:%d", scope.App().GetHostname(), scope.App().GetPort())
 	go func() {
-		scope.AppByName(w.name).
-			GetLogger().
-			Error(
-				"server - %v",
-				http.ListenAndServe(fmt.Sprintf("%s:%d", scope.AppByName(w.name).GetHostname(), scope.AppByName(w.name).GetPort()), app),
-			)
+		scope.App().GetLogger().Error("websocket server - %v", app.ListenAndServe())
 	}()
 }

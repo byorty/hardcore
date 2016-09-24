@@ -5,6 +5,7 @@ import (
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
+	"golang.org/x/net/websocket"
 )
 
 type Router struct {
@@ -52,12 +53,13 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		req.URL.Host = req.Host
 	}
 	var matchersKey string
+
+	isWebsocket := false
 	if scope.App().GetEnableWebsocket() {
-		if req.Header.Get("Upgrade") == "websocket" && req.Header.Get("Connection") == "Upgrade" {
-			matchersKey = websocket
-		} else {
-			matchersKey = req.Method
-		}
+		isWebsocket = req.Header.Get("Upgrade") == "websocket" && req.Header.Get("Connection") == "Upgrade"
+	}
+	if isWebsocket {
+		matchersKey = methodWebsocket
 	} else {
 		matchersKey = req.Method
 	}
@@ -71,24 +73,45 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	if existsMatcher != nil {
-		hasConstruct := existsMatcher.construct != nil
-		hasHandler := existsMatcher.handler != nil
+	if isWebsocket {
+		r.handleWebsocket(existsMatcher, rs, rw, req)
+	} else {
+		r.handleRequest(existsMatcher, rs, rw, req)
+	}
+}
+
+func (r *Router) handleWebsocket(matcher *Matcher, rs types.RequestScope, rw http.ResponseWriter, req *http.Request) {
+	server := &websocket.Server{
+		Handler: func(conn *websocket.Conn) {
+			ws := scope.NewWebsocket(rs, conn)
+			r.handleRequest(matcher, ws, rw, req)
+		},
+		Handshake: func(*websocket.Config, *http.Request) error {
+			return nil
+		},
+	}
+	server.ServeHTTP(rw, req)
+}
+
+func (r *Router) handleRequest(matcher *Matcher, rs types.RequestScope, rw http.ResponseWriter, req *http.Request) {
+	if matcher != nil {
+		hasConstruct := matcher.construct != nil
+		hasHandler := matcher.handler != nil
 		if hasConstruct && hasHandler {
 			r.fetchSession(rs)
-			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
+			r.doMiddlewares(matcher.beforeMiddlewares, rs)
 			if rs.NotPrevented() {
-				controller := existsMatcher.construct()
-				controller.CallAction(existsMatcher.handler, rs)
+				controller := matcher.construct()
+				controller.CallAction(matcher.handler, rs)
 			}
-			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
+			r.doMiddlewares(matcher.afterMiddlewares, rs)
 		} else if !hasConstruct && hasHandler {
 			r.fetchSession(rs)
-			r.doMiddlewares(existsMatcher.beforeMiddlewares, rs)
+			r.doMiddlewares(matcher.beforeMiddlewares, rs)
 			if rs.NotPrevented() {
-				existsMatcher.handler.(func(types.RequestScope))(rs)
+				matcher.handler.(func(types.RequestScope))(rs)
 			}
-			r.doMiddlewares(existsMatcher.afterMiddlewares, rs)
+			r.doMiddlewares(matcher.afterMiddlewares, rs)
 		} else {
 			r.callNotFoundFunc(rw, req)
 		}

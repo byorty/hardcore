@@ -2,16 +2,16 @@ package benchmark
 
 import (
 	"encoding/json"
-	"github.com/byorty/hardcore/test/models"
-	"testing"
 	"github.com/byorty/hardcore/decoder"
 	"github.com/byorty/hardcore/test/importers"
+	"github.com/byorty/hardcore/test/models"
+	"testing"
 )
 
 type ImpPost2 struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 var (

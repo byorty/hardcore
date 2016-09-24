@@ -6,22 +6,16 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
+type RouterImpl struct{}
+
 func NewRouter() types.ApplicationPlugin {
-	return NewRouterByName(scope.DefaultName)
-}
-
-func NewRouterByName(name string) types.ApplicationPlugin {
-	return newByName(new(RouterImpl), name)
-}
-
-type RouterImpl struct{
-	BaseImpl
+	return new(RouterImpl)
 }
 
 func (r *RouterImpl) Run() {
 	router := mux.NewRouter()
-	for _, route := range scope.AppByName(r.name).GetRoutes() {
+	for _, route := range scope.App().GetRoutes() {
 		router.Add(route)
 	}
-	scope.AppByName(r.name).SetRouter(router)
+	scope.App().SetRouter(router)
 }

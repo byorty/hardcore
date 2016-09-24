@@ -304,7 +304,7 @@ func (m *Model) Do(env types.Environment) {
 						"MultipleName": modelEntity.GetMultipleName(),
 						"AutoName":     fmt.Sprintf("Auto%s", entity.GetName()),
 						"Package":      container.GetShortPackage(),
-						"Properties": modelEntity.GetProperties(),
+						"Properties":   modelEntity.GetProperties(),
 					}
 
 					var tpl, autoTpl string
