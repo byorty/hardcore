@@ -8,7 +8,7 @@ import (
 
 type Property struct {
 	Name string                       `xml:"name,attr"`
-	Kind types.ImportablePropertyKind `xml:"type,attr"`
+	Kind string `xml:"type,attr"`
 	prop types.Property
 }
 
@@ -32,6 +32,10 @@ func (p Property) GetModelProperty() types.Property {
 	return p.prop
 }
 
-func (p Property) GetKind() types.ImportablePropertyKind {
+func (p Property) GetKind() string {
 	return p.Kind
+}
+
+func (p Property) GetProtoKind() string {
+	return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
 }

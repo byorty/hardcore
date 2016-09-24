@@ -42,6 +42,9 @@ func (i *Importer) Init(container types.Container) {
 
 	props := make([]types.ImportableProperty, 0)
 	for _, prop := range i.Properties {
+		if len(prop.Kind) == 0 {
+			prop.Kind = "string"
+		}
 		props = append(props, prop)
 	}
 	i.SetProperties(props)

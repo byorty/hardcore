@@ -1,14 +1,13 @@
 package types
 
-type ImportablePropertyKind string
-
 type ImportableProperty interface {
 	GetName() string
 	GetSetterName() string
-	GetKind() ImportablePropertyKind
+	GetKind() string
 	HasModelProperty() bool
 	SetModelProperty(Property)
 	GetModelProperty() Property
+	GetProtoKind() string
 }
 
 type ImporterEntity interface {

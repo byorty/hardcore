@@ -57,6 +57,9 @@ var (
 	{{.VarName}}Properties = types.ImportableProperties{ {{range .Properties}}{{if .HasModelProperty}}
 		"{{.GetName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
 			{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}}))
+		}),{{else}}
+		"{{.GetName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
+
 		}),{{end}}{{end}}
 	}
 )
