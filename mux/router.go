@@ -86,9 +86,6 @@ func (r *Router) handleWebsocket(matcher *Matcher, rs types.RequestScope, rw htt
 			ws := scope.NewWebsocket(rs, conn)
 			r.handleRequest(matcher, ws, rw, req)
 		},
-		Handshake: func(*websocket.Config, *http.Request) error {
-			return nil
-		},
 	}
 	server.ServeHTTP(rw, req)
 }
