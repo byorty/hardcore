@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/byorty/hardcore/app/plugin"
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/scope"
+	"github.com/byorty/hardcore/types"
 )
 
 type Application struct {
@@ -25,7 +25,7 @@ func (a Application) Run() {
 	for _, plugin := range a.plugins {
 		plugin.Run()
 	}
-	<- scope.App().IsExit()
+	<-scope.App().IsExit()
 }
 
 func NewHttpServer() types.Application {

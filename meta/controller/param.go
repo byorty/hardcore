@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	RequestScopeKind = "types.RequestScope"
+	RequestScopeKind   = "types.RequestScope"
 	WebsocketScopeKind = "types.WebsocketScope"
-	FormScopeKind = "types.Form"
+	FormScopeKind      = "types.Form"
 )
 
 var injections = map[string]func() types.Injection{

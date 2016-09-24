@@ -3,8 +3,8 @@ package plugin
 import (
 	"fmt"
 	"github.com/byorty/hardcore/scope"
-	"net/http"
 	"github.com/byorty/hardcore/types"
+	"net/http"
 )
 
 type HttpImpl struct{}

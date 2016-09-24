@@ -7,7 +7,7 @@ import (
 )
 
 type Property struct {
-	Name string                       `xml:"name,attr"`
+	Name string `xml:"name,attr"`
 	Kind string `xml:"type,attr"`
 	prop types.Property
 }

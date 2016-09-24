@@ -1,8 +1,8 @@
 package scope
 
 import (
-	"golang.org/x/net/websocket"
 	"github.com/byorty/hardcore/types"
+	"golang.org/x/net/websocket"
 )
 
 type WebsocketImpl struct {
@@ -13,7 +13,7 @@ type WebsocketImpl struct {
 func NewWebsocket(rs types.RequestScope, conn *websocket.Conn) types.WebsocketScope {
 	return &WebsocketImpl{
 		RequestScope: rs,
-		conn: conn,
+		conn:         conn,
 	}
 }
 

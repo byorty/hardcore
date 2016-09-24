@@ -123,7 +123,7 @@ func (i *Importer) Do(env types.Environment) {
 					"IsMutiple":          isMutiple,
 				}
 
-				env.GetConfiguration().AddAutoFile(impEntity.GetFilename(), importerTpl, tplParams)
+				env.GetConfiguration().AddFile(impEntity.GetFilename(), importerTpl, tplParams)
 			}
 		}
 	}

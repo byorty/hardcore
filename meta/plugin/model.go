@@ -244,7 +244,7 @@ func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} 
 }
 
 func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodDefineKind}}) *{{$name}} {
-	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{$shortName}}.{{.GetName}}){{end}}{{else}}{{.GetName}}{{end}}
+	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{.GetName}}){{end}}{{else}}{{.GetName}}{{end}}
 	return {{$shortName}}
 }{{end}}
 

@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	methodGet    = "GET"
-	methodPost   = "POST"
-	methodPut    = "PUT"
-	methodDelete = "DELETE"
+	methodGet       = "GET"
+	methodPost      = "POST"
+	methodPut       = "PUT"
+	methodDelete    = "DELETE"
 	methodWebsocket = "websocket"
 )
 

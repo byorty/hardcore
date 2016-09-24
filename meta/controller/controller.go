@@ -8,10 +8,10 @@ import (
 type Controller struct {
 	common.Entity
 	Initializer
-	Route   string         `xml:"path,attr"`
-	Scheme  Scheme         `xml:"scheme,attr"`
+	Route   string               `xml:"path,attr"`
+	Scheme  Scheme               `xml:"scheme,attr"`
 	Kind    types.ControllerKind `xml:"type,attr"`
-	Actions []*Action      `xml:"actions>action"`
+	Actions []*Action            `xml:"actions>action"`
 	actions []types.Action
 }
 

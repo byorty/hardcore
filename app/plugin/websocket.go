@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type WebsocketImpl struct {}
+type WebsocketImpl struct{}
 
 func NewWebsocket() types.ApplicationPlugin {
 	return new(WebsocketImpl)

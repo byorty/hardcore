@@ -4,8 +4,8 @@ import (
 	"github.com/byorty/hardcore/helper"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
-	"net/http"
 	"golang.org/x/net/websocket"
+	"net/http"
 )
 
 type Router struct {

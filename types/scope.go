@@ -1,10 +1,10 @@
 package types
 
 import (
+	"golang.org/x/net/websocket"
 	"html/template"
 	"net/http"
 	"time"
-	"golang.org/x/net/websocket"
 )
 
 type ApplicationScope interface {

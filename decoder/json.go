@@ -43,6 +43,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 	var property types.ImportableProperty
 	start := invalidIndex
 	last := dataLen - 1
+	quotesCount := 0
 
 	for i := 0; i < dataLen; i++ {
 		char := data[i]
@@ -58,9 +59,13 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 			}
 		} else {
 			switch {
+			case char == '"':
+				if data[i-1] != '\\' {
+					quotesCount++
+				}
 			case start == invalidIndex:
 				start = i + 1
-			case (char == ',' && i < last && data[i+1] == '"') || i == last:
+			case (char == ',' && (quotesCount == 0 || quotesCount == 2)) || i == last:
 				var value string
 				if i == last {
 					value = string(data[start:])
@@ -68,6 +73,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 					value = string(data[start:i])
 				}
 				j.decodeValue(importer, property, value)
+				quotesCount = 0
 				property = nil
 				start = invalidIndex
 			}
