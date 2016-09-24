@@ -223,14 +223,15 @@ type {{.Name}} struct {
 }
 
 type {{.MultipleName}} []*{{.Name}}
+
+// implement me!
+func ({{.ShortName}} {{.MultipleName}}) Less(x, y int) bool {
+	return true
+}
 `
 	autoValueTpl = `{{$name := .Name}}` +
 		`{{$shortName := .ShortName}}` +
 		`package {{.Package}}
-
-import ({{range .AutoImports}}
-	"{{.}}"{{end}}
-)
 
 type {{.AutoName}} struct {` +
 		`
@@ -239,22 +240,16 @@ type {{.AutoName}} struct {` +
 {{end}}}
 {{range .Properties}}
 func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
-	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}
-{{else}}	return {{$shortName}}.{{.GetName}}{{end}}
-	return {{$shortName}}.{{.GetName}}
+	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}{{else}}return {{$shortName}}.{{.GetName}}{{end}}
 }
 
 func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodDefineKind}}) *{{$name}} {
-	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{$shortName}}.{{.GetName}}){{end}}{{end}}{{.GetName}}
+	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{$shortName}}.{{.GetName}}){{end}}{{else}}{{.GetName}}{{end}}
 	return {{$shortName}}
 }{{end}}
 
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
-}
-
-func ({{.ShortName}} {{.MultipleName}}) Less(x, y int) bool {
-	return {{.ShortName}}[x].GetId() < {{.ShortName}}[y].GetId()
 }
 
 func ({{.ShortName}} {{.MultipleName}}) Swap(x, y int) {
@@ -309,14 +304,6 @@ func (m *Model) Do(env types.Environment) {
 						"MultipleName": modelEntity.GetMultipleName(),
 						"AutoName":     fmt.Sprintf("Auto%s", entity.GetName()),
 						"Package":      container.GetShortPackage(),
-						"AutoImports": append([]string{
-							types.DefaultImport,
-							types.DaoImport,
-							types.ProtoImport,
-							types.CriteriaImport,
-							types.ExprImport,
-							types.PoolImport,
-						}, modelEntity.GetImports()...),
 						"Properties": modelEntity.GetProperties(),
 					}
 
@@ -324,7 +311,14 @@ func (m *Model) Do(env types.Environment) {
 					if modelEntity.GetPattern() == types.StraightMappingPattern {
 						tpl = modelTpl
 						autoTpl = autoModelTpl
-
+						tplParams["AutoImports"] = append([]string{
+							types.DefaultImport,
+							types.DaoImport,
+							types.ProtoImport,
+							types.CriteriaImport,
+							types.ExprImport,
+							types.PoolImport,
+						}, modelEntity.GetImports()...)
 						tplParams["UpperIdentifierKind"] = utils.UpperFirst(modelEntity.GetProperties()[0].GetKind())
 						tplParams["VarName"] = varName
 						tplParams["VarDaoName"] = fmt.Sprintf("%sDao", varName)

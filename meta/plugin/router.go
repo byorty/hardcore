@@ -55,16 +55,19 @@ func (r *Router) Do(env types.Environment) {
 
 		}
 	}
-	tplParams := map[string]interface{}{
-		"AutoImports": append([]string{
-			types.DefaultImport,
-			types.MuxImport,
-		}, r.imports...),
-		"Containers": containers,
-	}
 
-	filename := filepath.Join(env.GetAbsPath(), "configs", "router")
-	env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
+	if len(containers) > 0 {
+		tplParams := map[string]interface{}{
+			"AutoImports": append([]string{
+				types.DefaultImport,
+				types.MuxImport,
+			}, r.imports...),
+			"Containers": containers,
+		}
+
+		filename := filepath.Join(env.GetAbsPath(), "configs", "router")
+		env.GetConfiguration().AddAutoFile(filename+"_auto", autoRouterTpl, tplParams)
+	}
 }
 
 func (r *Router) addMiddlewaresImports(slice types.EntitySlice) {

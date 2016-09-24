@@ -32,18 +32,24 @@ func (d *DAOs) Do(env types.Environment) {
 
 			for _, entity := range container.GetEntities() {
 				if entity.GetEntityKind() == types.ModelEntityKind {
-					entities = append(entities, entity)
+					modelEntity := entity.(types.ModelEntity)
+					if modelEntity.GetPattern() == types.StraightMappingPattern {
+						entities = append(entities, entity)
+					}
 				}
 			}
 		}
 	}
-	tplParams := map[string]interface{}{
-		"Imports": append([]string{
-			types.DefaultImport,
-		}, d.imports...),
-		"Entities": entities,
-	}
 
-	filename := filepath.Join(env.GetAbsPath(), "configs", "daos_auto")
-	env.GetConfiguration().AddAutoFile(filename, daosTpl, tplParams)
+	if len(entities) > 0 {
+		tplParams := map[string]interface{}{
+			"Imports": append([]string{
+				types.DefaultImport,
+			}, d.imports...),
+			"Entities": entities,
+		}
+
+		filename := filepath.Join(env.GetAbsPath(), "configs", "daos_auto")
+		env.GetConfiguration().AddAutoFile(filename, daosTpl, tplParams)
+	}
 }
