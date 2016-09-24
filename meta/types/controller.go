@@ -10,7 +10,7 @@ type ControllerEntity interface {
 type Action interface {
 	GetName() string
 	GetRoute() string
-	GetMethod() string
+	GetRouteMethod() string
 	GetParams() []ActionParam
 	SetParams([]ActionParam)
 	HasForm() bool

@@ -7,17 +7,28 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"github.com/byorty/hardcore/types"
 )
 
 var (
 	tmplFiles = make([]string, 0)
 )
 
-type TmplImpl struct{}
+func NewTmpl() types.ApplicationPlugin {
+	return NewTmplByName(scope.DefaultName)
+}
+
+func NewTmplByName(name string) types.ApplicationPlugin {
+	return newByName(new(TmplImpl), name)
+}
+
+type TmplImpl struct{
+	BaseImpl
+}
 
 func (t *TmplImpl) Run() {
-	logger := scope.App().GetLogger()
-	dirname := filepath.Join(scope.App().GetRootPath(), scope.App().GetTmplPath())
+	logger := scope.AppByName(t.name).GetLogger()
+	dirname := filepath.Join(scope.AppByName(t.name).GetRootPath(), scope.AppByName(t.name).GetTmplPath())
 	filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			tmplFiles = append(tmplFiles, path)
@@ -34,7 +45,7 @@ func (t *TmplImpl) Run() {
 			if len(relParts) == 2 {
 				tmplName := relParts[0]
 				tmpl := template.New(tmplName)
-				tmpl.Delims(scope.App().GetTmplDelims())
+				tmpl.Delims(scope.AppByName(t.name).GetTmplDelims())
 				var buf []byte
 				buf, err = ioutil.ReadFile(tmplFile)
 				if err == nil {
@@ -54,5 +65,5 @@ func (t *TmplImpl) Run() {
 			logger.Error("tmpl - %v", err)
 		}
 	}
-	scope.App().SetTmplCache(tmplCache)
+	scope.AppByName(t.name).SetTmplCache(tmplCache)
 }

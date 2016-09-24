@@ -16,6 +16,8 @@ const (
 	methodDelete = "DELETE"
 )
 
+const websocket = "websocket"
+
 const (
 	defaultScheme = "http"
 	defaultHost   = "localhost"
@@ -73,6 +75,10 @@ func Get(tpl string, handler interface{}) types.Route {
 
 func Post(tpl string, handler interface{}) types.Route {
 	return newRouteByKindAndMethod(types.ActionRouteKind, methodPost, tpl, handler)
+}
+
+func Websocket(tpl string, handler interface{}) types.Route {
+	return newRouteByKindAndMethod(types.ActionRouteKind, websocket, tpl, handler)
 }
 
 func Put(tpl string, handler interface{}) types.Route {
@@ -139,6 +145,10 @@ func (r *Route) Get(tpl string, handler interface{}) types.Route {
 
 func (r *Route) Post(tpl string, handler interface{}) types.Route {
 	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, methodPost, tpl, handler))
+}
+
+func (r *Route) Websocket(tpl string, handler interface{}) types.Route {
+	return r.Add(newRouteByKindAndMethod(types.ControllerActionRouteKind, websocket, tpl, handler))
 }
 
 func (r *Route) GetOrPost(tpl string, handler interface{}) types.Route {

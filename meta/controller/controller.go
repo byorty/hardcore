@@ -8,8 +8,10 @@ import (
 type Controller struct {
 	common.Entity
 	Initializer
-	Route   string    `xml:"path,attr"`
-	Actions []*Action `xml:"actions>action"`
+	Route   string         `xml:"path,attr"`
+	Scheme  Scheme         `xml:"scheme,attr"`
+	Kind    ControllerKind `xml:"type,attr"`
+	Actions []*Action      `xml:"actions>action"`
 	actions []types.Action
 }
 
@@ -50,12 +52,27 @@ func (c *Controller) Init(container types.Container) {
 			}
 			params = append(params, param)
 		}
+		action.setController(c)
 		action.SetParams(params)
 		actions = append(actions, action)
 		action.Params = nil
 	}
 	c.SetActions(actions)
 	c.Actions = nil
+}
+
+func (c Controller) GetScheme() Scheme {
+	if len(c.Scheme) == 0 {
+		c.Scheme = HttpScheme
+	}
+	return c.Scheme
+}
+
+func (c Controller) GetKind() ControllerKind {
+	if len(c.Kind) == 0 {
+		c.Kind = HttpControllerKind
+	}
+	return c.Kind
 }
 
 type Controllers []*Controller
@@ -67,3 +84,23 @@ func (c Controllers) Len() int {
 func (c Controllers) Get(i int) types.Entity {
 	return c[i]
 }
+
+type ControllerKind string
+
+func (c ControllerKind) GetRouteMethod() string {
+	return defaultRouteMethods[c]
+}
+
+const(
+	HttpControllerKind      ControllerKind = "http"
+	WebsocketControllerKind ControllerKind = "websocket"
+)
+
+var (
+	defaultRouteMethods = map[ControllerKind]string{
+		HttpControllerKind:      "GET",
+		WebsocketControllerKind: "WEBSOCKET",
+	}
+)
+
+

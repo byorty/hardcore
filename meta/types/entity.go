@@ -15,6 +15,7 @@ const (
 	ModelEntityKind
 	EnumEntityKind
 	ExporterEntityKind
+	ImporterEntityKind
 	MiddlewareEntityKind
 	BeforeMiddlewareEntityKind
 	AfterMiddlewareEntityKind

@@ -10,21 +10,31 @@ import (
 	"strings"
 )
 
-type StaticFileImpl struct{}
+func NewStaticFile() types.ApplicationPlugin {
+	return NewStaticFileByName(scope.DefaultName)
+}
+
+func NewStaticFileByName(name string) types.ApplicationPlugin {
+	return newByName(new(StaticFileImpl), name)
+}
+
+type StaticFileImpl struct{
+	BaseImpl
+}
 
 func (f *StaticFileImpl) Run() {
-	if scope.App().GetStaticPath() != "" && scope.App().GetStaticDir() != "" {
-		scope.App().SetRoutes(
+	if scope.AppByName(f.name).GetStaticPath() != "" && scope.AppByName(f.name).GetStaticDir() != "" {
+		scope.AppByName(f.name).SetRoutes(
 			append(
-				scope.App().GetRoutes(),
+				scope.AppByName(f.name).GetRoutes(),
 				mux.Get(
-					fmt.Sprintf("%s/:filename>", scope.App().GetStaticPath()),
+					fmt.Sprintf("%s/:filename>", scope.AppByName(f.name).GetStaticPath()),
 					func(rs types.RequestScope) {
 						filename := filepath.Join(strings.Split(rs.GetPathParams().GetString("filename"), "/")...)
 						http.ServeFile(
 							rs.GetWriter(),
 							rs.GetRequest(),
-							filepath.Join(scope.App().GetStaticDir(), filename),
+							filepath.Join(scope.AppByName(f.name).GetStaticDir(), filename),
 						)
 					},
 				),

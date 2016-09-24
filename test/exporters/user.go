@@ -1,9 +1,9 @@
 package exporters
 
 import (
+	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/exporter"
 	"github.com/byorty/hardcore/test/models"
-	"github.com/byorty/hardcore/types"
 )
 
 type UserPropertyImpl struct {
@@ -11,7 +11,7 @@ type UserPropertyImpl struct {
 	closure func(*models.User) interface{}
 }
 
-func NewUserProperty(name string, closure func(user *models.User) interface{}) types.ExportableProperty {
+func newUserProperty(name string, closure func(user *models.User) interface{}) types.ExportableProperty {
 	return &UserPropertyImpl{
 		exporter.NewProperty(name),
 		closure,
@@ -29,18 +29,25 @@ func NewUser(user *models.User) types.Exporter {
 	return exp
 }
 
+func NewUsers(users models.Users) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties(userProperties)
+	exp.SetExportable(users)
+	return exp
+}
+
 var (
-	userProperties = []types.ExportableProperty{
-		NewUserProperty("id", func(user *models.User) interface{} {
+	userProperties = []types.ExportableProperty{ 
+		newUserProperty("id", func(user *models.User) interface{} {
 			return user.GetId()
 		}),
-		NewUserProperty("email", func(user *models.User) interface{} {
+		newUserProperty("email", func(user *models.User) interface{} {
 			return user.GetEmail()
 		}),
-		NewUserProperty("role", func(user *models.User) interface{} {
-			return user.GetRole()
+		newUserProperty("role", func(user *models.User) interface{} {
+			return nil
 		}),
-		NewUserProperty("registerDate", func(user *models.User) interface{} {
+		newUserProperty("registerDate", func(user *models.User) interface{} {
 			return user.GetRegisterDate()
 		}),
 	}

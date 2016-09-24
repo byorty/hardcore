@@ -51,4 +51,13 @@
             </properties>
         </exporter>
     </exporters>
+    <importers package="importers">
+        <importer name="Post" source="models.Post">
+            <properties>
+                <property name="id"/>
+                <property name="name"/>
+                <property name="description"/>
+            </properties>
+        </importer>
+    </importers>
 </configuration>

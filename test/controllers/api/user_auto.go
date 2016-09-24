@@ -1,18 +1,21 @@
 package api
 
 import (
-	"github.com/byorty/hardcore/form"
-	"github.com/byorty/hardcore/form/prim"
-	"github.com/byorty/hardcore/test/models"
-	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/view"
+    "github.com/byorty/hardcore/types"
+    "github.com/byorty/hardcore/form"
+    "github.com/byorty/hardcore/form/prim"
+    "github.com/byorty/hardcore/view"
+    "github.com/byorty/hardcore/test/models"
 )
 
 func (u *User) CallAction(action interface{}, scope types.RequestScope) {
 	if callable, ok := action.(types.CallableAction); ok {
 		callable.Call(u, scope)
 	} else {
-		action.(func(*User, types.RequestScope))(u, scope)
+		v := action.(func(*User, types.RequestScope) types.View)(u, scope)
+		v.SetController(u)
+		v.SetScope(scope)
+		v.Render()
 	}
 }
 
@@ -30,6 +33,7 @@ func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*User)
 		v = u(ctrl, page)
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
@@ -57,6 +61,7 @@ func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*User)
 		v = u(ctrl, &user)
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {

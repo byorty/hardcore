@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/byorty/hardcore/orm/dao"
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/orm/dao"
 )
 
 func (u UserRole) GetRawId() interface{} {
@@ -43,7 +43,7 @@ func (u UserRoles) Get(x int) *UserRole {
 	return u[x]
 }
 
-type UserRoleDao struct{}
+type UserRoleDao struct {}
 
 func (u UserRoleDao) GetList() []types.Named {
 	return userRoleList
@@ -63,18 +63,19 @@ func (u UserRoleDao) Scan(src, dest types.Named) {
 }
 
 const (
-	LoggedUserRole UserRole = iota
+	LoggedUserRole UserRole = iota + 1
 	LoggedAdminRole
 )
 
 var (
-	userRoleDao  UserRoleDao
-	userRoleList = []types.Named{
+	userRoleDao UserRoleDao
+	userRoleList = []types.Named{ 
 		LoggedUserRole,
 		LoggedAdminRole,
 	}
-	userRoleNames = map[UserRole]string{
-		LoggedUserRole:  "User",
+	userRoleNames = map[UserRole]string{ 
+		LoggedUserRole: "User",
 		LoggedAdminRole: "Admin",
 	}
 )
+	

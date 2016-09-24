@@ -1,23 +1,26 @@
 package models
 
 import (
+	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/orm/dao"
 	"github.com/byorty/hardcore/proto"
-	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/query/criteria"
+	"github.com/byorty/hardcore/query/expr"
+	"github.com/byorty/hardcore/pool"
 	"time"
 )
 
 type AutoUser struct {
-	id           int64
-	email        string
-	password     string
-	role         *UserRole
-	roleId       int
+	id int64
+	email string
+	password string
+	role *UserRole
+	roleId int
 	registerDate time.Time
-	posts        Posts
+	posts Posts
 }
 
-func (u User) GetId() int64 {
+func (u User) GetId() int64 { 
 	return u.id
 }
 
@@ -25,7 +28,8 @@ func (u *User) SetId(id int64) *User {
 	u.id = id
 	return u
 }
-func (u User) GetEmail() string {
+
+func (u User) GetEmail() string { 
 	return u.email
 }
 
@@ -33,7 +37,8 @@ func (u *User) SetEmail(email string) *User {
 	u.email = email
 	return u
 }
-func (u User) GetPassword() string {
+
+func (u User) GetPassword() string { 
 	return u.password
 }
 
@@ -41,7 +46,8 @@ func (u *User) SetPassword(password string) *User {
 	u.password = password
 	return u
 }
-func (u User) GetRole() UserRole {
+
+func (u User) GetRole() UserRole { 
 	if u.role == nil {
 		var role UserRole
 		role.DAO().ById(u.roleId).One(&role)
@@ -55,7 +61,8 @@ func (u *User) SetRole(role UserRole) *User {
 	u.SetRoleId(role.GetId())
 	return u
 }
-func (u User) GetRoleId() int {
+
+func (u User) GetRoleId() int { 
 	return u.roleId
 }
 
@@ -63,7 +70,8 @@ func (u *User) SetRoleId(roleId int) *User {
 	u.roleId = roleId
 	return u
 }
-func (u User) GetRegisterDate() time.Time {
+
+func (u User) GetRegisterDate() time.Time { 
 	return u.registerDate
 }
 
@@ -71,8 +79,9 @@ func (u *User) SetRegisterDate(registerDate time.Time) *User {
 	u.registerDate = registerDate
 	return u
 }
-func (u User) GetPosts() Posts {
-	if u.posts == nil {
+
+func (u User) GetPosts() Posts { 
+	if u.posts == nil { 
 		dao.NewInt64OneToMany("user").ById(u.GetId()).All(&u.posts)
 	}
 	return u.posts
@@ -83,15 +92,15 @@ func (u *User) SetPosts(posts Posts) *User {
 	return u
 }
 
-func (u *User) CommonDAO() types.ModelDAO {
+func(u *User) CommonDAO() types.ModelDAO {
 	return u.DAO()
 }
 
-func (u *User) KindDAO() types.Int64ModelDAO {
+func(u *User) KindDAO() types.Int64ModelDAO {
 	return u.DAO()
 }
 
-func (u *User) DAO() *UserDao {
+func(u *User) DAO() *UserDao {
 	return UserDaoInst()
 }
 
@@ -123,15 +132,15 @@ func (u Users) Get(x int) *User {
 	return u[x]
 }
 
-func (u *Users) CommonDAO() types.ModelDAO {
+func(u *Users) CommonDAO() types.ModelDAO {
 	return u.DAO()
 }
 
-func (u *Users) KindDAO() types.Int64ModelDAO {
+func(u *Users) KindDAO() types.Int64ModelDAO {
 	return u.DAO()
 }
 
-func (u *Users) DAO() *UserDao {
+func(u *Users) DAO() *UserDao {
 	return UserDaoInst()
 }
 
@@ -186,8 +195,48 @@ func (u UserDao) Scan(row interface{}, model interface{}) error {
 	)
 }
 
-func (u *UserDao) AutoInit(db types.DB) {
+func (u *UserDao) Add(model *User) {
+	db := pool.DB().ByDAO(u)
+	if db.SupportLastInsertId() {
+		u.InsertStmt.Exec(
+			model.email,
+			model.password,
+			model.roleId,
+			model.registerDate,
+		).One(model)
+	} else if db.SupportReturningId() {
+		u.InsertStmt.Custom(
+			model.email,
+			model.password,
+			model.roleId,
+			model.registerDate,
+		).One(&model.id)
+	}
+}
 
+func (u *UserDao) Save(model *User) {
+	u.UpdateStmt.Exec(
+		model.email,
+		model.password,
+		model.roleId,
+		model.registerDate,
+		model.id,
+	).One(model)
+}
+
+func (u *UserDao) Take(model *User) {
+	if model.IsScanned() {
+		 u.Save(model)
+	} else {
+		 u.Add(model)
+	}
+}
+
+func (u *UserDao) AutoInit(db types.DB) {
+	u.ByIdStmt = db.Prepare(criteria.SelectByDAO(u).And(expr.Eq("id", nil)))
+	//u.ByIdsStmt = db.Prepare(criteria.SelectByDAO(u).And(expr.In("id", nil)))
+	u.InsertStmt = db.Prepare(criteria.InsertByDao(u))
+	u.UpdateStmt = db.Prepare(criteria.UpdateByDAO(u).And(expr.Eq("id", nil)))
 }
 
 func userIdSetter(model interface{}, id interface{}) {
@@ -247,13 +296,13 @@ func userPostsGetter(model interface{}) interface{} {
 }
 
 var (
-	userDao   *UserDao
+	userDao *UserDao
 	userProto = proto.New().
-			Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, userIdSetter, userIdGetter)).
-			Set("email", proto.NewProperty("email", types.ProtoStringKind, types.ProtoNoneRelation, true, userEmailSetter, userEmailGetter)).
-			Set("password", proto.NewProperty("password", types.ProtoStringKind, types.ProtoNoneRelation, true, userPasswordSetter, userPasswordGetter)).
-			Set("role", proto.NewProperty("role", types.ProtoEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
-			Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
-			Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
-			Set("posts", proto.NewProperty("posts", types.ProtoSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
+		Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, userIdSetter, userIdGetter)).
+		Set("email", proto.NewProperty("email", types.ProtoStringKind, types.ProtoNoneRelation, true, userEmailSetter, userEmailGetter)).
+		Set("password", proto.NewProperty("password", types.ProtoStringKind, types.ProtoNoneRelation, true, userPasswordSetter, userPasswordGetter)).
+		Set("role", proto.NewProperty("role", types.ProtoEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
+		Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
+		Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
+		Set("posts", proto.NewProperty("posts", types.ProtoSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
 )

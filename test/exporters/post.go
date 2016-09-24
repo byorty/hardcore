@@ -1,9 +1,9 @@
 package exporters
 
 import (
+	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/exporter"
 	"github.com/byorty/hardcore/test/models"
-	"github.com/byorty/hardcore/types"
 )
 
 type PostPropertyImpl struct {
@@ -11,7 +11,7 @@ type PostPropertyImpl struct {
 	closure func(*models.Post) interface{}
 }
 
-func NewPostProperty(name string, closure func(post *models.Post) interface{}) types.ExportableProperty {
+func newPostProperty(name string, closure func(post *models.Post) interface{}) types.ExportableProperty {
 	return &PostPropertyImpl{
 		exporter.NewProperty(name),
 		closure,
@@ -29,15 +29,22 @@ func NewPost(post *models.Post) types.Exporter {
 	return exp
 }
 
+func NewPosts(posts models.Posts) types.Exporter {
+	exp := new(exporter.BaseImpl)
+	exp.SetProperties(postProperties)
+	exp.SetExportable(posts)
+	return exp
+}
+
 var (
-	postProperties = []types.ExportableProperty{
-		NewPostProperty("id", func(post *models.Post) interface{} {
+	postProperties = []types.ExportableProperty{ 
+		newPostProperty("id", func(post *models.Post) interface{} {
 			return post.GetId()
 		}),
-		NewPostProperty("name", func(post *models.Post) interface{} {
+		newPostProperty("name", func(post *models.Post) interface{} {
 			return post.GetName()
 		}),
-		NewPostProperty("description", func(post *models.Post) interface{} {
+		newPostProperty("description", func(post *models.Post) interface{} {
 			return post.GetDescription()
 		}),
 	}

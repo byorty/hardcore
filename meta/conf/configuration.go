@@ -7,6 +7,7 @@ import (
 	"github.com/byorty/hardcore/meta/middleware"
 	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/meta/importer"
 )
 
 type Configuration struct {
@@ -14,6 +15,7 @@ type Configuration struct {
 	ControllerContainers controller.Containers `xml:"controllers"`
 	ModelContainers      model.Containers      `xml:"models"`
 	ExporterContainers   exporter.Containers   `xml:"exporters"`
+	ImporterContainers   importer.Containers   `xml:"importers"`
 	MiddlewareContainers middleware.Containers `xml:"widdlewares"`
 	Files                []types.File
 	containers           []types.Container
@@ -24,6 +26,7 @@ func (c *Configuration) Init() {
 	c.addContainers(c.ControllerContainers)
 	c.addContainers(c.ModelContainers)
 	c.addContainers(c.ExporterContainers)
+	c.addContainers(c.ImporterContainers)
 	c.addContainers(c.MiddlewareContainers)
 }
 

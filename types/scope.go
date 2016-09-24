@@ -43,6 +43,10 @@ type ApplicationScope interface {
 	SetStaticPath(string) ApplicationScope
 	GetTmplDelims() (string, string)
 	SetTmplDelims(string, string) ApplicationScope
+	GetEnableWebsocket() bool
+	SetEnableWebsocket(bool) ApplicationScope
+	IsExit() chan bool
+	Exit(string)
 }
 
 type SessionScope interface {

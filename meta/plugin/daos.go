@@ -21,7 +21,7 @@ var (
 )
 
 type DAOs struct {
-	Importer
+	PackageImporter
 }
 
 func (d *DAOs) Do(env types.Environment) {

@@ -17,8 +17,8 @@ var (
 	Routers = []types.Route{
 		{{if .Containers}}{{range .Containers}}{{$package := .GetShortPackage}}mux.Path("{{.GetRoute}}", {{range .Controllers}}{{$ctrlName := .GetName}}
 			mux.Controller("{{.GetRoute}}", {{$package}}.New{{.GetName}}).Batch({{range .GetActions}}{{if .HasForm}}
-				mux.{{.GetMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
-				mux.{{.GetMethod}}("{{.GetRoute}}", (*{{$package}}.{{$ctrlName}}).{{.GetName}}),
+				mux.{{.GetRouteMethod}}("{{.GetRoute}}", {{$package}}.{{$ctrlName}}{{.GetName}}Action),{{else}}
+				mux.{{.GetRouteMethod}}("{{.GetRoute}}", (*{{$package}}.{{$ctrlName}}).{{.GetName}}),
 			{{end}}{{end}}
 			){{range .Befores}}.
 			Before({{.GetName}}){{end}}{{range .Afters}}.
@@ -33,7 +33,7 @@ var (
 )
 
 type Router struct {
-	Importer
+	PackageImporter
 }
 
 func (r *Router) Do(env types.Environment) {

@@ -14,6 +14,7 @@ type Action struct {
 	Return string   `xml:"return"`
 	Params []*Param `xml:"params>param"`
 	params []types.ActionParam
+	controller *Controller
 }
 
 func (a Action) GetName() string {
@@ -27,10 +28,11 @@ func (a Action) GetRoute() string {
 	return a.Route
 }
 
-func (a Action) GetMethod() string {
+func (a Action) GetRouteMethod() string {
 	if len(a.Method) == 0 {
-		a.Method = "GET"
+		a.Method = a.controller.GetKind().GetRouteMethod()
 	}
+
 	return utils.UpperFirst(strings.ToLower(a.Method))
 }
 
@@ -91,4 +93,8 @@ func (a Action) GetReturn() string {
 		}
 	}
 	return a.Return
+}
+
+func (a *Action) setController(controller *Controller) {
+	a.controller = controller
 }

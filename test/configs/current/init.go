@@ -12,13 +12,13 @@ import (
 func init() {
 	scope.App().
 		SetProjectName("Test").
-		SetRouter(configs.Router()).
+		SetRouter(configs.Routers).
 		SetLogger(log.NewDefaultLogger(log.ERROR))
 
 	pool.DB().
 		Add(
-		"default",
-		db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8"),
-	)
+			"default",
+			db.NewSqlDB("postgres://byorty:MK99rc@localhost:5432/hardcore?sslmode=disable&client_encoding=utf-8"),
+		)
 
 }

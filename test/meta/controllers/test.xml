@@ -53,4 +53,13 @@
             </actions>
         </controller>
     </controllers>
+    <controllers package="controllers.ws" path="/api">
+        <controller type="websocket" name="Handler" path="/ws">
+            <actions>
+                <action name="OnMessage">
+                    <return>types.EncodeView</return>
+                </action>
+            </actions>
+        </controller>
+    </controllers>
 </configuration>

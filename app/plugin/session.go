@@ -3,12 +3,23 @@ package plugin
 import (
 	"github.com/byorty/hardcore/helper"
 	"github.com/byorty/hardcore/scope"
+	"github.com/byorty/hardcore/types"
 )
 
-type SessionImpl struct{}
+func NewSession() types.ApplicationPlugin {
+	return NewSessionByName(scope.DefaultName)
+}
+
+func NewSessionByName(name string) types.ApplicationPlugin {
+	return newByName(new(SessionImpl), name)
+}
+
+type SessionImpl struct{
+	BaseImpl
+}
 
 func (s *SessionImpl) Run() {
-	if scope.App().GetSessionProvider() != nil {
-		helper.SessionManager().SetProvider(scope.App().GetSessionProvider())
+	if scope.AppByName(s.name).GetSessionProvider() != nil {
+		helper.SessionManager().SetProvider(scope.AppByName(s.name).GetSessionProvider())
 	}
 }

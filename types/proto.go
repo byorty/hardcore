@@ -41,6 +41,7 @@ const (
 	ProtoFloat32Kind
 	ProtoFloat64Kind
 	ProtoStringKind
+	ProtoBoolKind
 	ProtoTimeKind
 	ProtoEnumKind
 	ProtoModelKind

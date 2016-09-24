@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+const (
+	DefaultName string = "default"
+)
+
+var (
+	scopes = map[string]types.ApplicationScope{}
+)
 var app types.ApplicationScope
 
 type AppImpl struct {
@@ -30,6 +37,8 @@ type AppImpl struct {
 	staticPath      string
 	startDelim      string
 	endDelim        string
+	enableWebsocket bool
+	exit            chan bool
 }
 
 func New() types.ApplicationScope {
@@ -42,6 +51,7 @@ func New() types.ApplicationScope {
 		logger:       log.NewDefaultLogger(log.FINEST),
 		startDelim:   "{{",
 		endDelim:     "}}",
+		exit:         make(chan bool),
 	}
 }
 
@@ -208,13 +218,43 @@ func (a *AppImpl) SetTmplDelims(startDelim, endDelim string) types.ApplicationSc
 	return a
 }
 
-func App() types.ApplicationScope {
-	if app == nil {
-		app = New()
-	}
-	return app
+func (a AppImpl) GetEnableWebsocket() bool {
+	return a.enableWebsocket
 }
 
-func Set(a types.ApplicationScope) {
-	app = a
+func (a *AppImpl) SetEnableWebsocket(enableWebsocket bool) types.ApplicationScope {
+	a.enableWebsocket = true
+	return a
+}
+
+func (a AppImpl) IsExit() chan bool {
+	return a.exit
+}
+
+func (a *AppImpl) Exit(message string) {
+	a.logger.Debug(message)
+	time.Sleep(2 * time.Second)
+	a.exit <- true
+}
+
+func App() types.ApplicationScope {
+	return AppByName(DefaultName)
+}
+
+func AppByName(name string) types.ApplicationScope {
+	if existsAppScope, ok := scopes[name]; ok {
+		newAppScope := New()
+		scopes[name] = newAppScope
+		return newAppScope
+	} else {
+		return existsAppScope
+	}
+}
+
+func Set(appScope types.ApplicationScope) {
+	SetByName(DefaultName, appScope)
+}
+
+func SetByName(name string, appScope types.ApplicationScope) {
+	scopes[name] = appScope
 }

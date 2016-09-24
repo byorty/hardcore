@@ -1,18 +1,21 @@
 package api
 
 import (
-	"github.com/byorty/hardcore/form"
-	"github.com/byorty/hardcore/form/prim"
-	"github.com/byorty/hardcore/test/models"
-	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/view"
+    "github.com/byorty/hardcore/types"
+    "github.com/byorty/hardcore/form"
+    "github.com/byorty/hardcore/form/prim"
+    "github.com/byorty/hardcore/view"
+    "github.com/byorty/hardcore/test/models"
 )
 
 func (p *Post) CallAction(action interface{}, scope types.RequestScope) {
 	if callable, ok := action.(types.CallableAction); ok {
 		callable.Call(p, scope)
 	} else {
-		action.(func(*Post, types.RequestScope))(p, scope)
+		v := action.(func(*Post, types.RequestScope) types.View)(p, scope)
+		v.SetController(p)
+		v.SetScope(scope)
+		v.Render()
 	}
 }
 
@@ -35,6 +38,7 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, page, search)
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
@@ -62,6 +66,7 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, &post)
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {
@@ -101,6 +106,7 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	if form.Check(scope) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, form, &post, name, description)
+		v.SetController(ctrl)
 	} else {
 		handler, ok := rawCtrl.(types.FormErrorsHandler)
 		if ok {

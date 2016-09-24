@@ -51,9 +51,19 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	if len(req.URL.Host) == 0 {
 		req.URL.Host = req.Host
 	}
+	var matchersKey string
+	if scope.App().GetEnableWebsocket() {
+		if req.Header.Get("Upgrade") == "websocket" && req.Header.Get("Connection") == "Upgrade" {
+			matchersKey = websocket
+		} else {
+			matchersKey = req.Method
+		}
+	} else {
+		matchersKey = req.Method
+	}
 	var rs types.RequestScope
 	var existsMatcher *Matcher
-	for _, matcher := range r.matchers[req.Method] {
+	for _, matcher := range r.matchers[matchersKey] {
 		if ok, newScope := matcher.Match(req.URL.Path, req, rw); ok {
 			existsMatcher = matcher
 			rs = newScope
