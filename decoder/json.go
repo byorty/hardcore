@@ -59,7 +59,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 			}
 		} else {
 			switch {
-			case char == '"':
+			case char == '"' && i < last:
 				if data[i-1] != '\\' {
 					quotesCount++
 				}
