@@ -82,6 +82,10 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleWebsocket(matcher *Matcher, rs types.RequestScope, rw http.ResponseWriter, req *http.Request) {
 	server := &websocket.Server{
+		Config: websocket.Config{
+			Location: req.URL,
+			TlsConfig: scope.App().GetTlsConfig(),
+		},
 		Handler: func(conn *websocket.Conn) {
 			ws := scope.NewWebsocket(rs, conn)
 			r.handleRequest(matcher, ws, rw, req)

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	"crypto/tls"
 )
 
 type ApplicationScope interface {
@@ -47,7 +48,15 @@ type ApplicationScope interface {
 	GetEnableWebsocket() bool
 	SetEnableWebsocket(bool) ApplicationScope
 	IsExit() chan bool
-	Exit(string)
+	Exit()
+	GetCertFilename() string
+	SetCertFilename(string) ApplicationScope
+	GetPrivateKeyFilename() string
+	SetPrivateKeyFilename(string) ApplicationScope
+	GetTlsConfig() *tls.Config
+	SetTlsConfig(*tls.Config) ApplicationScope
+	GetSecurityPort() int
+	SetSecurityPort(int) ApplicationScope
 }
 
 type SessionScope interface {

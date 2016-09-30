@@ -1,6 +1,7 @@
 package scope
 
 import (
+	"crypto/tls"
 	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/utils"
@@ -11,33 +12,38 @@ import (
 var app types.ApplicationScope
 
 type AppImpl struct {
-	projectName     string
-	router          types.Router
-	hostname        string
-	port            int
-	readTimeout     time.Duration
-	writeTimeout    time.Duration
-	rootPath        string
-	tmplPath        string
-	tmplCache       map[string]*template.Template
-	logger          types.Logger
-	daos            []types.ModelDAO
-	cookieName      string
-	enableSession   bool
-	sessionProvider types.Cache
-	routes          []types.Route
-	staticDir       string
-	staticPath      string
-	startDelim      string
-	endDelim        string
-	enableWebsocket bool
-	exit            chan bool
+	projectName        string
+	router             types.Router
+	hostname           string
+	port               int
+	securityPort       int
+	readTimeout        time.Duration
+	writeTimeout       time.Duration
+	rootPath           string
+	tmplPath           string
+	tmplCache          map[string]*template.Template
+	logger             types.Logger
+	daos               []types.ModelDAO
+	cookieName         string
+	enableSession      bool
+	sessionProvider    types.Cache
+	routes             []types.Route
+	staticDir          string
+	staticPath         string
+	startDelim         string
+	endDelim           string
+	enableWebsocket    bool
+	exit               chan bool
+	certFilename       string
+	privateKeyFilename string
+	tlsConfig          *tls.Config
 }
 
 func New() types.ApplicationScope {
 	return &AppImpl{
 		hostname:     "localhost",
 		port:         8080,
+		securityPort: 4443,
 		readTimeout:  10 * time.Second,
 		writeTimeout: 10 * time.Second,
 		rootPath:     utils.Pwd(),
@@ -224,10 +230,45 @@ func (a AppImpl) IsExit() chan bool {
 	return a.exit
 }
 
-func (a *AppImpl) Exit(message string) {
-	a.logger.Debug(message)
+func (a *AppImpl) Exit() {
 	time.Sleep(2 * time.Second)
 	a.exit <- true
+}
+
+func (a AppImpl) GetCertFilename() string {
+	return a.certFilename
+}
+
+func (a *AppImpl) SetCertFilename(certFilename string) types.ApplicationScope {
+	a.certFilename = certFilename
+	return a
+}
+
+func (a AppImpl) GetPrivateKeyFilename() string {
+	return a.privateKeyFilename
+}
+
+func (a *AppImpl) SetPrivateKeyFilename(privateKeyFilename string) types.ApplicationScope {
+	a.privateKeyFilename = privateKeyFilename
+	return a
+}
+
+func (a AppImpl) GetTlsConfig() *tls.Config {
+	return a.tlsConfig
+}
+
+func (a *AppImpl) SetTlsConfig(tlsConfig *tls.Config) types.ApplicationScope {
+	a.tlsConfig = tlsConfig
+	return a
+}
+
+func (a AppImpl) GetSecurityPort() int {
+	return a.securityPort
+}
+
+func (a *AppImpl) SetSecurityPort(securityPort int) types.ApplicationScope {
+	a.securityPort = securityPort
+	return a
 }
 
 func App() types.ApplicationScope {
