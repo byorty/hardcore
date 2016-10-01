@@ -34,5 +34,5 @@ func NewHttpServer() types.Application {
 		AddPlugin(plugin.NewDAO()).
 		AddPlugin(plugin.NewTmpl()).
 		AddPlugin(plugin.NewSession()).
-		AddPlugin(plugin.NewHttp())
+		AddPlugin(plugin.NewWebServer())
 }

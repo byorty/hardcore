@@ -55,7 +55,7 @@ type ApplicationScope interface {
 	SetPrivateKeyFilename(string) ApplicationScope
 	GetTlsConfig() *tls.Config
 	SetTlsConfig(*tls.Config) ApplicationScope
-	GetSecurityPort() int
+	GetSecurePort() int
 	SetSecurityPort(int) ApplicationScope
 }
 

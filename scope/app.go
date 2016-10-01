@@ -262,7 +262,7 @@ func (a *AppImpl) SetTlsConfig(tlsConfig *tls.Config) types.ApplicationScope {
 	return a
 }
 
-func (a AppImpl) GetSecurityPort() int {
+func (a AppImpl) GetSecurePort() int {
 	return a.securityPort
 }
 
