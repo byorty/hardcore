@@ -5,7 +5,7 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
-type WebsocketServerImpl struct{
+type WebsocketServerImpl struct {
 	WebServerImpl
 }
 
@@ -19,7 +19,7 @@ func (w *WebsocketServerImpl) Run() {
 	scope.App().GetLogger().Finest("web server - websocket enable")
 }
 
-type SecureWebsocketServerImpl struct{
+type SecureWebsocketServerImpl struct {
 	SecureWebServerImpl
 }
 

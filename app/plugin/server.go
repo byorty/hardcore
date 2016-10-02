@@ -1,11 +1,11 @@
 package plugin
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
-	"crypto/tls"
 )
 
 type WebServerImpl struct{}
@@ -16,7 +16,7 @@ func NewWebServer() types.ApplicationPlugin {
 
 func (w *WebServerImpl) Run() {
 	app := w.createServer(scope.App().GetHostname(), scope.App().GetPort())
-	go func () {
+	go func() {
 		scope.App().GetLogger().Finest("web server - start on %s:%d", scope.App().GetHostname(), scope.App().GetPort())
 		err := app.ListenAndServe()
 		if err != nil {
@@ -35,7 +35,7 @@ func (w *WebServerImpl) createServer(hostname string, port int) *http.Server {
 	}
 }
 
-type SecureWebServerImpl struct{
+type SecureWebServerImpl struct {
 	WebServerImpl
 }
 
@@ -52,14 +52,14 @@ func (s *SecureWebServerImpl) Run() {
 			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
 			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
 		},
-		ClientAuth:             tls.RequireAndVerifyClientCert,
-		CurvePreferences:       []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-		MinVersion:             tls.VersionTLS12,
-		SessionTicketsDisabled: true,
+		ClientAuth:               tls.RequireAndVerifyClientCert,
+		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+		MinVersion:               tls.VersionTLS12,
+		SessionTicketsDisabled:   true,
 		PreferServerCipherSuites: true,
 	}
 	scope.App().SetTlsConfig(app.TLSConfig)
-	go func () {
+	go func() {
 		scope.App().GetLogger().Finest("secure web server - start on %s:%d", scope.App().GetHostname(), scope.App().GetPort())
 		err := app.ListenAndServeTLS(scope.App().GetCertFilename(), scope.App().GetPrivateKeyFilename())
 		if err != nil {

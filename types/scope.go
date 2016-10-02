@@ -1,11 +1,11 @@
 package types
 
 import (
+	"crypto/tls"
 	"golang.org/x/net/websocket"
 	"html/template"
 	"net/http"
 	"time"
-	"crypto/tls"
 )
 
 type ApplicationScope interface {

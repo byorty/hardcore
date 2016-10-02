@@ -28,6 +28,7 @@ var (
 		new(plugin.Router),
 		new(plugin.DAOs),
 		new(plugin.File),
+		new(plugin.Formatter),
 	}
 )
 

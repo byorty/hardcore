@@ -55,7 +55,7 @@ func New{{.MultipleName}}({{.ExportablesVarName}} {{.ExportablesName}}) types.Ex
 {{end}}
 var (
 	{{.VarName}}Properties = []types.ExportableProperty{ {{range .Properties}}
-		new{{$name}}Property("{{.GetName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
+		new{{$name}}Property("{{.GetAliasName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
 			return {{if .HasGetter}}{{$sourceVarName}}.{{.GetGetterName}}(){{else}}nil{{end}}
 		}),{{end}}
 	}

@@ -55,10 +55,13 @@ func New{{.MultipleName}}({{.ImportablesVarName}} {{.ImportablesName}}) types.Im
 {{end}}
 var (
 	{{.VarName}}Properties = types.ImportableProperties{ {{range .Properties}}{{if .HasModelProperty}}
-		"{{.GetName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
-			{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}}))
+		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
+			{{if .GetModelProperty.HasRelation}}{{if .GetModelProperty.GetEntity.GetEntityKind.IsEnum}}var {{.GetModelProperty.GetName}} {{.GetModelProperty.GetEntity.GetFullName}}
+			{{.GetModelProperty.GetName}}.DAO().ById(value.({{.GetModelProperty.GetEntity.GetKind}})).One(&{{.GetModelProperty.GetName}})
+			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}
+			{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}})){{end}}
 		}),{{else}}
-		"{{.GetName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
+		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
 
 		}),{{end}}{{end}}
 	}

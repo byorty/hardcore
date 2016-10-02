@@ -7,12 +7,20 @@ import (
 )
 
 type Property struct {
-	Name string `xml:"name,attr"`
-	Kind string `xml:"type,attr"`
-	prop types.Property
+	Name  string `xml:"name,attr"`
+	Kind  string `xml:"type,attr"`
+	Alias string `xml:"as,attr"`
+	prop  types.Property
 }
 
 func (p Property) GetName() string {
+	return p.Name
+}
+
+func (p Property) GetAliasName() string {
+	if p.Alias != "" {
+		return p.Alias
+	}
 	return p.Name
 }
 

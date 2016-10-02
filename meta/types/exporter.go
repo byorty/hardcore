@@ -4,6 +4,7 @@ type ExportableProperty interface {
 	HasGetter() bool
 	SetHasGetter(bool)
 	GetName() string
+	GetAliasName() string
 	GetGetterName() string
 }
 
