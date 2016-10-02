@@ -7,6 +7,7 @@ import (
 
 type Property struct {
 	Name      string `xml:"name,attr"`
+	Alias     string `xml:"as,attr"`
 	hasGetter bool
 }
 
@@ -19,6 +20,13 @@ func (p *Property) SetHasGetter(hasGetter bool) {
 }
 
 func (p Property) GetName() string {
+	return p.Name
+}
+
+func (p Property) GetAliasName() string {
+	if p.Alias != "" {
+		return p.Alias
+	}
 	return p.Name
 }
 

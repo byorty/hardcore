@@ -58,8 +58,7 @@ var (
 		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
 			{{if .GetModelProperty.HasRelation}}{{if .GetModelProperty.GetEntity.GetEntityKind.IsEnum}}var {{.GetModelProperty.GetName}} {{.GetModelProperty.GetEntity.GetFullName}}
 			{{.GetModelProperty.GetName}}.DAO().ById(value.({{.GetModelProperty.GetEntity.GetKind}})).One(&{{.GetModelProperty.GetName}})
-			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}
-			{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}})){{end}}
+			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}})){{end}}
 		}),{{else}}
 		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
 
