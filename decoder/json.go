@@ -89,6 +89,7 @@ func (j *JsonImpl) decodeValue(importer types.Importer, property types.Importabl
 }
 
 func (j *JsonImpl) decodeScalarValue(importer types.Importer, property types.ImportableProperty, jsonValue string) {
+	jsonValue = strings.Trim(jsonValue, ` `)
 	jsonValue = strings.Trim(jsonValue, `"`)
 	switch property.GetProtoKind() {
 	case types.ProtoIntKind:
@@ -118,7 +119,7 @@ func (j *JsonImpl) decodeScalarValue(importer types.Importer, property types.Imp
 	case types.ProtoStringKind:
 		property.SetValue(importer.GetImportable(), jsonValue)
 	case types.ProtoEnumKind:
-		j.decodeEnum(importer.GetImportable(), property, jsonValue)
+		j.decodeEnum(importer, property, jsonValue)
 	case types.ProtoBoolKind:
 		boolValue, _ := strconv.ParseBool(jsonValue)
 		property.SetValue(importer.GetImportable(), boolValue)

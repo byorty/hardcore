@@ -87,6 +87,10 @@ func ({{.ShortName}} {{.Name}}) IsScanned() bool {
 	return {{.ShortName}}.GetId() != 0
 }
 
+func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
 }
@@ -233,6 +237,10 @@ func ({{.ShortName}} {{.MultipleName}}) Less(x, y int) bool {
 		`{{$shortName := .ShortName}}` +
 		`package {{.Package}}
 
+import ({{range .AutoImports}}
+	"{{.}}"{{end}}
+)
+
 type {{.AutoName}} struct {` +
 		`
 {{range .Properties}}` +
@@ -240,13 +248,18 @@ type {{.AutoName}} struct {` +
 {{end}}}
 {{range .Properties}}
 func ({{$shortName}} {{$name}}) Get{{.GetUpperName}}() {{.GetMethodDefineKind}} { {{if .GetRelation.IsOneToOne}}
-	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}{{else}}return {{$shortName}}.{{.GetName}}{{end}}
+	return {{if .GetEntity.GetEntityKind.IsEnum}}*({{$shortName}}.{{.GetName}}){{else}}{{$shortName}}.{{.GetName}}{{end}}{{else}}
+	return {{$shortName}}.{{.GetName}}{{end}}
 }
 
 func ({{$shortName}} *{{$name}}) Set{{.GetUpperName}}({{.GetName}} {{.GetMethodDefineKind}}) *{{$name}} {
 	{{$shortName}}.{{.GetName}} = {{if .GetRelation.IsOneToOne}}{{if .GetEntity.GetEntityKind.IsEnum}}&({{.GetName}}){{end}}{{else}}{{.GetName}}{{end}}
 	return {{$shortName}}
-}{{end}}
+}
+{{end}}
+func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
 
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
@@ -332,6 +345,9 @@ func (m *Model) Do(env types.Environment) {
 							types.DefaultImport,
 						}
 					} else {
+						tplParams["AutoImports"] = append([]string{
+							types.DefaultImport,
+						}, modelEntity.GetImports()...)
 						tpl = valueTpl
 						autoTpl = autoValueTpl
 					}

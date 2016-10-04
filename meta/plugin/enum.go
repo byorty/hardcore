@@ -37,6 +37,10 @@ func ({{.ShortName}} {{.Name}}) DAO() {{.Kind.DAO}} {
 	return {{.VarDaoName}}
 }
 
+func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
+	return types.ProtoEnumKind
+}
+
 type {{.MultipleName}} []*{{.Name}}
 
 func ({{.ShortName}} {{.MultipleName}}) Len() int {

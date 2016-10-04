@@ -24,6 +24,10 @@ type ProtoSlice interface {
 	Get(int) ProtoProperty
 }
 
+type ProtoEntity interface {
+	GetProtoKind() ProtoKind
+}
+
 type ProtoKind int
 
 const (

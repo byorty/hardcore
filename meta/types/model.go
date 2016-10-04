@@ -77,6 +77,6 @@ var (
 type Pattern string
 
 const (
-	ValueObjectPattern     = "ValueObject"
-	StraightMappingPattern = "StraightMapping"
+	ValueObjectPattern     Pattern = "ValueObject"
+	StraightMappingPattern Pattern = "StraightMapping"
 )

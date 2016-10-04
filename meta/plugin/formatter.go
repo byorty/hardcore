@@ -16,8 +16,9 @@ func (f *Formatter) Do(env types.Environment) {
 		packeges = append(packeges, container.GetImport())
 	}
 	if len(packeges) > 0 {
-		cmd := exec.Command("go", "fmt", strings.Join(packeges, " "))
+		args := append([]string{"fmt"}, packeges...)
+		cmd := exec.Command("go", args...)
 		cmd.Run()
-		env.GetLogger().Debug("formatter format %v", packeges)
+		env.GetLogger().Debug("formatter format packages: %s", strings.Join(packeges, ", "))
 	}
 }

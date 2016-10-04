@@ -277,7 +277,3 @@ func App() types.ApplicationScope {
 	}
 	return app
 }
-
-func Set(a types.ApplicationScope) {
-	app = a
-}
