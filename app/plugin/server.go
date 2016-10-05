@@ -1,11 +1,11 @@
 package plugin
 
 import (
-	"crypto/tls"
 	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
+	"crypto/tls"
 )
 
 type WebServerImpl struct{}
@@ -47,20 +47,18 @@ func (s *SecureWebServerImpl) Run() {
 	app := s.createServer(scope.App().GetHostname(), scope.App().GetSecurePort())
 	app.TLSConfig = &tls.Config{
 		CipherSuites: []uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
 			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
 		},
-		ClientAuth:               tls.RequireAndVerifyClientCert,
-		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
 		MinVersion:               tls.VersionTLS12,
 		SessionTicketsDisabled:   true,
 		PreferServerCipherSuites: true,
 	}
 	scope.App().SetTlsConfig(app.TLSConfig)
 	go func() {
-		scope.App().GetLogger().Finest("secure web server - start on %s:%d", scope.App().GetHostname(), scope.App().GetPort())
+		scope.App().GetLogger().Finest("secure web server - start on %s:%d", scope.App().GetHostname(), scope.App().GetSecurePort())
 		err := app.ListenAndServeTLS(scope.App().GetCertFilename(), scope.App().GetPrivateKeyFilename())
 		if err != nil {
 			scope.App().GetLogger().Error("secure web server - %v", err)
