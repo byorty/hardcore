@@ -134,32 +134,22 @@ func (w *FileLogWriter) intRotate() error {
 
 	// If we are keeping log files, move it to the next available number
 	if w.rotate {
-		_, err := os.Lstat(w.filename)
+		info, err := os.Lstat(w.filename)
 		if err == nil { // file exists
-			// Find the next available number
-			num := 1
-			fname := ""
+			if w.daily_opendate == 0 {
+				w.daily_opendate = info.ModTime().Day()
+			}
 			if w.daily && time.Now().Day() != w.daily_opendate {
 				yesterday := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-				for ; err == nil && num <= 999; num++ {
-					fname = w.filename + fmt.Sprintf(".%s.%03d", yesterday, num)
-					_, err = os.Lstat(fname)
+				fname := w.filename + fmt.Sprintf(".%s", yesterday)
+				if w.file != nil {
+					w.file.Close()
 				}
-			} else {
-				for ; err == nil && num <= 999; num++ {
-					fname = w.filename + fmt.Sprintf(".%s.%03d", time.Now().Format("2006-01-02"), num)
-					_, err = os.Lstat(fname)
+				// Rename the file to its newfound home
+				err = os.Rename(w.filename, fname)
+				if err != nil {
+					return fmt.Errorf("Rotate: %s\n", err)
 				}
-			}
-			// return error if the last file checked still existed
-			if err == nil {
-				return fmt.Errorf("Rotate: Cannot find free log number to rename %s\n", w.filename)
-			}
-			w.file.Close()
-			// Rename the file to its newfound home
-			err = os.Rename(w.filename, fname)
-			if err != nil {
-				return fmt.Errorf("Rotate: %s\n", err)
 			}
 		}
 	}
