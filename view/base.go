@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/byorty/hardcore/types"
 	"net/http"
+	"github.com/byorty/hardcore/is"
 )
 
 type BaseImpl struct {
@@ -22,7 +23,7 @@ func (b *BaseImpl) SetController(ctrl types.ActionController) types.View {
 }
 
 func (b *BaseImpl) Render() {
-	if b.status == 0 {
+	if is.Eq(b.status, 0) {
 		b.status = http.StatusOK
 	}
 	b.scope.GetWriter().WriteHeader(b.status)

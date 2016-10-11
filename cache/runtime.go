@@ -3,12 +3,13 @@ package cache
 import (
 	"github.com/byorty/hardcore/types"
 	"sync"
+	"github.com/byorty/hardcore/is"
 )
 
 var runtime types.Cache
 
 func Runtime() types.Cache {
-	if runtime == nil {
+	if is.Nil(runtime) {
 		runtime = &RuntimeImpl{
 			mtx:  new(sync.Mutex),
 			data: make(map[string]interface{}),

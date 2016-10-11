@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"github.com/byorty/hardcore/is"
 )
 
 var (
@@ -33,7 +34,7 @@ func (t *TmplImpl) Run() {
 	tmplCache := make(map[string]*template.Template)
 	for _, tmplFile := range tmplFiles {
 		rel, err := filepath.Rel(dirname, tmplFile)
-		if err == nil {
+		if is.Nil(err) {
 			relParts := strings.Split(rel, ".")
 
 			if len(relParts) == 2 {
@@ -42,9 +43,9 @@ func (t *TmplImpl) Run() {
 				tmpl.Delims(scope.App().GetTmplDelims())
 				var buf []byte
 				buf, err = ioutil.ReadFile(tmplFile)
-				if err == nil {
+				if is.Nil(err) {
 					_, err = tmpl.Parse(string(buf))
-					if err == nil {
+					if is.Nil(err) {
 						tmplCache[tmplName] = tmpl
 					} else {
 						logger.Error("tmpl - can't parse %s, details - %v", tmplFile, err)

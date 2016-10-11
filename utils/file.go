@@ -2,11 +2,12 @@ package utils
 
 import (
 	"os"
+	"github.com/byorty/hardcore/is"
 )
 
 func Pwd() string {
 	pwd, err := os.Getwd()
-	if err == nil {
+	if is.Nil(err) {
 		return pwd
 	}
 	return ""

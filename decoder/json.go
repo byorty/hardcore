@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/types"
 	"strconv"
 	"strings"
+	"github.com/byorty/hardcore/is"
 )
 
 const (
@@ -47,7 +48,7 @@ func (j *JsonImpl) decodeObject(data []byte, dataLen int, importer types.Importe
 
 	for i := 0; i < dataLen; i++ {
 		char := data[i]
-		if property == nil {
+		if is.Nil(property) {
 			switch {
 			case char == '"' && start == invalidIndex:
 				start = i + 1

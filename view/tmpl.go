@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/is"
 )
 
 type TmplImpl struct {
@@ -52,7 +53,7 @@ func (t *TmplImpl) render(tmplName string) {
 	tmplCache := scope.App().GetTmplCache()
 	if tmpl, ok := tmplCache[tmplName]; ok {
 		clonedTmpl, err := tmpl.Clone()
-		if err == nil {
+		if is.Nil(err) {
 			err = clonedTmpl.Execute(t.scope.GetWriter(), t.vars)
 			if err != nil {
 				scope.App().GetLogger().Error("tmpl - can't exec template %s, details - %v", tmplName, err)

@@ -7,6 +7,7 @@ import (
 	"github.com/byorty/hardcore/utils"
 	"html/template"
 	"time"
+	"github.com/byorty/hardcore/is"
 )
 
 var app types.ApplicationScope
@@ -272,7 +273,7 @@ func (a *AppImpl) SetSecurityPort(securityPort int) types.ApplicationScope {
 }
 
 func App() types.ApplicationScope {
-	if app == nil {
+	if is.Nil(app) {
 		app = New()
 	}
 	return app

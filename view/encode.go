@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/byorty/hardcore/encoder"
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/is"
 )
 
 type EncodeImpl struct {
@@ -31,7 +32,7 @@ func (e EncodeImpl) Render() {
 	req := e.scope.GetRequest()
 	rw := e.scope.GetWriter()
 
-	if e.encoder == nil {
+	if is.Nil(e.encoder) {
 		switch req.Header.Get("Content-Type") {
 		case "application/xml", "text/xml":
 		case "application/json":
