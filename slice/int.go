@@ -4,152 +4,152 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
-type IntsImpl []int
+type Ints []int
 
 func NewInts() types.IntSlice {
-	return make(IntsImpl, 0)
+	return make(Ints, 0)
 }
 
 func NewIntsBy(arr []int) types.IntSlice {
-	return IntsImpl(arr)
+	return Ints(arr)
 }
 
-func (i IntsImpl) Len() int {
+func (i Ints) Len() int {
 	return len(i)
 }
 
-func (i IntsImpl) Less(x, y int) bool {
+func (i Ints) Less(x, y int) bool {
 	return i[x] < i[y]
 }
 
-func (i IntsImpl) Swap(x, y int) {
+func (i Ints) Swap(x, y int) {
 	i[x], i[y] = i[y], i[x]
 }
 
-func (i IntsImpl) GetRaw(x int) interface{} {
+func (i Ints) GetRaw(x int) interface{} {
 	return i.Get(x)
 }
 
-func (i IntsImpl) Get(x int) int {
+func (i Ints) Get(x int) int {
 	return i[x]
 }
 
-type Int8sImpl []int8
+type Int8s []int8
 
 func NewInt8s() types.Int8Slice {
-	return make(Int8sImpl, 0)
+	return make(Int8s, 0)
 }
 
 func NewInt8sBy(arr []int8) types.Int8Slice {
-	return Int8sImpl(arr)
+	return Int8s(arr)
 }
 
-func (i Int8sImpl) Len() int {
+func (i Int8s) Len() int {
 	return len(i)
 }
 
-func (i Int8sImpl) Less(x, y int) bool {
+func (i Int8s) Less(x, y int) bool {
 	return i[x] < i[y]
 }
 
-func (i Int8sImpl) Swap(x, y int) {
+func (i Int8s) Swap(x, y int) {
 	i[x], i[y] = i[y], i[x]
 }
 
-func (i Int8sImpl) GetRaw(x int) interface{} {
+func (i Int8s) GetRaw(x int) interface{} {
 	return i.Get(x)
 }
 
-func (i Int8sImpl) Get(x int) int8 {
+func (i Int8s) Get(x int) int8 {
 	return i[x]
 }
 
-type Int16sImpl []int16
+type Int16s []int16
 
 func NewInt16s() types.Int16Slice {
-	return make(Int16sImpl, 0)
+	return make(Int16s, 0)
 }
 
 func NewInt16sBy(arr []int16) types.Int16Slice {
-	return Int16sImpl(arr)
+	return Int16s(arr)
 }
 
-func (i Int16sImpl) Len() int {
+func (i Int16s) Len() int {
 	return len(i)
 }
 
-func (i Int16sImpl) Less(x, y int) bool {
+func (i Int16s) Less(x, y int) bool {
 	return i[x] < i[y]
 }
 
-func (i Int16sImpl) Swap(x, y int) {
+func (i Int16s) Swap(x, y int) {
 	i[x], i[y] = i[y], i[x]
 }
 
-func (i Int16sImpl) GetRaw(x int) interface{} {
+func (i Int16s) GetRaw(x int) interface{} {
 	return i.Get(x)
 }
 
-func (i Int16sImpl) Get(x int) int16 {
+func (i Int16s) Get(x int) int16 {
 	return i[x]
 }
 
-type Int32sImpl []int32
+type Int32s []int32
 
 func NewInt32s() types.Int32Slice {
-	return make(Int32sImpl, 0)
+	return make(Int32s, 0)
 }
 
 func NewInt32sBy(arr []int32) types.Int32Slice {
-	return Int32sImpl(arr)
+	return Int32s(arr)
 }
 
-func (i Int32sImpl) Len() int {
+func (i Int32s) Len() int {
 	return len(i)
 }
 
-func (i Int32sImpl) Less(x, y int) bool {
+func (i Int32s) Less(x, y int) bool {
 	return i[x] < i[y]
 }
 
-func (i Int32sImpl) Swap(x, y int) {
+func (i Int32s) Swap(x, y int) {
 	i[x], i[y] = i[y], i[x]
 }
 
-func (i Int32sImpl) GetRaw(x int) interface{} {
+func (i Int32s) GetRaw(x int) interface{} {
 	return i.Get(x)
 }
 
-func (i Int32sImpl) Get(x int) int32 {
+func (i Int32s) Get(x int) int32 {
 	return i[x]
 }
 
-type Int64sImpl []int64
+type Int64s []int64
 
 func NewInt64s() types.Int64Slice {
-	return make(Int64sImpl, 0)
+	return make(Int64s, 0)
 }
 
 func NewInt64sBy(arr []int64) types.Int64Slice {
-	return Int64sImpl(arr)
+	return Int64s(arr)
 }
 
-func (i Int64sImpl) Len() int {
+func (i Int64s) Len() int {
 	return len(i)
 }
 
-func (i Int64sImpl) Less(x, y int) bool {
+func (i Int64s) Less(x, y int) bool {
 	return i[x] < i[y]
 }
 
-func (i Int64sImpl) Swap(x, y int) {
+func (i Int64s) Swap(x, y int) {
 	i[x], i[y] = i[y], i[x]
 }
 
-func (i Int64sImpl) GetRaw(x int) interface{} {
+func (i Int64s) GetRaw(x int) interface{} {
 	return i.Get(x)
 }
 
-func (i Int64sImpl) Get(x int) int64 {
+func (i Int64s) Get(x int) int64 {
 	return i[x]
 }
