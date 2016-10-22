@@ -114,11 +114,13 @@ func (e Enum) Do(env types.Environment) {
 						}
 						constant.Value = enum.GetValue(constant)
 					}
-					if !hasIota {
-						for _, constant := range enum.Constants {
-							if !constant.HasValue() {
-								constant.Value = "iota + 1"
-								break
+					if enum.GetKind() != model.StringEnumKind {
+						if !hasIota {
+							for _, constant := range enum.Constants {
+								if !constant.HasValue() {
+									constant.Value = "iota + 1"
+									break
+								}
 							}
 						}
 					}

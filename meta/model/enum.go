@@ -102,7 +102,7 @@ func (e Enum) GetEntityKind() types.EntityKind {
 }
 
 func (e Enum) GetValue(constant *Constant) string {
-	if e.Kind == StringEnumKind && constant.HasValue() {
+	if e.Kind == StringEnumKind {
 		return fmt.Sprintf(`"%s"`, constant.Value)
 	} else {
 		return constant.Value
