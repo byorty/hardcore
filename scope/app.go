@@ -233,7 +233,9 @@ func (a AppImpl) IsExit() chan bool {
 
 func (a *AppImpl) Exit() {
 	time.Sleep(2 * time.Second)
-	a.exit <- true
+	go func() {
+		a.exit <- true
+	}()
 }
 
 func (a AppImpl) GetCertFilename() string {
