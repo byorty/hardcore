@@ -30,9 +30,20 @@ type ProtoEntity interface {
 
 type ProtoKind int
 
+func (p ProtoKind) IsModel() bool {
+	return p == ProtoModelKind
+}
+
+func (p ProtoKind) IsScalar() bool {
+	return p <= ProtoBoolKind
+}
+
+func (p ProtoKind) IsSlice() bool {
+	return p >= ProtoIntSliceKind && p <= ProtoModelSliceKind
+}
+
 const (
-	ProtoBasicKind ProtoKind = iota
-	ProtoIntKind
+	ProtoIntKind ProtoKind = iota
 	ProtoInt8Kind
 	ProtoInt16Kind
 	ProtoInt32Kind
@@ -49,7 +60,23 @@ const (
 	ProtoTimeKind
 	ProtoEnumKind
 	ProtoModelKind
-	ProtoSliceKind
+	ProtoIntSliceKind
+	ProtoInt8SliceKind
+	ProtoInt16SliceKind
+	ProtoInt32SliceKind
+	ProtoInt64SliceKind
+	ProtoUintSliceKind
+	ProtoUint8SliceKind
+	ProtoUint16SliceKind
+	ProtoUint32SliceKind
+	ProtoUint64SliceKind
+	ProtoFloat32SliceKind
+	ProtoFloat64SliceKind
+	ProtoStringSliceKind
+	ProtoBoolSliceKind
+	ProtoTimeSliceKind
+	ProtoEnumSliceKind
+	ProtoModelSliceKind
 )
 
 type ProtoRelation int

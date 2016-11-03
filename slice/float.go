@@ -32,6 +32,10 @@ func (f Float32s) Get(x int) float32 {
 	return f[x]
 }
 
+func (f Float32s) ExportItem(i int, encoder types.Encoder) {
+	encoder.EncodeFloat32(f[i])
+}
+
 type Float64s []float64
 
 func NewFloats64() types.Float64Slice {
@@ -60,4 +64,8 @@ func (f Float64s) GetRaw(x int) interface{} {
 
 func (f Float64s) Get(x int) float64 {
 	return f[x]
+}
+
+func (f Float64s) ExportItem(i int, encoder types.Encoder) {
+	encoder.EncodeFloat64(f[i])
 }

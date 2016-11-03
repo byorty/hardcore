@@ -2,57 +2,91 @@ package exporter
 
 import (
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/encoder"
 )
 
-type FormErrorPropertyImpl struct {
-	PropertyImpl
-	closure func(types.FormError) interface{}
+type FormErrorImpl struct {
+	error types.FormError
+	props []FormPropertyImpl
+	kind types.ProtoKind
 }
 
-func newFormErrorProperty(name string, closure func(error types.FormError) interface{}) types.ExportableProperty {
-	return &FormErrorPropertyImpl{
-		NewProperty(name),
+func NewFormError(error types.FormError) types.Exporter {
+	return newFormError(error, formMessageProperties)
+}
+
+func newFormError(error types.FormError, props []FormPropertyImpl) types.Exporter {
+	exp := new(FormErrorImpl)
+	exp.props = props
+	exp.error = error
+	exp.kind = types.ProtoModelKind
+	return exp
+}
+
+func (f FormErrorImpl) Len() int {
+	return len(f.props)
+}
+
+func (f FormErrorImpl) Get(i int) types.ExportableProperty {
+	return f.props[i]
+}
+
+func (f FormErrorImpl) GetProtoKind() types.ProtoKind {
+	return f.kind
+}
+
+func (f FormErrorImpl) ExportProperty(i int, encoder types.Encoder) {
+	f.props[i].closure(f.error, encoder)
+}
+
+type FormErrorsImpl struct {
+	errors types.FormErrors
+}
+
+func NewFormErrors(errors types.FormErrors) types.Exporter {
+	exp := new(FormErrorsImpl)
+	exp.errors = errors
+	return exp
+}
+
+func (f FormErrorsImpl) Len() int {
+	return f.errors.Len()
+}
+
+func (f FormErrorsImpl) ExportItem(i int, encoder types.Encoder) {
+	encoder.One(newFormError(f.errors[i], formMessagesProperties))
+}
+
+type FormPropertyImpl struct {
+	PropertyImpl
+	closure func(types.FormError, types.Encoder)
+}
+
+func newFormErrorProperty(name string, closure func(types.FormError, types.Encoder)) FormPropertyImpl {
+	return FormPropertyImpl{
+		NewPropertyWithKind(name, types.ProtoModelKind),
 		closure,
 	}
 }
 
-func (u FormErrorPropertyImpl) GetValue(model interface{}) interface{} {
-	return u.closure(model.(types.FormError))
-}
-
-func NewFormError(error types.FormError) types.Exporter {
-	exp := new(BaseImpl)
-	exp.SetProperties(errorProperties)
-	exp.SetExportable(error)
-	return exp
-}
-
-func NewFormErrorMessage(error types.FormError) types.Exporter {
-	exp := new(BaseImpl)
-	exp.SetProperties(errorMessageProperties)
-	exp.SetExportable(error)
-	return exp
-}
-
-func NewFormErrors(errors types.FormErrors) types.Exporter {
-	exp := new(BaseImpl)
-	exp.SetProperties(errorProperties)
-	exp.SetExportable(errors)
-	return exp
-}
-
 var (
-	errorMessageProperties = []types.ExportableProperty{
-		newFormErrorProperty("message", func(error types.FormError) interface{} {
-			return error.GetMessage()
+	formMessageProperties = []FormPropertyImpl{
+		newFormErrorProperty("message", func(error types.FormError, encoder types.Encoder) {
+			encoder.EncodeString(error.GetMessage())
+		}),
+		newFormErrorProperty("code", func(error types.FormError, encoder types.Encoder) {
+			encoder.EncodeInt(error.GetCode())
 		}),
 	}
-	errorProperties = []types.ExportableProperty{
-		newFormErrorProperty("name", func(error types.FormError) interface{} {
-			return error.GetName()
+	formMessagesProperties = []FormPropertyImpl{
+		newFormErrorProperty("name", func(error types.FormError, encoder types.Encoder) {
+			encoder.EncodeString(error.GetName())
 		}),
-		newFormErrorProperty("message", func(error types.FormError) interface{} {
-			return error.GetMessage()
+		newFormErrorProperty("message", func(error types.FormError, encoder types.Encoder) {
+			encoder.EncodeString(error.GetMessage())
+		}),
+		newFormErrorProperty("code", func(error types.FormError, encoder types.Encoder) {
+			encoder.EncodeInt(error.GetCode())
 		}),
 	}
 )

@@ -31,3 +31,7 @@ func (s Strings) GetRaw(x int) interface{} {
 func (s Strings) Get(x int) string {
 	return s[x]
 }
+
+func (s Strings) ExportItem(i int, encoder types.Encoder) {
+	encoder.EncodeString(s[i])
+}
