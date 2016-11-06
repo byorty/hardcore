@@ -1,51 +1,64 @@
 package importers
 
 import (
-	"github.com/byorty/hardcore/importer"
 	"github.com/byorty/hardcore/test/models"
 	"github.com/byorty/hardcore/types"
 )
 
-type PostPropertyImpl struct {
-	importer.PropertyImpl
-	closure func(*models.Post, interface{})
+type _PostImpl struct {
+	model *models.Post
+	props map[string]_PostPropertyImpl
 }
 
-func newPostProperty(kind types.ProtoKind, closure func(post *models.Post, value interface{})) types.ImportableProperty {
-	return &PostPropertyImpl{
-		importer.NewProperty(types.ScalarImportablePropertyKind, kind),
+func (p _PostImpl) Get(key string) (types.ImportableProperty, bool) {
+	prop, ok := p.props[key]
+	return prop, ok
+}
+
+func (p _PostImpl) Decode(key string, decoder types.Decoder, value []byte) {
+	p.props[key].closure(p.model, decoder, value)
+}
+
+type _PostPropertyImpl struct {
+	kind types.ProtoKind
+	closure func(*models.Post, types.Decoder, []byte)
+}
+
+func (p _PostPropertyImpl) GetProtoKind() types.ProtoKind {
+	return p.kind
+}
+
+func newPostProperty(kind types.ProtoKind, closure func(*models.Post, types.Decoder, []byte)) _PostPropertyImpl {
+	return _PostPropertyImpl{
+		kind,
 		closure,
 	}
 }
 
-func (p PostPropertyImpl) SetValue(model interface{}, value interface{}) {
-	p.closure(model.(*models.Post), value)
-}
-
 func NewPost(post *models.Post) types.Importer {
-	imp := new(importer.BaseImpl)
-	imp.SetProperties(postProperties)
-	imp.SetImportable(post)
+	imp := new(_PostImpl)
+	imp.model = post
+	imp.props = _postProperties
 	return imp
 }
 
-func NewPosts(posts models.Posts) types.Importer {
-	imp := new(importer.BaseImpl)
-	imp.SetProperties(postProperties)
-	imp.SetImportable(posts)
-	return imp
-}
+//func NewPosts(posts models.Posts) types.Importer {
+//	imp := new(importer.BaseImpl)
+//	imp.SetProperties(postProperties)
+//	imp.SetImportable(posts)
+//	return imp
+//}
 
 var (
-	postProperties = types.ImportableProperties{
-		"id": newPostProperty(types.ProtoInt64Kind, func(post *models.Post, value interface{}) {
-			post.SetId(value.(int64))
+	_postProperties = map[string]_PostPropertyImpl{
+		"id": newPostProperty(types.ProtoInt64Kind, func(post *models.Post, decoder types.Decoder, value []byte) {
+			post.SetId(decoder.DecodeInt64(value))
 		}),
-		"name": newPostProperty(types.ProtoStringKind, func(post *models.Post, value interface{}) {
-			post.SetName(value.(string))
+		"name": newPostProperty(types.ProtoStringKind, func(post *models.Post, decoder types.Decoder, value []byte) {
+			post.SetName(decoder.DecodeString(value))
 		}),
-		"description": newPostProperty(types.ProtoStringKind, func(post *models.Post, value interface{}) {
-			post.SetDescription(value.(string))
+		"description": newPostProperty(types.ProtoStringKind, func(post *models.Post, decoder types.Decoder, value []byte) {
+			post.SetDescription(decoder.DecodeString(value))
 		}),
 	}
 )

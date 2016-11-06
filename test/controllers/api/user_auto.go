@@ -8,20 +8,20 @@ import (
 	"github.com/byorty/hardcore/view"
 )
 
-func (u *User) CallAction(action interface{}, scope types.RequestScope) {
+func (u *User) CallAction(action interface{}, rs types.RequestScope) {
 	if callable, ok := action.(types.CallableAction); ok {
-		callable.Call(u, scope)
+		callable.Call(u, rs)
 	} else {
-		v := action.(func(*User, types.RequestScope) types.View)(u, scope)
+		v := action.(func(*User, types.RequestScope) types.View)(u, rs)
 		v.SetController(u)
-		v.SetScope(scope)
+		v.SetScope(rs)
 		v.Render()
 	}
 }
 
 type UserList func(*User, int) types.EncodeView
 
-func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
+func (u UserList) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New()
 	var page int
 	pagePrim := prim.Int("page")
@@ -30,7 +30,7 @@ func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form.Add(pagePrim)
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*User)
 		v = u(ctrl, page)
 		v.SetController(ctrl)
@@ -42,13 +42,13 @@ func (u UserList) Call(rawCtrl interface{}, scope types.RequestScope) {
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
 
 type UserView func(*User, *models.User) types.EncodeView
 
-func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
+func (u UserView) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New()
 	var user models.User
 	userPrim := prim.Int64Model("user")
@@ -58,7 +58,7 @@ func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form.Add(userPrim)
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*User)
 		v = u(ctrl, &user)
 		v.SetController(ctrl)
@@ -70,7 +70,7 @@ func (u UserView) Call(rawCtrl interface{}, scope types.RequestScope) {
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
 

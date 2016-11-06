@@ -88,6 +88,10 @@ func (p Post) IsScanned() bool {
 	return p.GetId() != 0
 }
 
+func (p Post) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func (p Posts) Len() int {
 	return len(p)
 }

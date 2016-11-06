@@ -112,6 +112,10 @@ func (u User) IsScanned() bool {
 	return u.GetId() != 0
 }
 
+func (u User) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func (u Users) Len() int {
 	return len(u)
 }
@@ -304,5 +308,5 @@ var (
 			Set("role", proto.NewProperty("role", types.ProtoEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
 			Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
 			Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
-			Set("posts", proto.NewProperty("posts", types.ProtoSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
+			Set("posts", proto.NewProperty("posts", types.ProtoModelSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
 )

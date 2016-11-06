@@ -51,7 +51,7 @@ func (j *JsonImpl) All(exporter types.SliceExporter) []byte {
 	return buf
 }
 
-func (j JsonImpl) EncodeModel(exporter types.Exporter) {
+func (j *JsonImpl) EncodeModel(exporter types.Exporter) {
 	propsLen := exporter.Len()
 	lastIndex := propsLen - 1
 	j.buf.Write(jsonStartBrace)
@@ -123,7 +123,7 @@ func (j *JsonImpl) EncodeUint64(value uint64) {
 }
 
 func (j *JsonImpl) EncodeFloat32(value float32) {
-	j.encodeFloat(value, 32)
+	j.encodeFloat(float64(value), 32)
 }
 
 func (j *JsonImpl) EncodeFloat64(value float64) {
@@ -201,7 +201,7 @@ func (j *JsonImpl) EncodeBool(value bool) {
 }
 
 func (j *JsonImpl) EncodeTime(value time.Time) {
-	j.buf.WriteString(value.Format("2006-01-02 15:04:05"))
+	j.EncodeString(value.Format("2006-01-02 15:04:05"))
 }
 
 func (j *JsonImpl) EncodeBytes(value []byte) {

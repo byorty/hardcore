@@ -35,6 +35,6 @@ func BenchmarkJson(b *testing.B) {
 
 func BenchmarkExporter(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		encoder.NewJson().Encode(exporters.NewUser(user1))
+		encoder.NewJson().One(exporters.NewUser(user1))
 	}
 }

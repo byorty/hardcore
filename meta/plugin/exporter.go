@@ -7,60 +7,94 @@ import (
 )
 
 var (
-	tpl = `{{$name := .Name}}` +
+	exporterAutoTpl = `{{$name := .Name}}` +
 		`{{$sourceName := .SourceName}}` +
 		`{{$sourceVarName := .SourceVarName}}` +
-		`package {{.Package}}
+`package {{.Package}}
+
+import ({{range .AutoImports}}
+	"{{.}}"{{end}}
+)
+
+type _{{$name}}Impl struct {
+	model {{$sourceName}}
+	props []_{{$name}}PropertyImpl
+	kind types.ProtoKind
+}
+
+func New{{$name}}(model {{$sourceName}}) types.Exporter {
+	return new{{$name}}(model, {{.VarName}}Properties)
+}
+
+func new{{$name}}(model {{$sourceName}}, props []_{{$name}}PropertyImpl) types.Exporter {
+	exp := new(_{{$name}}Impl)
+	exp.props = props
+	exp.model = model
+	exp.kind = types.ProtoModelKind
+	return exp
+}
+
+func ({{.ShortName}} _{{$name}}Impl) Len() int {
+	return len({{.ShortName}}.props)
+}
+
+func ({{.ShortName}} _{{$name}}Impl) Get(i int) types.ExportableProperty {
+	return {{.ShortName}}.props[i]
+}
+
+func ({{.ShortName}} _{{$name}}Impl) GetProtoKind() types.ProtoKind {
+	return {{.ShortName}}.kind
+}
+
+func ({{.ShortName}} _{{$name}}Impl) Export(i int, encoder types.Encoder) {
+	{{.ShortName}}.props[i].closure({{.ShortName}}.model, encoder)
+}
+
+type _{{.MultipleName}}Impl struct {
+	{{.ExportablesVarName}} {{.ExportablesName}}
+}
+
+func New{{.MultipleName}}({{.ExportablesVarName}} {{.ExportablesName}}) types.SliceExporter {
+	exp := new(_{{.MultipleName}}Impl)
+	exp.{{.ExportablesVarName}} = {{.ExportablesVarName}}
+	return exp
+}
+
+func ({{.ShortName}} _{{.MultipleName}}Impl) Len() int {
+	return {{.ShortName}}.{{.ExportablesVarName}}.Len()
+}
+
+func ({{.ShortName}} _{{.MultipleName}}Impl) ExportItem(i int, encoder types.Encoder) {
+	encoder.One(new{{$name}}({{.ShortName}}.{{.ExportablesVarName}}[i], {{.VarName}}Properties))
+}
+
+type _{{$name}}PropertyImpl struct {
+	exporter.PropertyImpl
+	closure func({{$sourceName}}, types.Encoder)
+}
+
+func new{{$name}}Property(name string, kind types.ProtoKind, closure func({{$sourceName}}, types.Encoder)) _{{$name}}PropertyImpl {
+	return _{{$name}}PropertyImpl{
+		exporter.NewPropertyWithKind(name, kind),
+		closure,
+	}
+}`
+exporterTpl = `{{$name := .Name}}` +
+`{{$sourceName := .SourceName}}` +
+`{{$sourceVarName := .SourceVarName}}` +
+`package {{.Package}}
 
 import ({{range .Imports}}
 	"{{.}}"{{end}}
 )
 
-type {{$name}}PropertyImpl struct {
-	exporter.PropertyImpl
-	closure func({{$sourceName}}) interface{}
-}
-
-func new{{$name}}Property(name string, closure func({{$sourceVarName}} {{$sourceName}}) interface{}) types.ExportableProperty {
-	return &{{$name}}PropertyImpl{
-		exporter.NewProperty(name),
-		closure,
-	}
-}
-
-func ({{.ShortName}} {{$name}}PropertyImpl) GetValue(model interface{}) interface{} {
-	return {{.ShortName}}.closure(model.({{$sourceName}}))
-}
-{{if .IsMutiple}}
-func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
-	exp := new(exporter.BaseImpl)
-	exp.SetProperties({{.VarName}}Properties)
-	exp.SetExportable({{.ExportableVarName}})
-	return exp
-}
-{{else}}
-func New{{$name}}({{.ExportableVarName}} {{.ExportableName}}) types.Exporter {
-	exp := new(exporter.BaseImpl)
-	exp.SetProperties({{.VarName}}Properties)
-	exp.SetExportable({{.ExportableVarName}})
-	return exp
-}
-
-func New{{.MultipleName}}({{.ExportablesVarName}} {{.ExportablesName}}) types.Exporter {
-	exp := new(exporter.BaseImpl)
-	exp.SetProperties({{.VarName}}Properties)
-	exp.SetExportable({{.ExportablesVarName}})
-	return exp
-}
-{{end}}
 var (
-	{{.VarName}}Properties = []types.ExportableProperty{ {{range .Properties}}
-		new{{$name}}Property("{{.GetAliasName}}", func({{$sourceVarName}} {{$sourceName}}) interface{} {
-			return {{if .HasGetter}}{{$sourceVarName}}.{{.GetGetterName}}(){{else}}nil{{end}}
+    {{.VarName}}Properties = []_{{$name}}PropertyImpl{ {{range .Properties}}
+		new{{$name}}Property("{{.GetAliasName}}", {{if .HasGetter}}types.{{.GetProtoKind}}{{else}}types.ProtoUnkownKind{{end}}, func({{$sourceVarName}} {{$sourceName}}, encoder types.Encoder) {
+			{{if .HasGetter}}encoder.{{.GetMethod}}({{$sourceVarName}}.{{.GetGetterName}}()){{end}}
 		}),{{end}}
 	}
-)
-`
+)`
 )
 
 type Exporter struct{}
@@ -84,6 +118,7 @@ func (e *Exporter) Do(env types.Environment) {
 							for _, modelProp := range modelEntity.GetProperties() {
 								if prop.GetName() == modelProp.GetName() && modelProp.GetRelation().IsNone() {
 									prop.SetHasGetter(true)
+									prop.SetProperty(modelProp)
 									break
 								}
 							}
@@ -112,9 +147,12 @@ func (e *Exporter) Do(env types.Environment) {
 					"MultipleName": expEntity.GetMultipleName(),
 					"ShortName":    strings.ToLower(expEntity.GetName()[0:1]),
 					"Package":      container.GetShortPackage(),
-					"Imports": append([]string{
+					"AutoImports": append([]string{
 						types.DefaultImport,
 						types.ExporterImport,
+					}, expEntity.GetImports()...),
+					"Imports": append([]string{
+						types.DefaultImport,
 					}, expEntity.GetImports()...),
 					"Properties":         expEntity.GetProperties(),
 					"VarName":            utils.LowerFirst(expEntity.GetName()),
@@ -127,7 +165,8 @@ func (e *Exporter) Do(env types.Environment) {
 					"IsMutiple":          isMutiple,
 				}
 
-				env.GetConfiguration().AddFile(expEntity.GetFilename(), tpl, tplParams)
+				env.GetConfiguration().AddAutoFile(expEntity.GetAutoFilename(), exporterAutoTpl, tplParams)
+				env.GetConfiguration().AddFile(expEntity.GetFilename(), exporterTpl, tplParams)
 			}
 		}
 	}

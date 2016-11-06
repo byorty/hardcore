@@ -11,7 +11,7 @@ func TestImporter(t *testing.T) {
 	post := new(models.Post)
 	data := []byte(`{"id":1,"name":"name","description":"description"}`)
 	decoder := decoder.NewJson()
-	decoder.Decode(data, importers.NewPost(post))
+	decoder.One(data, importers.NewPost(post))
 	if post.GetId() != 1 || post.GetName() != "name" || post.GetDescription() != "description" {
 		t.Fail()
 	}

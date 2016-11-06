@@ -3,15 +3,15 @@ package types
 import "time"
 
 type ExportableProperty interface {
+	ProtoEntity
 	HasName() bool
 	GetName() string
-	GetProtoKind() ProtoKind
 }
 
 type Exporter interface {
+	ProtoEntity
 	Len() int
 	Get(int) ExportableProperty
-	GetProtoKind() ProtoKind
 	Export(int, Encoder)
 }
 
@@ -38,7 +38,7 @@ type Encoder interface {
 	EncodeTime(time.Time)
 	EncodeBytes([]byte)
 	EncodeModel(Exporter)
-	EncodeSlice(Slice)
+	EncodeSlice(SliceExporter)
 	One(Exporter) []byte
 	All(SliceExporter) []byte
 }

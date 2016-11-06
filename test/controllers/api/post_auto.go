@@ -8,20 +8,20 @@ import (
 	"github.com/byorty/hardcore/view"
 )
 
-func (p *Post) CallAction(action interface{}, scope types.RequestScope) {
+func (p *Post) CallAction(action interface{}, rs types.RequestScope) {
 	if callable, ok := action.(types.CallableAction); ok {
-		callable.Call(p, scope)
+		callable.Call(p, rs)
 	} else {
-		v := action.(func(*Post, types.RequestScope) types.View)(p, scope)
+		v := action.(func(*Post, types.RequestScope) types.View)(p, rs)
 		v.SetController(p)
-		v.SetScope(scope)
+		v.SetScope(rs)
 		v.Render()
 	}
 }
 
 type PostList func(*Post, int, string) types.EncodeView
 
-func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
+func (p PostList) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New()
 	var page int
 	pagePrim := prim.Int("page")
@@ -35,7 +35,7 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form.Add(searchPrim)
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, page, search)
 		v.SetController(ctrl)
@@ -47,13 +47,13 @@ func (p PostList) Call(rawCtrl interface{}, scope types.RequestScope) {
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
 
 type PostView func(*Post, *models.Post) types.EncodeView
 
-func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
+func (p PostView) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New()
 	var post models.Post
 	postPrim := prim.Int64Model("post")
@@ -63,7 +63,7 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form.Add(postPrim)
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, &post)
 		v.SetController(ctrl)
@@ -75,13 +75,13 @@ func (p PostView) Call(rawCtrl interface{}, scope types.RequestScope) {
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
 
 type PostEdit func(*Post, types.Form, *models.Post, string, string) types.EncodeView
 
-func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
+func (p PostEdit) Call(rawCtrl interface{}, rs types.RequestScope) {
 	form := form.New()
 	var post models.Post
 	postPrim := prim.Int64Model("post")
@@ -103,7 +103,7 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 	form.Add(descriptionPrim)
 
 	var v types.View
-	if form.Check(scope) {
+	if form.Check(rs) {
 		ctrl := rawCtrl.(*Post)
 		v = p(ctrl, form, &post, name, description)
 		v.SetController(ctrl)
@@ -115,7 +115,7 @@ func (p PostEdit) Call(rawCtrl interface{}, scope types.RequestScope) {
 			v = view.BadRequest()
 		}
 	}
-	v.SetScope(scope)
+	v.SetScope(rs)
 	v.Render()
 }
 

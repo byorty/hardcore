@@ -6,6 +6,9 @@ type ExportableProperty interface {
 	GetName() string
 	GetAliasName() string
 	GetGetterName() string
+	SetProperty(Property)
+	GetMethod() string
+	GetProtoKind() string
 }
 
 type ExporterEntity interface {

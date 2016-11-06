@@ -123,7 +123,7 @@ func (p Property) GetProtoKind() string {
 			return "ProtoEnumKind"
 		}
 	case types.OneToManyRelation, types.ManyToManyRelation:
-		return "ProtoSliceKind"
+		return "ProtoModelSliceKind"
 	default:
 		if p.GetKind() == TimeKind {
 			return "ProtoTimeKind"
