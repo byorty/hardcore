@@ -47,3 +47,11 @@ func (p Property) GetKind() string {
 func (p Property) GetProtoKind() string {
 	return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
 }
+
+func (p Property) GetMethod() string {
+	kind := p.prop.GetKind()
+	if kind == "time.Time" {
+		kind = "time"
+	}
+	return fmt.Sprintf("Decode%s", utils.UpperFirst(kind))
+}

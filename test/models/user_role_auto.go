@@ -22,7 +22,7 @@ func (u UserRole) DAO() types.IntEnumDAO {
 }
 
 func (u UserRole) GetProtoKind() types.ProtoKind {
-	return types.ProtoEnumKind
+	return types.ProtoIntEnumKind
 }
 
 type UserRoles []*UserRole

@@ -9,6 +9,7 @@ type ImportableProperty interface {
 	SetModelProperty(Property)
 	GetModelProperty() Property
 	GetProtoKind() string
+	GetMethod() string
 }
 
 type ImporterEntity interface {

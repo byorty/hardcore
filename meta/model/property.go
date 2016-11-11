@@ -120,7 +120,8 @@ func (p Property) GetProtoKind() string {
 		if p.GetEntity().GetEntityKind().IsModel() {
 			return "ProtoModelKind"
 		} else {
-			return "ProtoEnumKind"
+			enumEntity := p.GetEntity().(*Enum)
+			return fmt.Sprintf("Proto%sEnumKind", utils.UpperFirst(string(enumEntity.GetKind())))
 		}
 	case types.OneToManyRelation, types.ManyToManyRelation:
 		return "ProtoModelSliceKind"

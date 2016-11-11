@@ -35,11 +35,23 @@ func (p ProtoKind) IsModel() bool {
 }
 
 func (p ProtoKind) IsScalar() bool {
-	return p <= ProtoBoolKind
+	return p <= ProtoStringKind
 }
 
 func (p ProtoKind) IsSlice() bool {
 	return p >= ProtoIntSliceKind && p <= ProtoModelSliceKind
+}
+
+func (p ProtoKind) IsEnum() bool {
+	return p >= ProtoIntEnumKind && p <= ProtoStringEnumKind
+}
+
+func (p ProtoKind) IsNotStringEnum() bool {
+	return p >= ProtoIntEnumKind && p <= ProtoBoolEnumKind
+}
+
+func (p ProtoKind) IsStringEnum() bool {
+	return p == ProtoStringEnumKind
 }
 
 func (p ProtoKind) IsNumber() bool {
@@ -67,10 +79,23 @@ const (
 	ProtoUint64Kind
 	ProtoFloat32Kind
 	ProtoFloat64Kind
-	ProtoStringKind
 	ProtoBoolKind
+	ProtoStringKind
 	ProtoTimeKind
-	ProtoEnumKind
+	ProtoIntEnumKind
+	ProtoInt8EnumKind
+	ProtoInt16EnumKind
+	ProtoInt32EnumKind
+	ProtoInt64EnumKind
+	ProtoUintEnumKind
+	ProtoUint8EnumKind
+	ProtoUint16EnumKind
+	ProtoUint32EnumKind
+	ProtoUint64EnumKind
+	ProtoFloat32EnumKind
+	ProtoFloat64EnumKind
+	ProtoBoolEnumKind
+	ProtoStringEnumKind
 	ProtoModelKind
 	ProtoIntSliceKind
 	ProtoInt8SliceKind

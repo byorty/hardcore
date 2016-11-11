@@ -305,7 +305,7 @@ var (
 			Set("id", proto.NewProperty("id", types.ProtoInt64Kind, types.ProtoNoneRelation, true, userIdSetter, userIdGetter)).
 			Set("email", proto.NewProperty("email", types.ProtoStringKind, types.ProtoNoneRelation, true, userEmailSetter, userEmailGetter)).
 			Set("password", proto.NewProperty("password", types.ProtoStringKind, types.ProtoNoneRelation, true, userPasswordSetter, userPasswordGetter)).
-			Set("role", proto.NewProperty("role", types.ProtoEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
+			Set("role", proto.NewProperty("role", types.ProtoIntEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
 			Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
 			Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
 			Set("posts", proto.NewProperty("posts", types.ProtoModelSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))

@@ -7,6 +7,49 @@ import (
 )
 
 var (
+	importerAutoTpl = `package {{.Package}}
+
+import ({{range .Imports}}
+	"{{.}}"{{end}}
+)
+
+type _{{.Name}}Impl struct {
+	model {{.SourceName}}
+	props map[string]_{{.Name}}PropertyImpl
+}
+
+func ({{.ShortName}} _{{.Name}}Impl) Get(key string) (types.ImportableProperty, bool) {
+	prop, ok := {{.ShortName}}.props[key]
+	return prop, ok
+}
+
+func ({{.ShortName}} _{{.Name}}Impl) Decode(key string, decoder types.Decoder, value []byte) {
+	{{.ShortName}}.props[key].closure({{.ShortName}}.model, decoder, value)
+}
+
+type _{{.Name}}PropertyImpl struct {
+	kind    types.ProtoKind
+	closure func({{.SourceName}}, types.Decoder, []byte)
+}
+
+func ({{.ShortName}} _{{.Name}}PropertyImpl) GetProtoKind() types.ProtoKind {
+	return {{.ShortName}}.kind
+}
+
+func new{{.Name}}Property(kind types.ProtoKind, closure func({{.SourceName}}, types.Decoder, []byte)) _{{.Name}}PropertyImpl {
+	return _{{.Name}}PropertyImpl{
+		kind,
+		closure,
+	}
+}
+
+func New{{.Name}}({{.SourceVarName}} {{.SourceName}}) types.Importer {
+	imp := new(_{{.Name}}Impl)
+	imp.model = {{.SourceVarName}}
+	imp.props = _{{.VarName}}Properties
+	return imp
+}
+`
 	importerTpl = `{{$name := .Name}}` +
 		`{{$sourceName := .SourceName}}` +
 		`{{$sourceVarName := .SourceVarName}}` +
@@ -16,53 +59,13 @@ import ({{range .Imports}}
 	"{{.}}"{{end}}
 )
 
-type {{$name}}PropertyImpl struct {
-	importer.PropertyImpl
-	closure func({{$sourceName}}, interface{})
-}
-
-func new{{$name}}Property(kind types.ProtoKind, closure func({{$sourceVarName}} {{$sourceName}}, value interface{})) types.ImportableProperty {
-	return &{{$name}}PropertyImpl{
-		importer.NewProperty(types.ScalarImportablePropertyKind, kind),
-		closure,
-	}
-}
-
-func ({{.ShortName}} {{$name}}PropertyImpl) SetValue(model interface{}, value interface{}) {
-	{{.ShortName}}.closure(model.({{$sourceName}}), value)
-}
-
-{{if .IsMutiple}}func New{{$name}}({{.ImportableVarName}} {{.ImportableName}}) types.Importer {
-	imp := new(importer.BaseImpl)
-	imp.SetProperties({{.VarName}}Properties)
-	imp.SetImportable({{.ImportableVarName}})
-	return imp
-}
-{{else}}
-func New{{$name}}({{.ImportableVarName}} {{.ImportableName}}) types.Importer {
-	imp := new(importer.BaseImpl)
-	imp.SetProperties({{.VarName}}Properties)
-	imp.SetImportable({{.ImportableVarName}})
-	return imp
-}
-
-func New{{.MultipleName}}({{.ImportablesVarName}} {{.ImportablesName}}) types.Importer {
-	imp := new(importer.BaseImpl)
-	imp.SetProperties({{.VarName}}Properties)
-	imp.SetImportable({{.ImportablesVarName}})
-	return imp
-}
-{{end}}
 var (
-	{{.VarName}}Properties = types.ImportableProperties{ {{range .Properties}}{{if .HasModelProperty}}
-		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
+	_{{.VarName}}Properties = map[string]_{{$name}}PropertyImpl{ {{range .Properties}}
+		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, decoder types.Decoder, value []byte) { {{if .HasModelProperty}}
 			{{if .GetModelProperty.HasRelation}}{{if .GetModelProperty.GetEntity.GetEntityKind.IsEnum}}var {{.GetModelProperty.GetName}} {{.GetModelProperty.GetEntity.GetFullName}}
-			{{.GetModelProperty.GetName}}.DAO().ById(value.({{.GetModelProperty.GetEntity.GetKind}})).One(&{{.GetModelProperty.GetName}})
-			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(value.({{.GetModelProperty.GetKind}})){{end}}
-		}),{{else}}
-		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, value interface{}) {
-
-		}),{{end}}{{end}}
+			{{.GetModelProperty.GetName}}.DAO().ById(decoder.{{.GetMethod}}(value)).One(&{{.GetModelProperty.GetName}})
+			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(decoder.{{.GetMethod}}(value)){{end}}
+		{{end}}}),{{end}}
 	}
 )
 `
@@ -112,7 +115,6 @@ func (i *Importer) Do(env types.Environment) {
 					"Package":      container.GetShortPackage(),
 					"Imports": append([]string{
 						types.DefaultImport,
-						types.ImporterImport,
 					}, impEntity.GetImports()...),
 					"Properties":         impEntity.GetProperties(),
 					"VarName":            utils.LowerFirst(impEntity.GetName()),
@@ -125,6 +127,7 @@ func (i *Importer) Do(env types.Environment) {
 					"IsMutiple":          isMutiple,
 				}
 
+				env.GetConfiguration().AddFile(impEntity.GetAutoFilename(), importerAutoTpl, tplParams)
 				env.GetConfiguration().AddFile(impEntity.GetFilename(), importerTpl, tplParams)
 			}
 		}

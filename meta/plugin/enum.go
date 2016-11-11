@@ -38,7 +38,7 @@ func ({{.ShortName}} {{.Name}}) DAO() {{.Kind.DAO}} {
 }
 
 func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
-	return types.ProtoEnumKind
+	return types.{{.ProtoKind}}
 }
 
 type {{.MultipleName}} []*{{.Name}}
@@ -135,6 +135,7 @@ func (e Enum) Do(env types.Environment) {
 						"MapName":   fmt.Sprintf("%sNames", varName),
 						"Constants": enum.Constants,
 						"Kind":      enum.GetKind(),
+						"ProtoKind": fmt.Sprintf("Proto%sEnumKind", utils.UpperFirst(string(enum.GetKind()))),
 						"AutoImports": []string{
 							types.DefaultImport,
 							types.DaoImport,

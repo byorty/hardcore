@@ -28,7 +28,7 @@ func BenchmarkJsonUnmarshal(b *testing.B) {
 func BenchmarkImporter(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		post := new(models.Post)
-		decoder := decoder.NewJson()
-		decoder.Decode(impJsonBytes, importers.NewPost(post))
+		decoder := decoder.NewJson(impJsonBytes)
+		decoder.Decode(importers.NewPost(post))
 	}
 }
