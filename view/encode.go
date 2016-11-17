@@ -43,9 +43,5 @@ func (e EncodeImpl) Render() {
 	}
 	//	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
 	e.BaseImpl.Render()
-	if e.exporter.GetProtoKind().IsSlice() {
-		rw.Write(e.encoder.All(e.exporter))
-	} else {
-		rw.Write(e.encoder.One(e.exporter))
-	}
+	rw.Write(e.encoder.Encode(e.exporter))
 }

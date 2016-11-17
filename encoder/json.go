@@ -33,18 +33,13 @@ func NewJson() types.Encoder {
 	}
 }
 
-func (j *JsonImpl) One(exporter types.Exporter) []byte {
+func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
 	jsonMutex.Lock()
-	j.EncodeModel(exporter)
-	buf := j.buf.Bytes()
-	j.buf.Reset()
-	jsonMutex.Unlock()
-	return buf
-}
-
-func (j *JsonImpl) All(exporter types.SliceExporter) []byte {
-	jsonMutex.Lock()
-	j.EncodeSlice(exporter)
+	if exporter.GetProtoKind().IsSlice() {
+		j.EncodeSlice(exporter)
+	} else {
+		j.EncodeModel(exporter)
+	}
 	buf := j.buf.Bytes()
 	j.buf.Reset()
 	jsonMutex.Unlock()
@@ -69,12 +64,12 @@ func (j *JsonImpl) EncodeModel(exporter types.Exporter) {
 	j.buf.Write(jsonEndBrace)
 }
 
-func (j *JsonImpl) EncodeSlice(exporter types.SliceExporter) {
+func (j *JsonImpl) EncodeSlice(exporter types.Exporter) {
 	sliceLen := exporter.Len()
 	sliceLastIndex := sliceLen - 1
 	j.buf.Write(jsonStartSquareBracket)
 	for x := 0; x < sliceLen; x++ {
-		exporter.ExportItem(x, j)
+		exporter.Export(x, j)
 		if x < sliceLastIndex {
 			j.buf.Write(jsonComma)
 		}

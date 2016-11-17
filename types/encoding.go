@@ -15,11 +15,6 @@ type Exporter interface {
 	Export(int, Encoder)
 }
 
-type SliceExporter interface {
-	Len() int
-	ExportItem(int, Encoder)
-}
-
 type Encoder interface {
 	EncodeInt(int)
 	EncodeInt8(int8)
@@ -38,7 +33,5 @@ type Encoder interface {
 	EncodeTime(time.Time)
 	EncodeBytes([]byte)
 	EncodeModel(Exporter)
-	EncodeSlice(SliceExporter)
-	One(Exporter) []byte
-	All(SliceExporter) []byte
+	Encode(Exporter) []byte
 }

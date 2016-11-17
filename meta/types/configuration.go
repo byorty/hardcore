@@ -11,6 +11,7 @@ const (
 	PoolImport     = "github.com/byorty/hardcore/pool"
 	CriteriaImport = "github.com/byorty/hardcore/query/criteria"
 	ExprImport     = "github.com/byorty/hardcore/query/expr"
+	IsImport       = "github.com/byorty/hardcore/is"
 )
 
 type Configuration interface {
