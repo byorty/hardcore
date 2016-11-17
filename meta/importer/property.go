@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
+	"github.com/byorty/hardcore/meta/model"
 )
 
 type Property struct {
@@ -50,8 +51,14 @@ func (p Property) GetProtoKind() string {
 
 func (p Property) GetMethod() string {
 	kind := p.prop.GetKind()
-	if kind == "time.Time" {
-		kind = "time"
+	if p.prop.GetRelation().IsNone() {
+		if kind == "time.Time" {
+			kind = "time"
+		}
+	} else {
+		if p.prop.GetEntity().GetEntityKind().IsEnum() {
+			kind = string(p.prop.GetEntity().(*model.Enum).GetKind())
+		}
 	}
 	return fmt.Sprintf("Decode%s", utils.UpperFirst(kind))
 }
