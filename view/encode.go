@@ -2,8 +2,8 @@ package view
 
 import (
 	"github.com/byorty/hardcore/encoder"
-	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/is"
+	"github.com/byorty/hardcore/types"
 )
 
 type EncodeImpl struct {

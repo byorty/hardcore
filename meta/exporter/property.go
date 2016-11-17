@@ -2,8 +2,8 @@ package exporter
 
 import (
 	"fmt"
-	"github.com/byorty/hardcore/utils"
 	"github.com/byorty/hardcore/meta/types"
+	"github.com/byorty/hardcore/utils"
 )
 
 type Property struct {

@@ -1,9 +1,9 @@
 package view
 
 import (
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
 	"net/http"
-	"github.com/byorty/hardcore/is"
 )
 
 type BaseImpl struct {

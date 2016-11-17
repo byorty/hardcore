@@ -4,8 +4,8 @@ import "github.com/byorty/hardcore/types"
 
 type PropertyImpl struct {
 	hasName bool
-	name string
-	kind types.ProtoKind
+	name    string
+	kind    types.ProtoKind
 }
 
 func NewProperty(name string) PropertyImpl {

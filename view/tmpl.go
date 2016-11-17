@@ -1,9 +1,9 @@
 package view
 
 import (
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
-	"github.com/byorty/hardcore/is"
 )
 
 type TmplImpl struct {

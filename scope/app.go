@@ -2,12 +2,12 @@ package scope
 
 import (
 	"crypto/tls"
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/utils"
 	"html/template"
 	"time"
-	"github.com/byorty/hardcore/is"
 )
 
 var app types.ApplicationScope

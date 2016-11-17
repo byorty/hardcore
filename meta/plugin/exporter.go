@@ -10,7 +10,7 @@ var (
 	exporterAutoTpl = `{{$name := .Name}}` +
 		`{{$sourceName := .SourceName}}` +
 		`{{$sourceVarName := .SourceVarName}}` +
-`package {{.Package}}
+		`package {{.Package}}
 
 import ({{range .AutoImports}}
 	"{{.}}"{{end}}
@@ -79,10 +79,10 @@ func new{{$name}}Property(name string, kind types.ProtoKind, closure func({{$sou
 		closure,
 	}
 }`
-exporterTpl = `{{$name := .Name}}` +
-`{{$sourceName := .SourceName}}` +
-`{{$sourceVarName := .SourceVarName}}` +
-`package {{.Package}}
+	exporterTpl = `{{$name := .Name}}` +
+		`{{$sourceName := .SourceName}}` +
+		`{{$sourceVarName := .SourceVarName}}` +
+		`package {{.Package}}
 
 import ({{range .Imports}}
 	"{{.}}"{{end}}

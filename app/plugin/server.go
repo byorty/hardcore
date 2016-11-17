@@ -1,11 +1,11 @@
 package plugin
 
 import (
+	"crypto/tls"
 	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"net/http"
-	"crypto/tls"
 )
 
 type WebServerImpl struct{}

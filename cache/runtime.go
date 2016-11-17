@@ -1,9 +1,9 @@
 package cache
 
 import (
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
 	"sync"
-	"github.com/byorty/hardcore/is"
 )
 
 var runtime types.Cache

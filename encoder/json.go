@@ -3,24 +3,24 @@ package encoder
 import (
 	"bytes"
 	"github.com/byorty/hardcore/types"
+	"strconv"
 	"sync"
 	"time"
-	"strconv"
 	"unicode/utf8"
 )
 
 var (
-	jsonHex = "0123456789abcdef"
-	jsonStartBrace = []byte("{")
-	jsonEndBrace = []byte("}")
-	jsonQuotes = []byte("\"")
-	jsonColon = []byte(":")
-	jsonComma = []byte(",")
+	jsonHex                = "0123456789abcdef"
+	jsonStartBrace         = []byte("{")
+	jsonEndBrace           = []byte("}")
+	jsonQuotes             = []byte("\"")
+	jsonColon              = []byte(":")
+	jsonComma              = []byte(",")
 	jsonStartSquareBracket = []byte("[")
-	jsonEndSquareBracket = []byte("]")
-	jsonNull = []byte("null")
-	jsonBuf            = new(bytes.Buffer)
-	jsonMutex          = new(sync.Mutex)
+	jsonEndSquareBracket   = []byte("]")
+	jsonNull               = []byte("null")
+	jsonBuf                = new(bytes.Buffer)
+	jsonMutex              = new(sync.Mutex)
 )
 
 type JsonImpl struct {
@@ -161,8 +161,8 @@ func (j *JsonImpl) EncodeString(value string) {
 				j.buf.WriteByte('t')
 			default:
 				j.buf.WriteString(`\u00`)
-				j.buf.WriteByte(jsonHex[y >>4])
-				j.buf.WriteByte(jsonHex[y &0xF])
+				j.buf.WriteByte(jsonHex[y>>4])
+				j.buf.WriteByte(jsonHex[y&0xF])
 			}
 			x++
 			start = x

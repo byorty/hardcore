@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"strings"
 	"github.com/byorty/hardcore/is"
+	"strings"
 )
 
 func LowerFirst(str string) string {

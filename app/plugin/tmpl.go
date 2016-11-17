@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"html/template"
@@ -8,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/byorty/hardcore/is"
 )
 
 var (

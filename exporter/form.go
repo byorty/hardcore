@@ -7,7 +7,7 @@ import (
 type FormErrorImpl struct {
 	error types.FormError
 	props []FormPropertyImpl
-	kind types.ProtoKind
+	kind  types.ProtoKind
 }
 
 func NewFormError(error types.FormError) types.Exporter {

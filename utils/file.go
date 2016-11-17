@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"os"
 	"github.com/byorty/hardcore/is"
+	"os"
 )
 
 func Pwd() string {

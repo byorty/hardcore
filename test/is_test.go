@@ -1,9 +1,9 @@
 package test
 
 import (
-	"testing"
-	"github.com/byorty/hardcore/is"
 	"errors"
+	"github.com/byorty/hardcore/is"
+	"testing"
 )
 
 func TestEq(t *testing.T) {

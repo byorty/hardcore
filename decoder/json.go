@@ -1,27 +1,26 @@
 package decoder
 
 import (
+	"bytes"
+	"github.com/byorty/hardcore/is"
+	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
 	"strconv"
-	"github.com/byorty/hardcore/is"
-	"unicode/utf8"
-	"unicode/utf16"
-	"unicode"
-	"github.com/byorty/hardcore/scope"
 	"time"
-	"bytes"
+	"unicode"
+	"unicode/utf16"
+	"unicode/utf8"
 )
 
 const (
-	jsonStartBrace = '{'
-	jsonEndBrace = '}'
+	jsonStartBrace         = '{'
+	jsonEndBrace           = '}'
 	jsonStartSquareBracket = '['
-	jsonEndSquareBracket = ']'
-	jsonDoubleQuotes = '"'
-	jsonBackslash = '\\'
-	jsonComma = ','
-	jsonColon = ':'
-
+	jsonEndSquareBracket   = ']'
+	jsonDoubleQuotes       = '"'
+	jsonBackslash          = '\\'
+	jsonComma              = ','
+	jsonColon              = ':'
 )
 
 type decoderState int
@@ -37,13 +36,13 @@ const (
 func NewJson(data []byte) types.Decoder {
 	return &JsonImpl{
 		data: data,
-		len: len(data),
+		len:  len(data),
 	}
 }
 
 type JsonImpl struct {
 	data []byte
-	len int
+	len  int
 }
 
 func (j *JsonImpl) Decode(importer types.Importer) {
@@ -51,7 +50,7 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 	var start, quoteCount, deep int
 	state := startState
 	var prop types.ImportableProperty
-	for i := 0;i < j.len;i++ {
+	for i := 0; i < j.len; i++ {
 		char := j.data[i]
 		switch {
 		case state == startState && char == jsonStartBrace:
@@ -322,6 +321,3 @@ func (j *JsonImpl) DecodeTime(value []byte) time.Time {
 		return time.Time{}
 	}
 }
-
-
-

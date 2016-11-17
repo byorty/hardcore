@@ -28,4 +28,5 @@ type Container interface {
 	SetEntities([]Entity)
 	GetEntities() []Entity
 	Init(Environment)
+	Merge(EntitySlice)
 }

@@ -54,11 +54,15 @@ func (i *Init) Do(env types.Environment) {
 
 func (i *Init) init(env types.Environment, containers []types.Container) {
 	for _, container := range containers {
-		container.Init(env)
-		for y := 0; y < container.Len(); y++ {
-			entity := container.Get(y)
-			entity.Init(container)
-		}
+		i.initContainer(env, container)
+	}
+}
+
+func (i *Init) initContainer(env types.Environment, container types.Container) {
+	container.Init(env)
+	for y := 0; y < container.Len(); y++ {
+		entity := container.Get(y)
+		entity.Init(container)
 	}
 }
 
@@ -81,6 +85,10 @@ func (i *Init) merge(env types.Environment, srcContainers []types.Container, ptr
 		isExists := false
 		for _, destContainer := range destContainers {
 			if destContainer.GetPackage() == srcContainer.GetPackage() {
+				i.logger.Warn("container %s is exists", srcContainer.GetPackage())
+				//srcContainer.Init(env)
+				i.initContainer(env, srcContainer)
+				destContainer.Merge(srcContainer)
 				isExists = true
 				break
 			}
