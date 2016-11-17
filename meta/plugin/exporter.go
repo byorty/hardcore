@@ -39,7 +39,7 @@ func ({{.ShortName}} _{{$name}}Impl) Len() int {
 	if is.Eq({{.ShortName}}.kind, types.ProtoModelKind) {
 		return len({{.ShortName}}.props)
 	} else {
-		return len({{.ShortName}}.items)
+		return {{.ShortName}}.items.Len()
 	}
 }
 
@@ -55,7 +55,7 @@ func ({{.ShortName}} _{{$name}}Impl) Export(i int, encoder types.Encoder) {
 	if is.Eq({{.ShortName}}.kind, types.ProtoModelKind) {
 		{{.ShortName}}.props[i].closure({{.ShortName}}.item, encoder)
 	} else {
-		encoder.Encode(_new{{$name}}({{.ShortName}}.items[i], {{.VarName}}Properties))
+		encoder.Encode(_new{{$name}}({{.ShortName}}.items.Get(i), {{.VarName}}Properties))
 	}
 }
 

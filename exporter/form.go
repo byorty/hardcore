@@ -2,12 +2,14 @@ package exporter
 
 import (
 	"github.com/byorty/hardcore/types"
+	"github.com/byorty/hardcore/is"
 )
 
 type FormErrorImpl struct {
-	error types.FormError
-	props []FormPropertyImpl
-	kind  types.ProtoKind
+	error  types.FormError
+	errors types.FormErrors
+	props  []FormPropertyImpl
+	kind   types.ProtoKind
 }
 
 func NewFormError(error types.FormError) types.Exporter {
@@ -23,7 +25,11 @@ func newFormError(error types.FormError, props []FormPropertyImpl) types.Exporte
 }
 
 func (f *FormErrorImpl) Len() int {
-	return len(f.props)
+	if is.Eq(f.kind, types.ProtoModelKind) {
+		return len(f.props)
+	} else {
+		return f.errors.Len()
+	}
 }
 
 func (f *FormErrorImpl) Get(i int) types.ExportableProperty {
@@ -35,25 +41,19 @@ func (f *FormErrorImpl) GetProtoKind() types.ProtoKind {
 }
 
 func (f *FormErrorImpl) Export(i int, encoder types.Encoder) {
-	f.props[i].closure(f.error, encoder)
+	if is.Eq(f.kind, types.ProtoModelKind) {
+		f.props[i].closure(f.error, encoder)
+	} else {
+		encoder.Encode(newFormError(f.errors.Get(i), formMessagesProperties))
+	}
 }
 
-type FormErrorsImpl struct {
-	errors types.FormErrors
-}
-
-func NewFormErrors(errors types.FormErrors) types.SliceExporter {
-	exp := new(FormErrorsImpl)
+func NewFormErrors(errors types.FormErrors) types.Exporter {
+	exp := new(FormErrorImpl)
+	exp.props = formMessageProperties
 	exp.errors = errors
+	exp.kind = types.ProtoModelSliceKind
 	return exp
-}
-
-func (f *FormErrorsImpl) Len() int {
-	return f.errors.Len()
-}
-
-func (f *FormErrorsImpl) ExportItem(i int, encoder types.Encoder) {
-	encoder.One(newFormError(f.errors.Get(i), formMessagesProperties))
 }
 
 type FormPropertyImpl struct {

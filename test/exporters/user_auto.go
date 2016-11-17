@@ -30,7 +30,7 @@ func (u _UserImpl) Len() int {
 	if is.Eq(u.kind, types.ProtoModelKind) {
 		return len(u.props)
 	} else {
-		return len(u.items)
+		return u.items.Len()
 	}
 }
 
@@ -46,7 +46,7 @@ func (u _UserImpl) Export(i int, encoder types.Encoder) {
 	if is.Eq(u.kind, types.ProtoModelKind) {
 		u.props[i].closure(u.item, encoder)
 	} else {
-		encoder.Encode(_newUser(u.items[i], userProperties))
+		encoder.Encode(_newUser(u.items.Get(i), userProperties))
 	}
 }
 

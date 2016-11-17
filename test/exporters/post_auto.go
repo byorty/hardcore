@@ -30,7 +30,7 @@ func (p _PostImpl) Len() int {
 	if is.Eq(p.kind, types.ProtoModelKind) {
 		return len(p.props)
 	} else {
-		return len(p.items)
+		return p.items.Len()
 	}
 }
 
@@ -46,7 +46,7 @@ func (p _PostImpl) Export(i int, encoder types.Encoder) {
 	if is.Eq(p.kind, types.ProtoModelKind) {
 		p.props[i].closure(p.item, encoder)
 	} else {
-		encoder.Encode(_newPost(p.items[i], postProperties))
+		encoder.Encode(_newPost(p.items.Get(i), postProperties))
 	}
 }
 
