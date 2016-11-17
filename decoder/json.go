@@ -68,7 +68,7 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 		case state == endDetectKeyState && char == jsonColon && is.NotNil(prop):
 			start = i + 1
 			state = detectValue
-		case state == detectValue && char == jsonDoubleQuotes && prop.GetProtoKind().IsString():
+		case state == detectValue && char == jsonDoubleQuotes && (prop.GetProtoKind().IsString() || prop.GetProtoKind().IsStringEnum()):
 			quoteCount++
 		case state == detectValue:
 			kind := prop.GetProtoKind()
