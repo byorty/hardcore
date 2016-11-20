@@ -32,6 +32,6 @@ func (s Strings) Get(x int) string {
 	return s[x]
 }
 
-func (s Strings) ExportItem(i int, encoder types.Encoder) {
+func (s Strings) Export(i int, encoder types.Encoder) {
 	encoder.EncodeString(s[i])
 }

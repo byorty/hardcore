@@ -27,7 +27,6 @@ type decoderState int
 
 const (
 	startState decoderState = iota
-	decodeModelState
 	startDetectKeyState
 	endDetectKeyState
 	detectValue
@@ -313,7 +312,7 @@ func (j *JsonImpl) DecodeBool(value []byte) bool {
 }
 
 func (j *JsonImpl) DecodeTime(value []byte) time.Time {
-	timeValue, err := time.Parse("2006-12-21 15:04:05", string(value))
+	timeValue, err := time.Parse(types.TimeFormat, string(value))
 	if is.Nil(err) {
 		return timeValue
 	} else {

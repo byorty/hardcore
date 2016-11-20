@@ -13,11 +13,11 @@ var (
 		newUserProperty("email", types.ProtoStringKind, func(user *models.User, encoder types.Encoder) {
 			encoder.EncodeString(user.GetEmail())
 		}),
-		newUserProperty("role", types.ProtoEnumKind, func(user *models.User, encoder types.Encoder) {
-			encoder.EncodeInt(user.GetRoleId())
-		}),
-		newUserProperty("registerDate", types.ProtoTimeKind, func(user *models.User, encoder types.Encoder) {
-			encoder.EncodeTime(user.GetRegisterDate())
-		}),
+		//newUserProperty("role", types.ProtoIntEnumKind, func(user *models.User, encoder types.Encoder) {
+		//	encoder.EncodeInt(user.GetRoleId())
+		//}),
+		//newUserProperty("registerDate", types.ProtoTimeKind, func(user *models.User, encoder types.Encoder) {
+		//	encoder.EncodeTime(user.GetRegisterDate())
+		//}),
 	}
 )

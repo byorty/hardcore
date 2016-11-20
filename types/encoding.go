@@ -8,11 +8,15 @@ type ExportableProperty interface {
 	GetName() string
 }
 
+type ScalarExporter interface {
+	Export(int, Encoder)
+	Len() int
+}
+
 type Exporter interface {
 	ProtoEntity
-	Len() int
+	ScalarExporter
 	Get(int) ExportableProperty
-	Export(int, Encoder)
 }
 
 type Encoder interface {

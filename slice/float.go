@@ -32,7 +32,7 @@ func (f Float32s) Get(x int) float32 {
 	return f[x]
 }
 
-func (f Float32s) ExportItem(i int, encoder types.Encoder) {
+func (f Float32s) Export(i int, encoder types.Encoder) {
 	encoder.EncodeFloat32(f[i])
 }
 
@@ -66,6 +66,6 @@ func (f Float64s) Get(x int) float64 {
 	return f[x]
 }
 
-func (f Float64s) ExportItem(i int, encoder types.Encoder) {
+func (f Float64s) Export(i int, encoder types.Encoder) {
 	encoder.EncodeFloat64(f[i])
 }

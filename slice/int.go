@@ -34,7 +34,7 @@ func (i Ints) Get(x int) int {
 	return i[x]
 }
 
-func (i Ints) ExportItem(x int, encoder types.Encoder) {
+func (i Ints) Export(x int, encoder types.Encoder) {
 	encoder.EncodeInt(i[x])
 }
 
@@ -68,7 +68,7 @@ func (i Int8s) Get(x int) int8 {
 	return i[x]
 }
 
-func (i Int8s) ExportItem(x int, encoder types.Encoder) {
+func (i Int8s) Export(x int, encoder types.Encoder) {
 	encoder.EncodeInt8(i[x])
 }
 
@@ -102,7 +102,7 @@ func (i Int16s) Get(x int) int16 {
 	return i[x]
 }
 
-func (i Int16s) ExportItem(x int, encoder types.Encoder) {
+func (i Int16s) Export(x int, encoder types.Encoder) {
 	encoder.EncodeInt16(i[x])
 }
 
@@ -136,7 +136,7 @@ func (i Int32s) Get(x int) int32 {
 	return i[x]
 }
 
-func (i Int32s) ExportItem(x int, encoder types.Encoder) {
+func (i Int32s) Export(x int, encoder types.Encoder) {
 	encoder.EncodeInt32(i[x])
 }
 
@@ -170,6 +170,6 @@ func (i Int64s) Get(x int) int64 {
 	return i[x]
 }
 
-func (i Int64s) ExportItem(x int, encoder types.Encoder) {
+func (i Int64s) Export(x int, encoder types.Encoder) {
 	encoder.EncodeInt64(i[x])
 }
