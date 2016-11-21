@@ -2,9 +2,10 @@ package importer
 
 import (
 	"fmt"
+	"github.com/byorty/hardcore/is"
+	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
-	"github.com/byorty/hardcore/meta/model"
 )
 
 type Property struct {
@@ -46,7 +47,11 @@ func (p Property) GetKind() string {
 }
 
 func (p Property) GetProtoKind() string {
-	return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
+	if is.NotNil(p.prop) {
+		return p.prop.GetProtoKind()
+	} else {
+		return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
+	}
 }
 
 func (p Property) GetMethod() string {

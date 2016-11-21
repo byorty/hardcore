@@ -61,7 +61,7 @@ import ({{range .Imports}}
 
 var (
 	_{{.VarName}}Properties = map[string]_{{$name}}PropertyImpl{ {{range .Properties}}
-		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetModelProperty.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, decoder types.Decoder, value []byte) { {{if .HasModelProperty}}
+		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, decoder types.Decoder, value []byte) { {{if .HasModelProperty}}
 			{{if .GetModelProperty.HasRelation}}{{if .GetModelProperty.GetEntity.GetEntityKind.IsEnum}}var {{.GetModelProperty.GetName}} {{.GetModelProperty.GetEntity.GetFullName}}
 			{{.GetModelProperty.GetName}}.DAO().ById(decoder.{{.GetMethod}}(value)).One(&{{.GetModelProperty.GetName}})
 			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(decoder.{{.GetMethod}}(value)){{end}}

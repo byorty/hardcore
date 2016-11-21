@@ -3,12 +3,12 @@ package encoder
 import (
 	"bytes"
 	"encoding/binary"
+	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
 	"io"
+	"math"
 	"sync"
 	"time"
-	"math"
-	"github.com/byorty/hardcore/is"
 )
 
 var (
@@ -158,11 +158,11 @@ func (m *MsgpackImpl) EncodeTime(value time.Time) {
 
 func (m *MsgpackImpl) EncodeBytes(value []byte) {
 	len := len(value)
-	if is.LtInt(len, types.MsgpackMaxFixRaw) {
+	if is.LtEqInt(len, types.MsgpackFixRawLen) {
 		m.writeHeaderFix(types.MsgpackFixRaw, len)
 	} else if is.LtInt(len, types.MsgpackMax16Bit) {
 		m.writeHeader16(types.MsgpackBin16, len)
-	} else  {
+	} else {
 		m.writeHeader32(types.MsgpackBin32, len)
 	}
 	m.buf.Write(value)

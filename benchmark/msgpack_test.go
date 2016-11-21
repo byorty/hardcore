@@ -1,10 +1,11 @@
 package benchmark
 
 import (
-	"encoding/json"
+	"bytes"
 	"github.com/byorty/hardcore/encoder"
 	"github.com/byorty/hardcore/test/exporters"
 	"github.com/byorty/hardcore/test/models"
+	msgpack "github.com/msgpack/msgpack-go"
 	"testing"
 	"time"
 )
@@ -17,24 +18,25 @@ type User2 struct {
 }
 
 var (
-	now   = time.Now()
-	role  = models.LoggedUserRole
-	user1 = new(models.User).
-		SetId(1).
-		SetEmail("user@example.com").
-		SetRole(role).
-		SetRegisterDate(time.Now())
-	user2 = &User2{1, "user@example.com", role.GetId(), now}
+	msgNow   = time.Now()
+	msgUser1 = new(models.User).
+			SetId(1).
+			SetEmail("user@example.com")
+	msgUser2 = map[string]interface{}{
+		"id":    1,
+		"email": "user@example.com",
+	}
 )
 
-func BenchmarkJson(b *testing.B) {
+func BenchmarkMsgpack(b *testing.B) {
+	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		json.Marshal(user2)
+		msgpack.Pack(buf, msgUser2)
 	}
 }
 
-func BenchmarkExporter(b *testing.B) {
+func BenchmarkMsgpackExporter(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		encoder.NewJson().Encode(exporters.NewUser(user1))
+		encoder.NewMsgpack().Encode(exporters.NewUser(msgUser1))
 	}
 }
