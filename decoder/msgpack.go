@@ -2,7 +2,6 @@ package decoder
 
 import (
 	"encoding/binary"
-	"fmt"
 	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
 	"math"
@@ -58,7 +57,6 @@ func (m *MsgpackImpl) DecodeInt64(value []byte) int64 {
 }
 
 func (m *MsgpackImpl) decodeFixInt(value []byte) (byte, bool) {
-	fmt.Println(value)
 	char := byte(value[0])
 	if char >= types.MsgpackPositiveFixInt && char <= types.MsgpackPositiveFixIntMax {
 		return char ^ types.MsgpackPositiveFixInt, true
@@ -155,7 +153,6 @@ func (m *MsgpackImpl) Decode(importer types.Importer) {
 			case m.isFixRaw(char):
 				keyBuf, len := m.readFixRaw(i, char)
 				key = string(keyBuf)
-				fmt.Println("key:", key)
 				if _, ok := importer.Get(key); ok {
 					i = i + len
 					state = detectValue
@@ -177,13 +174,19 @@ func (m *MsgpackImpl) Decode(importer types.Importer) {
 					importer.Decode(key, m, []byte{char})
 					state = startDetectKeyState
 
-				case types.MsgpackBin16:
+				case types.MsgpackBin8, types.MsgpackStr8:
+					buf, len := m.readHeader8(i)
+					importer.Decode(key, m, buf)
+					i = i + len
+					state = startDetectKeyState
+
+				case types.MsgpackBin16, types.MsgpackStr16:
 					buf, len := m.readHeader16(i)
 					importer.Decode(key, m, buf)
 					i = i + len
 					state = startDetectKeyState
 
-				case types.MsgpackBin32:
+				case types.MsgpackBin32, types.MsgpackStr32:
 					buf, len := m.readHeader32(i)
 					importer.Decode(key, m, buf)
 					i = i + len
@@ -235,6 +238,13 @@ func (m *MsgpackImpl) getFixRawLen(char byte) int {
 
 func (m *MsgpackImpl) isPositiveFixInt(char byte) bool {
 	return char >= types.MsgpackPositiveFixInt && char <= types.MsgpackPositiveFixIntMax
+}
+
+func (m *MsgpackImpl) readHeader8(i int) ([]byte, int) {
+	start := i + 1
+	len := int(m.data[start])
+	start += 1
+	return m.data[start : start+len], len + 1
 }
 
 func (m *MsgpackImpl) readHeader16(i int) ([]byte, int) {

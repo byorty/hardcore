@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
-	"io"
 	"math"
 	"sync"
 	"time"
@@ -15,11 +14,6 @@ var (
 	msgBuf   = new(bytes.Buffer)
 	msgMutex = new(sync.Mutex)
 )
-
-// Packs a given value and writes it into the specified writer.
-func PackNil(writer io.Writer) (n int, err error) {
-	return writer.Write([]byte{types.MsgpackNil})
-}
 
 type MsgpackImpl struct {
 	buf *bytes.Buffer
@@ -141,7 +135,15 @@ func (m *MsgpackImpl) EncodeFloat64(value float64) {
 }
 
 func (m *MsgpackImpl) EncodeString(value string) {
-	m.EncodeBytes([]byte(value))
+	len := len(value)
+	if is.LtEqInt(len, types.MsgpackFixRawLen) {
+		m.writeHeaderFix(types.MsgpackFixRaw, len)
+	} else if is.LtInt(len, types.MsgpackMax16Bit) {
+		m.writeHeader16(types.MsgpackStr16, len)
+	} else {
+		m.writeHeader32(types.MsgpackStr32, len)
+	}
+	m.buf.Write([]byte(value))
 }
 
 func (m *MsgpackImpl) EncodeBool(value bool) {
@@ -210,8 +212,10 @@ func (m *MsgpackImpl) Encode(exporter types.Exporter) []byte {
 	msgMutex.Lock()
 	if exporter.GetProtoKind().IsSlice() {
 		m.EncodeSlice(exporter)
-	} else {
+	} else if exporter.GetProtoKind().IsModel() {
 		m.EncodeModel(exporter)
+	} else {
+		exporter.Export(0, m)
 	}
 	buf := m.buf.Bytes()
 	m.buf.Reset()
