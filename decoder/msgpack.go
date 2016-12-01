@@ -242,23 +242,23 @@ func (m *MsgpackImpl) isPositiveFixInt(char byte) bool {
 
 func (m *MsgpackImpl) readHeader8(i int) ([]byte, int) {
 	start := i + 1
-	len := int(m.data[start])
+	length := int(m.data[start])
 	start += 1
-	return m.data[start : start+len], len + 1
+	return m.data[start : start+length], length + 1
 }
 
 func (m *MsgpackImpl) readHeader16(i int) ([]byte, int) {
 	start := i + 1
-	len := int(binary.BigEndian.Uint16(m.data[start : start+1]))
+	length := int(binary.BigEndian.Uint16(m.data[start : start+2]))
 	start += 2
-	return m.data[start : start+len], len + 2
+	return m.data[start : start+length], length + 2
 }
 
 func (m *MsgpackImpl) readHeader32(i int) ([]byte, int) {
 	start := i + 1
-	len := int(binary.BigEndian.Uint32(m.data[start : start+3]))
-	start += 3
-	return m.data[start : start+len], len + 4
+	length := int(binary.BigEndian.Uint32(m.data[start : start+4]))
+	start += 4
+	return m.data[start : start+length], length + 4
 }
 
 func (m *MsgpackImpl) readNumber8(i int) ([]byte, int) {
