@@ -65,6 +65,10 @@ func ({{.ShortName}} {{.MultipleName}}) Get(x int) {{.Name}} {
 	return {{.ShortName}}[x]
 }
 
+func ({{.ShortName}} {{.DaoName}}) GetSlice() types.Slice {
+	return {{.SliceName}}
+}
+
 func ({{.ShortName}} {{.DaoName}}) ById(id {{.Kind}}) types.EnumScanner {
 	scanner := new(_{{.Name}}Scanner)
 	scanner.id = id

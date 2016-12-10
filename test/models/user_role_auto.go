@@ -47,6 +47,10 @@ func (u UserRoles) Get(x int) UserRole {
 	return u[x]
 }
 
+func (u UserRoleDao) GetSlice() types.Slice {
+	return userRoleList
+}
+
 func (u UserRoleDao) ById(id int) types.EnumScanner {
 	scanner := new(_UserRoleScanner)
 	scanner.id = id
