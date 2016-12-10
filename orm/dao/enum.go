@@ -1,20 +1,16 @@
 package dao
 
-import "github.com/byorty/hardcore/types"
+import (
+	"github.com/byorty/hardcore/types"
+)
 
-type EnumScannerImpl struct {
-	id  interface{}
-	dao types.EnumDAO
-}
+type EnumScannerImpl struct{}
 
-func NewEnumScanner(id interface{}, dao types.EnumDAO) types.EnumScanner {
-	return &EnumScannerImpl{id, dao}
-}
-
-func (e EnumScannerImpl) One(enum types.Named) {
-	for _, named := range e.dao.GetList() {
-		if e.dao.Eq(named, e.id) {
-			e.dao.Scan(named, enum)
+func (e EnumScannerImpl) Find(scanner types.EnumScanner, slice types.Slice) {
+	for i := 0; i < slice.Len(); i++ {
+		if scanner.Eq(i) {
+			scanner.Scan(i)
+			break
 		}
 	}
 }

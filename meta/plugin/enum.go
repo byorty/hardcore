@@ -12,6 +12,8 @@ var (
 	enumTpl = `package {{.Package}}
 
 type {{.Name}} {{.Kind}}
+
+type {{.DaoName}} struct {}
 `
 
 	autoEnumTpl = `{{$name := .Name}}` +
@@ -41,7 +43,7 @@ func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
 	return types.{{.ProtoKind}}
 }
 
-type {{.MultipleName}} []*{{.Name}}
+type {{.MultipleName}} []{{.Name}}
 
 func ({{.ShortName}} {{.MultipleName}}) Len() int {
 	return len({{.ShortName}})
@@ -59,27 +61,33 @@ func ({{.ShortName}} {{.MultipleName}}) GetRaw(x int) interface{} {
 	return {{.ShortName}}.Get(x)
 }
 
-func ({{.ShortName}} {{.MultipleName}}) Get(x int) *{{.Name}} {
+func ({{.ShortName}} {{.MultipleName}}) Get(x int) {{.Name}} {
 	return {{.ShortName}}[x]
 }
 
-type {{.DaoName}} struct {}
-
-func ({{.ShortName}} {{.DaoName}}) GetList() []types.Named {
-	return {{.SliceName}}
-}
-
 func ({{.ShortName}} {{.DaoName}}) ById(id {{.Kind}}) types.EnumScanner {
-	return dao.NewEnumScanner(id, {{.ShortName}})
+	scanner := new(_{{.Name}}Scanner)
+	scanner.id = id
+	return scanner
 }
 
-func ({{.ShortName}} {{.DaoName}}) Eq(named types.Named, id interface{}) bool {
-	return named.({{.Name}}).GetId() == id
+type _{{.Name}}Scanner struct {
+	dao.EnumScannerImpl
+	dest *{{.Name}}
+	id {{.Kind}}
 }
 
-func ({{.ShortName}} {{.DaoName}}) Scan(src, dest types.Named) {
-	enum := dest.(*{{.Name}})
-	(*enum) = src.({{.Name}})
+func ({{.ShortName}} *_{{.Name}}Scanner) Scan(i int) {
+	(*{{.ShortName}}.dest) = {{.SliceName}}.Get(i)
+}
+
+func ({{.ShortName}} *_{{.Name}}Scanner) One(named types.Named) {
+	{{.ShortName}}.dest = named.(*{{.Name}})
+	{{.ShortName}}.Find({{.ShortName}}, {{.SliceName}})
+}
+
+func ({{.ShortName}} *_{{.Name}}Scanner) Eq(i int) bool {
+	return {{.ShortName}}.id == {{.SliceName}}.Get(i).GetId()
 }
 
 const ({{range $k, $v := .Constants}}
@@ -88,14 +96,13 @@ const ({{range $k, $v := .Constants}}
 
 var (
 	{{.VarDaoName}} {{.DaoName}}
-	{{.SliceName}} = []types.Named{ {{range .Constants}}
+	{{.SliceName}} = {{.MultipleName}}{ {{range .Constants}}
 		{{.Name}},{{end}}
 	}
 	{{.MapName}} = map[{{.Name}}]string{ {{range .Constants}}
 		{{.Name}}: "{{.Label}}",{{end}}
 	}
-)
-	`
+)`
 )
 
 type Enum struct{}

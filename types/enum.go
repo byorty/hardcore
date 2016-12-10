@@ -84,9 +84,9 @@ type StringEnum interface {
 }
 
 type EnumDAO interface {
-	GetList() []Named
-	Eq(Named, interface{}) bool
-	Scan(src, dest Named)
+	//GetSlice() Slice
+	//Eq(Named, interface{}) bool
+	//Scan(src, dest Named)
 }
 
 type IntEnumDAO interface {

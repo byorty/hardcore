@@ -25,7 +25,7 @@ func (u UserRole) GetProtoKind() types.ProtoKind {
 	return types.ProtoIntEnumKind
 }
 
-type UserRoles []*UserRole
+type UserRoles []UserRole
 
 func (u UserRoles) Len() int {
 	return len(u)
@@ -43,27 +43,33 @@ func (u UserRoles) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u UserRoles) Get(x int) *UserRole {
+func (u UserRoles) Get(x int) UserRole {
 	return u[x]
 }
 
-type UserRoleDao struct{}
-
-func (u UserRoleDao) GetList() []types.Named {
-	return userRoleList
-}
-
 func (u UserRoleDao) ById(id int) types.EnumScanner {
-	return dao.NewEnumScanner(id, u)
+	scanner := new(_UserRoleScanner)
+	scanner.id = id
+	return scanner
 }
 
-func (u UserRoleDao) Eq(named types.Named, id interface{}) bool {
-	return named.(UserRole).GetId() == id
+type _UserRoleScanner struct {
+	dao.EnumScannerImpl
+	dest *UserRole
+	id   int
 }
 
-func (u UserRoleDao) Scan(src, dest types.Named) {
-	enum := dest.(*UserRole)
-	(*enum) = src.(UserRole)
+func (u *_UserRoleScanner) Scan(i int) {
+	(*u.dest) = userRoleList.Get(i)
+}
+
+func (u *_UserRoleScanner) One(named types.Named) {
+	u.dest = named.(*UserRole)
+	u.Find(u, userRoleList)
+}
+
+func (u *_UserRoleScanner) Eq(i int) bool {
+	return u.id == userRoleList.Get(i).GetId()
 }
 
 const (
@@ -73,7 +79,7 @@ const (
 
 var (
 	userRoleDao  UserRoleDao
-	userRoleList = []types.Named{
+	userRoleList = UserRoles{
 		LoggedUserRole,
 		LoggedAdminRole,
 	}

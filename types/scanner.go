@@ -6,6 +6,7 @@ type ModelScanner interface {
 }
 
 type EnumScanner interface {
+	Eq(int) bool
+	Scan(int)
 	One(Named)
-	//    All(Named)
 }
