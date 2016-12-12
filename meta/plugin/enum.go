@@ -39,6 +39,10 @@ func ({{.ShortName}} {{.Name}}) DAO() {{.Kind.DAO}} {
 	return {{.VarDaoName}}
 }
 
+func ({{.ShortName}} {{.Name}}) CastDAO() {{.DaoName}} {
+	return {{.VarDaoName}}
+}
+
 func ({{.ShortName}} {{.Name}}) GetProtoKind() types.ProtoKind {
 	return types.{{.ProtoKind}}
 }

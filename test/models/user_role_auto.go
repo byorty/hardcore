@@ -21,6 +21,10 @@ func (u UserRole) DAO() types.IntEnumDAO {
 	return userRoleDao
 }
 
+func (u UserRole) CastDAO() UserRoleDao {
+	return userRoleDao
+}
+
 func (u UserRole) GetProtoKind() types.ProtoKind {
 	return types.ProtoIntEnumKind
 }
