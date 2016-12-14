@@ -6,6 +6,7 @@ import (
 	"github.com/byorty/hardcore/types"
 	"golang.org/x/net/websocket"
 	"net/http"
+	"strings"
 )
 
 type Router struct {
@@ -56,7 +57,7 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 	isWebsocket := false
 	if scope.App().GetEnableWebsocket() {
-		isWebsocket = req.Header.Get("Upgrade") == "websocket" && req.Header.Get("Connection") == "Upgrade"
+		isWebsocket = req.Header.Get("Upgrade") == "websocket" && strings.ToLower(req.Header.Get("Connection")) == "upgrade"
 	}
 	if isWebsocket {
 		matchersKey = methodWebsocket
