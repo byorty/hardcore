@@ -80,7 +80,6 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	scope.App().GetLogger().Debug("mux: matcher is %v", existsMatcher)
 	if isWebsocket {
 		r.handleWebsocket(existsMatcher, rs, rw, req)
 	} else {
@@ -104,6 +103,7 @@ func (r *Router) handleWebsocket(matcher *Matcher, rs types.RequestScope, rw htt
 
 func (r *Router) handleRequest(matcher *Matcher, rs types.RequestScope, rw http.ResponseWriter, req *http.Request) {
 	if matcher != nil {
+		scope.App().GetLogger().Debug("mux: router found matcher")
 		hasConstruct := matcher.construct != nil
 		hasHandler := matcher.handler != nil
 		if hasConstruct && hasHandler {
@@ -111,6 +111,7 @@ func (r *Router) handleRequest(matcher *Matcher, rs types.RequestScope, rw http.
 			r.doMiddlewares(matcher.beforeMiddlewares, rs)
 			if rs.NotPrevented() {
 				controller := matcher.construct()
+				scope.App().GetLogger().Error("mux: router call method %T of controller %T", matcher.handler, controller)
 				controller.CallAction(matcher.handler, rs)
 			}
 			r.doMiddlewares(matcher.afterMiddlewares, rs)
@@ -118,13 +119,16 @@ func (r *Router) handleRequest(matcher *Matcher, rs types.RequestScope, rw http.
 			r.fetchSession(rs)
 			r.doMiddlewares(matcher.beforeMiddlewares, rs)
 			if rs.NotPrevented() {
+				scope.App().GetLogger().Error("mux: router call function %T", matcher.handler)
 				matcher.handler.(func(types.RequestScope))(rs)
 			}
 			r.doMiddlewares(matcher.afterMiddlewares, rs)
 		} else {
+			scope.App().GetLogger().Error("mux: router can`t to call matcher")
 			r.callNotFoundFunc(rw, req)
 		}
 	} else {
+		scope.App().GetLogger().Error("mux: router can`t to find matcher")
 		r.callNotFoundFunc(rw, req)
 	}
 }
