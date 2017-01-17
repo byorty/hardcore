@@ -56,14 +56,20 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	var matchersKey string
 
 	isWebsocket := false
+	scope.App().GetLogger().Debug("mux: websocket is enabled %t", scope.App().GetEnableWebsocket())
 	if scope.App().GetEnableWebsocket() {
-		isWebsocket = req.Header.Get("Upgrade") == "websocket" && strings.ToLower(req.Header.Get("Connection")) == "upgrade"
+		upgrade := req.Header.Get("Upgrade")
+		connection := req.Header.Get("Connection")
+		scope.App().GetLogger().Debug("mux: upgrade header contain %s", upgrade)
+		scope.App().GetLogger().Debug("mux: connection header contain - %s", connection)
+		isWebsocket = upgrade == "websocket" && strings.ToLower(connection) == "upgrade"
 	}
 	if isWebsocket {
 		matchersKey = methodWebsocket
 	} else {
 		matchersKey = req.Method
 	}
+	scope.App().GetLogger().Debug("mux: request method is %s", matchersKey)
 	var rs types.RequestScope
 	var existsMatcher *Matcher
 	for _, matcher := range r.matchers[matchersKey] {
@@ -74,6 +80,7 @@ func (r *Router) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	scope.App().GetLogger().Debug("mux: matcher is %v", existsMatcher)
 	if isWebsocket {
 		r.handleWebsocket(existsMatcher, rs, rw, req)
 	} else {

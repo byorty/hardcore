@@ -8,6 +8,7 @@ import (
 	"github.com/byorty/hardcore/test/exporters"
 	"github.com/byorty/hardcore/test/importers"
 	"github.com/byorty/hardcore/test/models"
+	"github.com/byorty/hardcore/types"
 	msgpack "github.com/msgpack/msgpack-go"
 	"testing"
 )
@@ -47,6 +48,7 @@ func TestMsgpack(t *testing.T) {
 	fmt.Println("FIXMAP = ", msgpack.FIXMAP|byte(2))
 	fmt.Println("MAP16 = ", msgpack.MAP16)
 	fmt.Println("MAP32 = ", msgpack.MAP32)
+	fmt.Println("MsgpackMax16Bit = ", types.MsgpackMax16Bit)
 
 	email := "user@example.com"
 	//role := models.LoggedUserRole
