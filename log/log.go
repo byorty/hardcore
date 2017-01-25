@@ -50,6 +50,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 )
@@ -481,4 +482,8 @@ func (log Logger) Critical(arg0 interface{}, args ...interface{}) error {
 	}
 	log.intLogf(lvl, msg)
 	return errors.New(msg)
+}
+
+func (log Logger) Stack() {
+	log.intLogf(DEBUG, "%s", string(debug.Stack()))
 }

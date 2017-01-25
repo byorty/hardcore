@@ -10,4 +10,5 @@ type Logger interface {
 	Warn(interface{}, ...interface{}) error
 	Error(interface{}, ...interface{}) error
 	Critical(interface{}, ...interface{}) error
+	Stack()
 }
