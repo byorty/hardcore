@@ -13,7 +13,9 @@ func NewHttpRouter() types.ApplicationPlugin {
 }
 
 func (h *HttpRouterImpl) run(router types.Router) {
+	scope.App().GetLogger().Finest("router - initialize %T", router)
 	for _, route := range scope.App().GetRoutes() {
+		scope.App().GetLogger().Finest("router - add router %v", route)
 		router.Add(route)
 	}
 	scope.App().SetRouter(router)
@@ -28,7 +30,7 @@ type WebsocketRouterImpl struct {
 }
 
 func NewWebsocketRouter() types.ApplicationPlugin {
-	return new(WebServerImpl)
+	return new(WebsocketRouterImpl)
 }
 
 func (w *WebsocketRouterImpl) Run() {
