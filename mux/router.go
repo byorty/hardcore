@@ -70,7 +70,7 @@ func (r *Router) serve(matcher *Matcher, rs types.RequestScope, rw http.Response
 			r.doMiddlewares(matcher.beforeMiddlewares, rs)
 			if rs.NotPrevented() {
 				controller := matcher.construct()
-				scope.App().GetLogger().Error("mux: router call method %T of controller %T", matcher.handler, controller)
+				scope.App().GetLogger().Debug("mux: router call method %T of controller %T", matcher.handler, controller)
 				controller.CallAction(matcher.handler, rs)
 			}
 			r.doMiddlewares(matcher.afterMiddlewares, rs)
