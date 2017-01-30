@@ -167,7 +167,7 @@ func (w *WebsocketRouter) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			w.serve(matcher, ws, rw, req)
 			defer conn.Close()
 		} else {
-			scope.App().GetLogger().Debug("mux: can`t upgrade connection^ err - %v", err)
+			scope.App().GetLogger().Debug("mux: can`t upgrade connection, err - %v", err)
 		}
 	} else {
 		scope.App().GetLogger().Debug("mux: connection isn`t websocket")
