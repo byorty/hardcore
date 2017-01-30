@@ -157,8 +157,8 @@ func (w *WebsocketRouter) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		scope.App().GetLogger().Debug("mux: upgrade header contain %s", upgrade)
 		scope.App().GetLogger().Debug("mux: connection header contain - %s", connection)
 	}
-	scope.App().GetLogger().Debug("websocket.IsWebSocketUpgrade %v", websocket.IsWebSocketUpgrade(req))
 	if websocket.IsWebSocketUpgrade(req) {
+		scope.App().GetLogger().Debug("mux: connection is websocket")
 		conn, err := w.upgrader.Upgrade(rw, req, nil)
 		if err == nil {
 			matcher, rs := w.find(methodWebsocket, req.URL.Path)
@@ -170,6 +170,7 @@ func (w *WebsocketRouter) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 			scope.App().GetLogger().Debug("mux: can`t upgrade connection^ err - %v", err)
 		}
 	} else {
+		scope.App().GetLogger().Debug("mux: connection isn`t websocket")
 		w.HttpRouter.ServeHTTP(rw, req)
 	}
 }
