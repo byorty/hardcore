@@ -49,4 +49,7 @@ type Route interface {
 
 type Router interface {
 	http.Handler
+	Add(Route) Router
+	Batch(...Route) Router
+	NotFound(func(RequestScope)) Router
 }

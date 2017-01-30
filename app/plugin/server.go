@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"crypto/tls"
 	"fmt"
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
@@ -45,17 +44,7 @@ func NewSecureWebServer() types.ApplicationPlugin {
 
 func (s *SecureWebServerImpl) Run() {
 	app := s.createServer(scope.App().GetHostname(), scope.App().GetSecurePort())
-	app.TLSConfig = &tls.Config{
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		},
-		//MinVersion:               tls.VersionTLS12,
-		SessionTicketsDisabled:   true,
-		PreferServerCipherSuites: true,
-	}
-	scope.App().SetTlsConfig(app.TLSConfig)
+	app.TLSConfig = scope.App().GetTlsConfig()
 	go func() {
 		scope.App().GetLogger().Finest("secure web server - start on %s:%d", scope.App().GetHostname(), scope.App().GetSecurePort())
 		err := app.ListenAndServeTLS(scope.App().GetCertFilename(), scope.App().GetPrivateKeyFilename())

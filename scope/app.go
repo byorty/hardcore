@@ -6,6 +6,7 @@ import (
 	"github.com/byorty/hardcore/log"
 	"github.com/byorty/hardcore/types"
 	"github.com/byorty/hardcore/utils"
+	"github.com/gorilla/websocket"
 	"html/template"
 	"time"
 )
@@ -38,6 +39,7 @@ type AppImpl struct {
 	certFilename       string
 	privateKeyFilename string
 	tlsConfig          *tls.Config
+	upgrader           *websocket.Upgrader
 }
 
 func New() types.ApplicationScope {
@@ -271,6 +273,15 @@ func (a AppImpl) GetSecurePort() int {
 
 func (a *AppImpl) SetSecurityPort(securityPort int) types.ApplicationScope {
 	a.securityPort = securityPort
+	return a
+}
+
+func (a AppImpl) GetUpgrader() *websocket.Upgrader {
+	return a.upgrader
+}
+
+func (a *AppImpl) SetUpgrader(upgrader *websocket.Upgrader) types.ApplicationScope {
+	a.upgrader = upgrader
 	return a
 }
 

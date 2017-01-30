@@ -2,7 +2,7 @@ package types
 
 import (
 	"crypto/tls"
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 	"html/template"
 	"net/http"
 	"time"
@@ -57,6 +57,8 @@ type ApplicationScope interface {
 	SetTlsConfig(*tls.Config) ApplicationScope
 	GetSecurePort() int
 	SetSecurityPort(int) ApplicationScope
+	GetUpgrader() *websocket.Upgrader
+	SetUpgrader(*websocket.Upgrader) ApplicationScope
 }
 
 type SessionScope interface {

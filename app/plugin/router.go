@@ -6,16 +6,31 @@ import (
 	"github.com/byorty/hardcore/types"
 )
 
-type RouterImpl struct{}
+type HttpRouterImpl struct{}
 
-func NewRouter() types.ApplicationPlugin {
-	return new(RouterImpl)
+func NewHttpRouter() types.ApplicationPlugin {
+	return new(HttpRouterImpl)
 }
 
-func (r *RouterImpl) Run() {
-	router := mux.NewRouter()
+func (h *HttpRouterImpl) run(router types.Router) {
 	for _, route := range scope.App().GetRoutes() {
 		router.Add(route)
 	}
 	scope.App().SetRouter(router)
+}
+
+func (h *HttpRouterImpl) Run() {
+	h.run(mux.NewHttpRouter())
+}
+
+type WebsocketRouterImpl struct {
+	HttpRouterImpl
+}
+
+func NewWebsocketRouter() types.ApplicationPlugin {
+	return new(WebServerImpl)
+}
+
+func (w *WebsocketRouterImpl) Run() {
+	w.run(mux.NewWebsocketRouter())
 }

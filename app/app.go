@@ -30,7 +30,7 @@ func (a Application) Run() {
 
 func NewHttpServer() types.Application {
 	return New().
-		AddPlugin(plugin.NewRouter()).
+		AddPlugin(plugin.NewHttpRouter()).
 		AddPlugin(plugin.NewDAO()).
 		AddPlugin(plugin.NewTmpl()).
 		AddPlugin(plugin.NewSession()).

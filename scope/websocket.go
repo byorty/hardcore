@@ -2,7 +2,7 @@ package scope
 
 import (
 	"github.com/byorty/hardcore/types"
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
 
 type WebsocketImpl struct {

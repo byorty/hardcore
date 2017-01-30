@@ -3,7 +3,6 @@ package mux
 import (
 	"github.com/byorty/hardcore/scope"
 	"github.com/byorty/hardcore/types"
-	"net/http"
 	"regexp"
 )
 
@@ -75,7 +74,7 @@ type Matcher struct {
 	afterMiddlewares  []types.MiddlewareFunc
 }
 
-func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) (bool, types.RequestScope) {
+func (m *Matcher) Match(path string) (bool, types.RequestScope) {
 	pathLen := len(path)
 	pathLastIndex := pathLen - 1
 	var params types.RequestScopeParams
@@ -124,8 +123,6 @@ func (m *Matcher) Match(path string, req *http.Request, rw http.ResponseWriter) 
 		return false, nil
 	}
 	rs := m.scopeConstruct()
-	rs.SetRequest(req)
-	rs.SetWriter(rw)
 	rs.SetPathParams(params)
 	return true, rs
 }
