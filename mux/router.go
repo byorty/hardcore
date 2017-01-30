@@ -6,7 +6,6 @@ import (
 	"github.com/byorty/hardcore/types"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"strings"
 )
 
 type Router struct {
@@ -152,18 +151,18 @@ func NewWebsocketRouter() types.Router {
 }
 
 func (w *WebsocketRouter) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	useWebsocket := false
 	if scope.App().GetEnableWebsocket() {
 		upgrade := req.Header.Get("Upgrade")
 		connection := req.Header.Get("Connection")
 		scope.App().GetLogger().Debug("mux: upgrade header contain %s", upgrade)
 		scope.App().GetLogger().Debug("mux: connection header contain - %s", connection)
-		useWebsocket = upgrade == "websocket" && strings.ToLower(connection) == "upgrade"
 	}
-	if useWebsocket {
+	scope.App().GetLogger().Debug("websocket.IsWebSocketUpgrade %v", websocket.IsWebSocketUpgrade(req))
+	if websocket.IsWebSocketUpgrade(req) {
 		conn, err := w.upgrader.Upgrade(rw, req, nil)
 		if err == nil {
-			matcher, rs := w.find("websoket", req.URL.Path)
+			matcher, rs := w.find(methodWebsocket, req.URL.Path)
+			scope.App().GetLogger().Debug("matcher - %v, rs - %v", matcher, rs)
 			ws := scope.NewWebsocket(rs, conn)
 			w.serve(matcher, ws, rw, req)
 			defer conn.Close()
