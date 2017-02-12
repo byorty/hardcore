@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/byorty/hardcore/decoder"
 	"github.com/byorty/hardcore/encoder"
+	"github.com/byorty/hardcore/exporter"
+	"github.com/byorty/hardcore/importer"
 	"github.com/byorty/hardcore/test/exporters"
 	"github.com/byorty/hardcore/test/importers"
 	"github.com/byorty/hardcore/test/models"
@@ -57,9 +59,10 @@ func TestMsgpack(t *testing.T) {
 		"email": email,
 		//"role": role.GetId(),
 	}
+
 	msgpack.Pack(buf, userMap)
 	msgBuf := buf.Bytes()
-	fmt.Println("m:", msgBuf)
+	fmt.Println("m->", msgBuf)
 
 	user := new(models.User).
 		SetId(1).
@@ -67,18 +70,36 @@ func TestMsgpack(t *testing.T) {
 		//SetRole(role)
 		//SetRegisterDate(now)
 	encoderBuf := encoder.NewMsgpack().Encode(exporters.NewUser(user))
-	fmt.Println("e:", encoderBuf)
+	fmt.Println("e->", encoderBuf)
 
 	//r := bytes.NewReader(msgBuf)
 	//v, _, err := msgpack.Unpack(r)
 	//fmt.Println("unpack m:", v, err)
-	r1 := bytes.NewReader(encoderBuf)
-	v1, _, err1 := msgpack.Unpack(r1)
-	fmt.Println("unpack e:", v1, err1)
+	//r1 := bytes.NewReader(encoderBuf)
+	//v1, _, err1 := msgpack.Unpack(r1)
+	//fmt.Println("unpack e:", v1, err1)
 
 	user1 := new(models.User)
 	decoder.NewMsgpack(encoderBuf).Decode(importers.NewUser(user1))
 	fmt.Println(user1)
 
-	t.Fail()
+	msg := []byte("hello world")
+	encMsg := encoder.NewMsgpack().Encode(exporter.NewBytes(msg))
+	var decMsg []byte
+	decoder.NewMsgpack(encMsg).Decode(importer.NewBytes(&decMsg))
+
+	fmt.Println(msg)
+	fmt.Println(decMsg)
+
+	fmt.Println("m:", msgBuf)
+	fmt.Println("e:", encoderBuf)
+	fmt.Println(bytes.Compare(msgBuf, encoderBuf) != 0)
+	fmt.Println(user1.GetId() != 1)
+	fmt.Println(bytes.Compare(msg, decMsg) != 0)
+
+	if bytes.Compare(msgBuf, encoderBuf) != 0 ||
+		bytes.Compare(msg, decMsg) != 0 ||
+		user1.GetId() != 1 {
+		t.Fail()
+	}
 }

@@ -73,3 +73,8 @@ type StringSlice interface {
 	Slice
 	Get(int) string
 }
+
+type ByteSlice interface {
+	Slice
+	Get(int) byte
+}

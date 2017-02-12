@@ -10,6 +10,10 @@ type _MsgpackImpl struct {
 	props map[string]_MsgpackPropertyImpl
 }
 
+func (m _MsgpackImpl) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func (m _MsgpackImpl) Get(key string) (types.ImportableProperty, bool) {
 	prop, ok := m.props[key]
 	return prop, ok

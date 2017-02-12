@@ -10,6 +10,10 @@ type _UserImpl struct {
 	props map[string]_UserPropertyImpl
 }
 
+func (u _UserImpl) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func (u _UserImpl) Get(key string) (types.ImportableProperty, bool) {
 	prop, ok := u.props[key]
 	return prop, ok

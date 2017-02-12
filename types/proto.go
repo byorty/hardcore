@@ -34,7 +34,7 @@ func (p ProtoKind) IsModel() bool {
 	return p == ProtoModelKind
 }
 
-func (p ProtoKind) IsScalar() bool {
+func (p ProtoKind) IsBase() bool {
 	return p <= ProtoStringKind
 }
 
@@ -80,6 +80,7 @@ const (
 	ProtoFloat32Kind
 	ProtoFloat64Kind
 	ProtoBoolKind
+	ProtoByteKind
 	ProtoStringKind
 	ProtoTimeKind
 	ProtoIntEnumKind
@@ -95,6 +96,7 @@ const (
 	ProtoFloat32EnumKind
 	ProtoFloat64EnumKind
 	ProtoBoolEnumKind
+	ProtoByteEnumKind
 	ProtoStringEnumKind
 	ProtoModelKind
 	ProtoIntSliceKind
@@ -109,6 +111,7 @@ const (
 	ProtoUint64SliceKind
 	ProtoFloat32SliceKind
 	ProtoFloat64SliceKind
+	ProtoByteSliceKind
 	ProtoStringSliceKind
 	ProtoBoolSliceKind
 	ProtoTimeSliceKind

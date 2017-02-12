@@ -10,6 +10,10 @@ type _PostImpl struct {
 	props map[string]_PostPropertyImpl
 }
 
+func (p _PostImpl) GetProtoKind() types.ProtoKind {
+	return types.ProtoModelKind
+}
+
 func (p _PostImpl) Get(key string) (types.ImportableProperty, bool) {
 	prop, ok := p.props[key]
 	return prop, ok

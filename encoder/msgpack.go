@@ -6,13 +6,7 @@ import (
 	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/types"
 	"math"
-	"sync"
 	"time"
-)
-
-var (
-	msgBuf   = new(bytes.Buffer)
-	msgMutex = new(sync.Mutex)
 )
 
 type MsgpackImpl struct {
@@ -21,7 +15,7 @@ type MsgpackImpl struct {
 
 func NewMsgpack() types.Encoder {
 	return &MsgpackImpl{
-		buf: msgBuf,
+		buf: new(bytes.Buffer),
 	}
 }
 
@@ -135,13 +129,13 @@ func (m *MsgpackImpl) EncodeFloat64(value float64) {
 }
 
 func (m *MsgpackImpl) EncodeString(value string) {
-	len := len(value)
-	if is.LtEqInt(len, types.MsgpackFixRawLen) {
-		m.writeHeaderFix(types.MsgpackFixRaw, len)
-	} else if is.LtInt(len, types.MsgpackMax16Bit) {
-		m.writeHeader16(types.MsgpackStr16, len)
+	l := len(value)
+	if is.LtEqInt(l, types.MsgpackFixRawLen) {
+		m.writeHeaderFix(types.MsgpackFixRaw, l)
+	} else if is.LtInt(l, types.MsgpackMax16Bit) {
+		m.writeHeader16(types.MsgpackStr16, l)
 	} else {
-		m.writeHeader32(types.MsgpackStr32, len)
+		m.writeHeader32(types.MsgpackStr32, l)
 	}
 	m.buf.Write([]byte(value))
 }
@@ -159,13 +153,13 @@ func (m *MsgpackImpl) EncodeTime(value time.Time) {
 }
 
 func (m *MsgpackImpl) EncodeBytes(value []byte) {
-	len := len(value)
-	if is.LtEqInt(len, types.MsgpackFixRawLen) {
-		m.writeHeaderFix(types.MsgpackFixRaw, len)
-	} else if is.LtInt(len, types.MsgpackMax16Bit) {
-		m.writeHeader16(types.MsgpackBin16, len)
+	l := len(value)
+	if is.LtEqInt(l, types.MsgpackFixRawLen) {
+		m.writeHeaderFix(types.MsgpackFixRaw, l)
+	} else if is.LtInt(l, types.MsgpackMax16Bit) {
+		m.writeHeader16(types.MsgpackBin16, l)
 	} else {
-		m.writeHeader32(types.MsgpackBin32, len)
+		m.writeHeader32(types.MsgpackBin32, l)
 	}
 	m.buf.Write(value)
 }
@@ -209,7 +203,6 @@ func (m *MsgpackImpl) EncodeSlice(exporter types.Exporter) {
 }
 
 func (m *MsgpackImpl) Encode(exporter types.Exporter) []byte {
-	msgMutex.Lock()
 	if exporter.GetProtoKind().IsSlice() {
 		m.EncodeSlice(exporter)
 	} else if exporter.GetProtoKind().IsModel() {
@@ -217,8 +210,5 @@ func (m *MsgpackImpl) Encode(exporter types.Exporter) []byte {
 	} else {
 		exporter.Export(0, m)
 	}
-	buf := m.buf.Bytes()
-	m.buf.Reset()
-	msgMutex.Unlock()
-	return buf
+	return m.buf.Bytes()
 }

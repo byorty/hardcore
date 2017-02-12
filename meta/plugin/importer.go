@@ -18,6 +18,10 @@ type _{{.Name}}Impl struct {
 	props map[string]_{{.Name}}PropertyImpl
 }
 
+func ({{.ShortName}} _{{.Name}}Impl) GetProtoKind() types.ProtoKind {
+	return {{.Kind}}
+}
+
 func ({{.ShortName}} _{{.Name}}Impl) Get(key string) (types.ImportableProperty, bool) {
 	prop, ok := {{.ShortName}}.props[key]
 	return prop, ok
@@ -80,6 +84,7 @@ func (i *Importer) Do(env types.Environment) {
 		if container.GetContainerKind() == types.ImporterContainerKind {
 			for _, entity := range container.GetEntities() {
 				impEntity := entity.(types.ImporterEntity)
+				kind := "types.ProtoUnkownKind"
 
 				srcEntity := config.GetEntity(impEntity.GetSource())
 				if srcEntity == nil {
@@ -88,6 +93,7 @@ func (i *Importer) Do(env types.Environment) {
 					impEntity.AddImport(srcEntity.GetContainer().GetImport())
 					if srcEntity.GetEntityKind() == types.ModelEntityKind {
 						modelEntity := srcEntity.(types.ModelEntity)
+						kind = "types.ProtoModelKind"
 						for _, prop := range impEntity.GetProperties() {
 							for _, modelProp := range modelEntity.GetProperties() {
 								if prop.GetName() == modelProp.GetName() {
@@ -125,9 +131,10 @@ func (i *Importer) Do(env types.Environment) {
 					"SourceName":         srcEntity.GetPointerFullName(),
 					"SourceVarName":      utils.LowerFirst(srcEntity.GetName()),
 					"IsMutiple":          isMutiple,
+					"Kind":               kind,
 				}
 
-				env.GetConfiguration().AddFile(impEntity.GetAutoFilename(), importerAutoTpl, tplParams)
+				env.GetConfiguration().AddAutoFile(impEntity.GetAutoFilename(), importerAutoTpl, tplParams)
 				env.GetConfiguration().AddFile(impEntity.GetFilename(), importerTpl, tplParams)
 			}
 		}

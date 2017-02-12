@@ -5,14 +5,12 @@ import (
 )
 
 type ByteImpl struct {
-	buf  []byte
-	kind types.ProtoKind
+	buf []byte
 }
 
 func NewBytes(buf []byte) types.Exporter {
 	exp := new(ByteImpl)
 	exp.buf = buf
-	exp.kind = types.ProtoStringKind
 	return exp
 }
 
@@ -25,7 +23,7 @@ func (b *ByteImpl) Get(i int) types.ExportableProperty {
 }
 
 func (b *ByteImpl) GetProtoKind() types.ProtoKind {
-	return b.kind
+	return types.ProtoByteKind
 }
 
 func (b *ByteImpl) Export(i int, encoder types.Encoder) {

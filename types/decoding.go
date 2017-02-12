@@ -7,6 +7,7 @@ type ImportableProperty interface {
 }
 
 type Importer interface {
+	ProtoEntity
 	Get(string) (ImportableProperty, bool)
 	Decode(string, Decoder, []byte)
 }

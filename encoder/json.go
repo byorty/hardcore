@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/byorty/hardcore/types"
 	"strconv"
-	"sync"
 	"time"
 	"unicode/utf8"
 )
@@ -19,8 +18,6 @@ var (
 	jsonStartSquareBracket = []byte("[")
 	jsonEndSquareBracket   = []byte("]")
 	jsonNull               = []byte("null")
-	jsonBuf                = new(bytes.Buffer)
-	jsonMutex              = new(sync.Mutex)
 )
 
 type JsonImpl struct {
@@ -29,21 +26,18 @@ type JsonImpl struct {
 
 func NewJson() types.Encoder {
 	return &JsonImpl{
-		buf: jsonBuf,
+		//buf: jsonBuf,
+		buf: new(bytes.Buffer),
 	}
 }
 
 func (j *JsonImpl) Encode(exporter types.Exporter) []byte {
-	jsonMutex.Lock()
 	if exporter.GetProtoKind().IsSlice() {
 		j.EncodeSlice(exporter)
 	} else {
 		j.EncodeModel(exporter)
 	}
-	buf := j.buf.Bytes()
-	j.buf.Reset()
-	jsonMutex.Unlock()
-	return buf
+	return j.buf.Bytes()
 }
 
 func (j *JsonImpl) EncodeModel(exporter types.Exporter) {

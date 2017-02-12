@@ -126,6 +126,17 @@ func (m *MsgpackImpl) DecodeTime(value []byte) time.Time {
 }
 
 func (m *MsgpackImpl) Decode(importer types.Importer) {
+	if m.len > 0 {
+		kind := importer.GetProtoKind()
+		if kind.IsModel() {
+			m.decodeModel(importer)
+		} else if kind.IsBase() {
+			m.decodeValue(importer, m.data[0], 0, "")
+		}
+	}
+}
+
+func (m *MsgpackImpl) decodeModel(importer types.Importer) {
 	var key string
 	var numEls int
 	state := startState
@@ -151,73 +162,71 @@ func (m *MsgpackImpl) Decode(importer types.Importer) {
 		case state == startDetectKeyState && numEls > 0:
 			switch {
 			case m.isFixRaw(char):
-				keyBuf, len := m.readFixRaw(i, char)
+				keyBuf, l := m.readFixRaw(i, char)
 				key = string(keyBuf)
 				if _, ok := importer.Get(key); ok {
-					i = i + len
+					i = i + l
 					state = detectValue
 				}
 			}
 
 		case state == detectValue:
-			if m.isFixRaw(char) {
-				buf, len := m.readFixRaw(i, char)
-				importer.Decode(key, m, buf)
-				i = i + len
-				state = startDetectKeyState
-			} else if m.isPositiveFixInt(char) {
-				importer.Decode(key, m, []byte{char})
-				state = startDetectKeyState
-			} else {
-				switch char {
-				case types.MsgpackNil, types.MsgpackTrue, types.MsgpackFalse:
-					importer.Decode(key, m, []byte{char})
-					state = startDetectKeyState
+			i, state = m.decodeValue(importer, char, i, key)
+		}
+	}
+}
 
-				case types.MsgpackBin8, types.MsgpackStr8:
-					buf, len := m.readHeader8(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+func (m *MsgpackImpl) decodeValue(importer types.Importer, char byte, i int, key string) (int, decoderState) {
+	if m.isFixRaw(char) {
+		buf, l := m.readFixRaw(i, char)
+		importer.Decode(key, m, buf)
+		return i + l, startDetectKeyState
+	} else if m.isPositiveFixInt(char) {
+		importer.Decode(key, m, []byte{char})
+		return i, startDetectKeyState
+	} else {
+		switch char {
+		case types.MsgpackNil, types.MsgpackTrue, types.MsgpackFalse:
+			importer.Decode(key, m, []byte{char})
+			return i, startDetectKeyState
 
-				case types.MsgpackBin16, types.MsgpackStr16:
-					buf, len := m.readHeader16(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackBin8, types.MsgpackStr8:
+			buf, l := m.readHeader8(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				case types.MsgpackBin32, types.MsgpackStr32:
-					buf, len := m.readHeader32(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackBin16, types.MsgpackStr16:
+			buf, l := m.readHeader16(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				case types.MsgpackInt8, types.MsgpackUint8:
-					buf, len := m.readNumber8(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackBin32, types.MsgpackStr32:
+			buf, l := m.readHeader32(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				case types.MsgpackInt16, types.MsgpackUint16:
-					buf, len := m.readNumber16(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackInt8, types.MsgpackUint8:
+			buf, l := m.readNumber8(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				case types.MsgpackInt32, types.MsgpackUint32, types.MsgpackFloat32:
-					buf, len := m.readNumber32(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackInt16, types.MsgpackUint16:
+			buf, l := m.readNumber16(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				case types.MsgpackInt64, types.MsgpackUint64, types.MsgpackFloat64:
-					buf, len := m.readNumber64(i)
-					importer.Decode(key, m, buf)
-					i = i + len
-					state = startDetectKeyState
+		case types.MsgpackInt32, types.MsgpackUint32, types.MsgpackFloat32:
+			buf, l := m.readNumber32(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
 
-				}
-			}
+		case types.MsgpackInt64, types.MsgpackUint64, types.MsgpackFloat64:
+			buf, l := m.readNumber64(i)
+			importer.Decode(key, m, buf)
+			return i + l, startDetectKeyState
+
+		default:
+			return i, startDetectKeyState
 		}
 	}
 }
