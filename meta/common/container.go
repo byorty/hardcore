@@ -54,11 +54,15 @@ func (c Container) GetEntities() []types.Entity {
 func (c *Container) Init(env types.Environment) {
 	path := strings.Replace(c.GetPackage(), ".", string(filepath.Separator), -1)
 	c.SetPath(filepath.Join(env.GetAbsPath(), path))
-	c.SetImport(fmt.Sprintf(
-		"%s/%s",
-		env.GetImportPart(),
-		path,
-	))
+	if env.GetImportPart() == "" {
+		c.SetImport(path)
+	} else {
+		c.SetImport(fmt.Sprintf(
+			"%s/%s",
+			env.GetImportPart(),
+			path,
+		))
+	}
 	pkgParts := strings.Split(c.GetPackage(), ".")
 	c.SetShortPackage(pkgParts[len(pkgParts)-1])
 }

@@ -58,7 +58,7 @@ func (i IntImpl) ById(id int) types.DBRow {
 }
 
 func (i IntImpl) ByIds(ids []int) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewIntsBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewIntBy(ids)))
 }
 
 type Int8Impl struct {
@@ -70,7 +70,7 @@ func (i Int8Impl) ById(id int8) types.DBRow {
 }
 
 func (i Int8Impl) ByIds(ids []int8) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewInt8sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewInt8By(ids)))
 }
 
 type Int16Impl struct {
@@ -82,7 +82,7 @@ func (i Int16Impl) ById(id int16) types.DBRow {
 }
 
 func (i Int16Impl) ByIds(ids []int16) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewInt16sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewInt16By(ids)))
 }
 
 type Int32Impl struct {
@@ -94,7 +94,7 @@ func (i Int32Impl) ById(id int32) types.DBRow {
 }
 
 func (i Int32Impl) ByIds(ids []int32) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewInt32sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewInt32By(ids)))
 }
 
 type Int64Impl struct {
@@ -106,7 +106,7 @@ func (i Int64Impl) ById(id int64) types.DBRow {
 }
 
 func (i Int64Impl) ByIds(ids []int64) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewInt64sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewInt64By(ids)))
 }
 
 type UintImpl struct {
@@ -118,7 +118,7 @@ func (u UintImpl) ById(id uint) types.DBRow {
 }
 
 func (i UintImpl) ByIds(ids []uint) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewUintsBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewUintBy(ids)))
 }
 
 type Uint8Impl struct {
@@ -130,7 +130,7 @@ func (u Uint8Impl) ById(id uint8) types.DBRow {
 }
 
 func (i Uint8Impl) ByIds(ids []uint8) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewUint8sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewUint8By(ids)))
 }
 
 type Uint16Impl struct {
@@ -142,7 +142,7 @@ func (u Uint16Impl) ById(id uint16) types.DBRow {
 }
 
 func (i Uint16Impl) ByIds(ids []uint16) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewUint16sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewUint16By(ids)))
 }
 
 type Uint32Impl struct {
@@ -154,7 +154,7 @@ func (u Uint32Impl) ById(id uint32) types.DBRow {
 }
 
 func (i Uint32Impl) ByIds(ids []uint32) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewUint32sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewUint32By(ids)))
 }
 
 type Uint64Impl struct {
@@ -166,5 +166,5 @@ func (u Uint64Impl) ById(id uint64) types.DBRow {
 }
 
 func (i Uint64Impl) ByIds(ids []uint64) types.ModelScanner {
-	return criteria.Select().And(expr.In("id", slice.NewUint64sBy(ids)))
+	return criteria.Select().And(expr.In("id", slice.NewUint64By(ids)))
 }

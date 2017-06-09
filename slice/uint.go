@@ -2,172 +2,197 @@ package slice
 
 import "github.com/byorty/hardcore/types"
 
-type Uints []uint
+type _Uint []uint
 
-func NewUints() types.UintSlice {
-	return make(Uints, 0)
+func NewUint() types.UintSlice {
+	return NewUintBy(make([]uint, 0))
 }
 
-func NewUintsBy(arr []uint) types.UintSlice {
-	return Uints(arr)
+func NewUintBy(arr []uint) types.UintSlice {
+	s := _Uint(arr)
+	return &s
 }
 
-func (u Uints) Len() int {
+func (u _Uint) Len() int {
 	return len(u)
 }
 
-func (u Uints) Less(x, y int) bool {
+func (u _Uint) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uints) Swap(x, y int) {
+func (u _Uint) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uints) GetRaw(x int) interface{} {
+func (u _Uint) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uints) Get(x int) uint {
+func (u _Uint) Get(x int) uint {
 	return u[x]
 }
 
-func (u Uints) Export(i int, encoder types.Encoder) {
+func (u *_Uint) Add(v uint) {
+	(*u) = append((*u), v)
+}
+
+func (u _Uint) Export(i int, encoder types.Encoder) {
 	encoder.EncodeUint(u[i])
 }
 
-type Uint8s []uint8
+type _Uint8 []uint8
 
-func NewUint8s() types.Uint8Slice {
-	return make(Uint8s, 0)
+func NewUint8() types.Uint8Slice {
+	return NewUint8By(make([]uint8, 0))
 }
 
-func NewUint8sBy(arr []uint8) types.Uint8Slice {
-	return Uint8s(arr)
+func NewUint8By(arr []uint8) types.Uint8Slice {
+	s := _Uint8(arr)
+	return &s
 }
 
-func (u Uint8s) Len() int {
+func (u _Uint8) Len() int {
 	return len(u)
 }
 
-func (u Uint8s) Less(x, y int) bool {
+func (u _Uint8) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint8s) Swap(x, y int) {
+func (u _Uint8) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint8s) GetRaw(x int) interface{} {
+func (u _Uint8) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint8s) Get(x int) uint8 {
+func (u _Uint8) Get(x int) uint8 {
 	return u[x]
 }
 
-func (u Uint8s) Export(i int, encoder types.Encoder) {
+func (u *_Uint8) Add(v uint8) {
+	(*u) = append((*u), v)
+}
+
+func (u _Uint8) Export(i int, encoder types.Encoder) {
 	encoder.EncodeUint8(u[i])
 }
 
-type Uint16s []uint16
+type _Uint16 []uint16
 
-func NewUint16s() types.Uint16Slice {
-	return make(Uint16s, 0)
+func NewUint16() types.Uint16Slice {
+	return NewUint16By(make([]uint16, 0))
 }
 
-func NewUint16sBy(arr []uint16) types.Uint16Slice {
-	return Uint16s(arr)
+func NewUint16By(arr []uint16) types.Uint16Slice {
+	s:= _Uint16(arr)
+	return &s
 }
 
-func (u Uint16s) Len() int {
+func (u _Uint16) Len() int {
 	return len(u)
 }
 
-func (u Uint16s) Less(x, y int) bool {
+func (u _Uint16) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint16s) Swap(x, y int) {
+func (u _Uint16) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint16s) GetRaw(x int) interface{} {
+func (u _Uint16) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint16s) Get(x int) uint16 {
+func (u _Uint16) Get(x int) uint16 {
 	return u[x]
 }
 
-func (u Uint16s) Export(i int, encoder types.Encoder) {
+func (u *_Uint16) Add(v uint16) {
+	(*u) = append((*u), v)
+}
+
+func (u _Uint16) Export(i int, encoder types.Encoder) {
 	encoder.EncodeUint16(u[i])
 }
 
-type Uint32s []uint32
+type _Uint32 []uint32
 
-func NewUint32s() types.Uint32Slice {
-	return make(Uint32s, 0)
+func NewUint32() types.Uint32Slice {
+	return NewUint32By(make([]uint32, 0))
 }
 
-func NewUint32sBy(arr []uint32) types.Uint32Slice {
-	return Uint32s(arr)
+func NewUint32By(arr []uint32) types.Uint32Slice {
+	s := _Uint32(arr)
+	return &s
 }
 
-func (u Uint32s) Len() int {
+func (u _Uint32) Len() int {
 	return len(u)
 }
 
-func (u Uint32s) Less(x, y int) bool {
+func (u _Uint32) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint32s) Swap(x, y int) {
+func (u _Uint32) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint32s) GetRaw(x int) interface{} {
+func (u _Uint32) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint32s) Get(x int) uint32 {
+func (u _Uint32) Get(x int) uint32 {
 	return u[x]
 }
 
-func (u Uint32s) Export(i int, encoder types.Encoder) {
+func (u *_Uint32) Add(v uint32) {
+	(*u) = append((*u), v)
+}
+
+func (u _Uint32) Export(i int, encoder types.Encoder) {
 	encoder.EncodeUint32(u[i])
 }
 
-type Uint64s []uint64
+type _Uint64 []uint64
 
-func NewUint64s() types.Uint64Slice {
-	return make(Uint64s, 0)
+func NewUint64() types.Uint64Slice {
+	return NewUint64By(make([]uint64, 0))
 }
 
-func NewUint64sBy(arr []uint64) types.Uint64Slice {
-	return Uint64s(arr)
+func NewUint64By(arr []uint64) types.Uint64Slice {
+	s := _Uint64(arr)
+	return &s
 }
 
-func (u Uint64s) Len() int {
+func (u _Uint64) Len() int {
 	return len(u)
 }
 
-func (u Uint64s) Less(x, y int) bool {
+func (u _Uint64) Less(x, y int) bool {
 	return u[x] < u[y]
 }
 
-func (u Uint64s) Swap(x, y int) {
+func (u _Uint64) Swap(x, y int) {
 	u[x], u[y] = u[y], u[x]
 }
 
-func (u Uint64s) GetRaw(x int) interface{} {
+func (u _Uint64) GetRaw(x int) interface{} {
 	return u.Get(x)
 }
 
-func (u Uint64s) Get(x int) uint64 {
+func (u _Uint64) Get(x int) uint64 {
 	return u[x]
 }
 
-func (u Uint64s) Export(i int, encoder types.Encoder) {
+func (u *_Uint64) Add(v uint64) {
+	(*u) = append((*u), v)
+}
+
+func (u _Uint64) Export(i int, encoder types.Encoder) {
 	encoder.EncodeUint64(u[i])
 }

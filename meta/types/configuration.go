@@ -12,6 +12,7 @@ const (
 	CriteriaImport = "github.com/byorty/hardcore/query/criteria"
 	ExprImport     = "github.com/byorty/hardcore/query/expr"
 	IsImport       = "github.com/byorty/hardcore/is"
+	SliceImport    = "github.com/byorty/hardcore/slice"
 )
 
 type Configuration interface {

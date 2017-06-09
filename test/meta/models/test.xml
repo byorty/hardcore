@@ -9,6 +9,7 @@
                 <property name="password" type="string" size="32" required="true"/>
                 <property name="role" type="models.UserRole" required="true" relation="OneToOne"/>
                 <property name="registerDate" type="time.Time" required="false"/>
+                <property name="postIds" type="types.Int64Slice" required="false"/>
 
                 <property name="posts" type="models.Post" required="true" relation="OneToMany"/>
             </properties>
@@ -82,6 +83,8 @@
             <properties>
                 <property name="id"/>
                 <property name="email"/>
+                <property name="postIds"/>
+                <property name="posts"/>
             </properties>
         </importer>
         <importer name="Msgpack" source="models.User">

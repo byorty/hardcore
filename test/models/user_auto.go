@@ -17,6 +17,7 @@ type AutoUser struct {
 	role         *UserRole
 	roleId       int
 	registerDate time.Time
+	postIds      types.Int64Slice
 	posts        Posts
 }
 
@@ -77,6 +78,15 @@ func (u User) GetRegisterDate() time.Time {
 
 func (u *User) SetRegisterDate(registerDate time.Time) *User {
 	u.registerDate = registerDate
+	return u
+}
+
+func (u User) GetPostIds() types.Int64Slice {
+	return u.postIds
+}
+
+func (u *User) SetPostIds(postIds types.Int64Slice) *User {
+	u.postIds = postIds
 	return u
 }
 
@@ -196,6 +206,7 @@ func (u UserDao) Scan(row interface{}, model interface{}) error {
 		&item.password,
 		&item.roleId,
 		&item.registerDate,
+		&item.postIds,
 	)
 }
 
@@ -207,6 +218,7 @@ func (u *UserDao) Add(model *User) {
 			model.password,
 			model.roleId,
 			model.registerDate,
+			model.postIds,
 		).One(model)
 	} else if db.SupportReturningId() {
 		u.InsertStmt.Custom(
@@ -214,6 +226,7 @@ func (u *UserDao) Add(model *User) {
 			model.password,
 			model.roleId,
 			model.registerDate,
+			model.postIds,
 		).One(&model.id)
 	}
 }
@@ -224,6 +237,7 @@ func (u *UserDao) Save(model *User) {
 		model.password,
 		model.roleId,
 		model.registerDate,
+		model.postIds,
 		model.id,
 	).One(model)
 }
@@ -291,6 +305,14 @@ func userRegisterDateGetter(model interface{}) interface{} {
 	return model.(*User).GetRegisterDate()
 }
 
+func userPostIdsSetter(model interface{}, postIds interface{}) {
+	model.(*User).SetPostIds(postIds.(types.Int64Slice))
+}
+
+func userPostIdsGetter(model interface{}) interface{} {
+	return model.(*User).GetPostIds()
+}
+
 func userPostsSetter(model interface{}, posts interface{}) {
 	model.(*User).SetPosts(posts.(Posts))
 }
@@ -308,5 +330,6 @@ var (
 			Set("role", proto.NewProperty("role", types.ProtoIntEnumKind, types.ProtoOneToOneRelation, true, userRoleSetter, userRoleGetter)).
 			Set("roleId", proto.NewProperty("role_id", types.ProtoIntKind, types.ProtoNoneRelation, true, userRoleIdSetter, userRoleIdGetter)).
 			Set("registerDate", proto.NewProperty("register_date", types.ProtoTimeKind, types.ProtoNoneRelation, false, userRegisterDateSetter, userRegisterDateGetter)).
+			Set("postIds", proto.NewProperty("post_ids", types.ProtoInt64SliceKind, types.ProtoNoneRelation, false, userPostIdsSetter, userPostIdsGetter)).
 			Set("posts", proto.NewProperty("posts", types.ProtoModelSliceKind, types.ProtoOneToManyRelation, true, userPostsSetter, userPostsGetter))
 )

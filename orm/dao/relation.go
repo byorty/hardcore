@@ -27,7 +27,7 @@ func (o IntOneToMany) ById(id int) types.ModelScanner {
 }
 
 func (o IntOneToMany) ByIds(ids []int) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewIntsBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewIntBy(ids)))
 }
 
 type Int8OneToMany struct {
@@ -45,7 +45,7 @@ func (o Int8OneToMany) ById(id int8) types.ModelScanner {
 }
 
 func (o Int8OneToMany) ByIds(ids []int8) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewInt8sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewInt8By(ids)))
 }
 
 type Int16OneToMany struct {
@@ -63,7 +63,7 @@ func (o Int16OneToMany) ById(id int16) types.ModelScanner {
 }
 
 func (o Int16OneToMany) ByIds(ids []int16) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewInt16sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewInt16By(ids)))
 }
 
 type Int32OneToMany struct {
@@ -81,7 +81,7 @@ func (o Int32OneToMany) ById(id int32) types.ModelScanner {
 }
 
 func (o Int32OneToMany) ByIds(ids []int32) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewInt32sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewInt32By(ids)))
 }
 
 type Int64OneToMany struct {
@@ -99,7 +99,7 @@ func (o Int64OneToMany) ById(id int64) types.ModelScanner {
 }
 
 func (o Int64OneToMany) ByIds(ids []int64) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewInt64sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewInt64By(ids)))
 }
 
 type UintOneToMany struct {
@@ -117,7 +117,7 @@ func (o UintOneToMany) ById(id uint) types.ModelScanner {
 }
 
 func (o UintOneToMany) ByIds(ids []uint) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewUintsBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewUintBy(ids)))
 }
 
 type Uint8OneToMany struct {
@@ -135,7 +135,7 @@ func (o Uint8OneToMany) ById(id uint8) types.ModelScanner {
 }
 
 func (o Uint8OneToMany) ByIds(ids []uint8) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewUint8sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewUint8By(ids)))
 }
 
 type Uint16OneToMany struct {
@@ -153,7 +153,7 @@ func (o Uint16OneToMany) ById(id uint16) types.ModelScanner {
 }
 
 func (o Uint16OneToMany) ByIds(ids []uint16) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewUint16sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewUint16By(ids)))
 }
 
 type Uint32OneToMany struct {
@@ -171,7 +171,7 @@ func (o Uint32OneToMany) ById(id uint32) types.ModelScanner {
 }
 
 func (o Uint32OneToMany) ByIds(ids []uint32) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewUint32sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewUint32By(ids)))
 }
 
 type Uint64OneToMany struct {
@@ -189,5 +189,5 @@ func (o Uint64OneToMany) ById(id uint64) types.ModelScanner {
 }
 
 func (o Uint64OneToMany) ByIds(ids []uint64) types.ModelScanner {
-	return criteria.Select().And(expr.In(o.field, slice.NewUint64sBy(ids)))
+	return criteria.Select().And(expr.In(o.field, slice.NewUint64By(ids)))
 }

@@ -42,6 +42,10 @@ func (p ProtoKind) IsSlice() bool {
 	return p >= ProtoIntSliceKind && p <= ProtoModelSliceKind
 }
 
+func (p ProtoKind) IsModelSlice() bool {
+	return p == ProtoModelSliceKind
+}
+
 func (p ProtoKind) IsEnum() bool {
 	return p >= ProtoIntEnumKind && p <= ProtoStringEnumKind
 }
@@ -58,8 +62,16 @@ func (p ProtoKind) IsNumber() bool {
 	return p >= ProtoIntKind && p <= ProtoFloat64Kind
 }
 
+func (p ProtoKind) IsNumberSlice() bool {
+	return p >= ProtoIntSliceKind && p <= ProtoFloat64SliceKind
+}
+
 func (p ProtoKind) IsBool() bool {
 	return p == ProtoBoolKind
+}
+
+func (p ProtoKind) IsBoolSlice() bool {
+	return p == ProtoBoolSliceKind
 }
 
 func (p ProtoKind) IsString() bool {
@@ -117,7 +129,7 @@ const (
 	ProtoTimeSliceKind
 	ProtoEnumSliceKind
 	ProtoModelSliceKind
-	ProtoUnkownKind
+	ProtoUnknownKind
 )
 
 type ProtoRelation int

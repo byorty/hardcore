@@ -6,6 +6,7 @@ import (
 	"github.com/byorty/hardcore/meta/model"
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
+	"strings"
 )
 
 type Property struct {
@@ -24,6 +25,10 @@ func (p Property) GetAliasName() string {
 		return p.Alias
 	}
 	return p.Name
+}
+
+func (p Property) GetGetterName() string {
+	return fmt.Sprintf("Get%s", utils.UpperFirst(p.Name))
 }
 
 func (p Property) GetSetterName() string {
@@ -60,10 +65,38 @@ func (p Property) GetMethod() string {
 		if kind == "time.Time" {
 			kind = "time"
 		}
+		if sliceKind, ok := types.SliceTypes[kind]; ok {
+			kind = sliceKind
+		}
 	} else {
 		if p.prop.GetEntity().GetEntityKind().IsEnum() {
 			kind = string(p.prop.GetEntity().(*model.Enum).GetKind())
 		}
 	}
 	return fmt.Sprintf("Decode%s", utils.UpperFirst(kind))
+}
+
+func (p Property) IsSlice() bool {
+	return strings.Contains(p.GetProtoKind(), "Slice")
+}
+
+func (p Property) IsNotModelSlice() bool {
+	return !p.IsModelSlice()
+}
+
+func (p Property) IsModelSlice() bool {
+	return p.GetProtoKind() == "ProtoModelSliceKind"
+}
+
+func (p Property) GetSliceConstruct() string {
+	var kind string
+	if is.NotNil(p.prop) {
+		kind = p.prop.GetKind()
+	} else {
+		kind = p.Kind
+	}
+	if sliceKind, ok := types.SliceTypes[kind]; ok {
+		kind = sliceKind
+	}
+	return fmt.Sprintf("slice.New%s()", utils.UpperFirst(kind))
 }

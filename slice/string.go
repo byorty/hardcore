@@ -2,36 +2,41 @@ package slice
 
 import "github.com/byorty/hardcore/types"
 
-type Strings []string
+type _String []string
 
-func NewStrings() types.StringSlice {
-	return make(Strings, 0)
+func NewString() types.StringSlice {
+	return NewStringBy(make([]string, 0))
 }
 
-func NewStringsBy(arr []string) types.StringSlice {
-	return Strings(arr)
+func NewStringBy(arr []string) types.StringSlice {
+	s := _String(arr)
+	return &s
 }
 
-func (s Strings) Len() int {
+func (s _String) Len() int {
 	return len(s)
 }
 
-func (s Strings) Less(x, y int) bool {
+func (s _String) Less(x, y int) bool {
 	return s[x] < s[y]
 }
 
-func (s Strings) Swap(x, y int) {
+func (s _String) Swap(x, y int) {
 	s[x], s[y] = s[y], s[x]
 }
 
-func (s Strings) GetRaw(x int) interface{} {
+func (s _String) GetRaw(x int) interface{} {
 	return s.Get(x)
 }
 
-func (s Strings) Get(x int) string {
+func (s _String) Get(x int) string {
 	return s[x]
 }
 
-func (s Strings) Export(i int, encoder types.Encoder) {
+func (s *_String) Add(v string) {
+	(*s) = append((*s), v)
+}
+
+func (s _String) Export(i int, encoder types.Encoder) {
 	encoder.EncodeString(s[i])
 }

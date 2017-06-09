@@ -9,7 +9,7 @@ import (
 var (
 	importerAutoTpl = `package {{.Package}}
 
-import ({{range .Imports}}
+import ({{range .AutoImports}}
 	"{{.}}"{{end}}
 )
 
@@ -68,7 +68,10 @@ var (
 		"{{.GetAliasName}}": new{{$name}}Property(types.{{.GetProtoKind}}, func({{$sourceVarName}} {{$sourceName}}, decoder types.Decoder, value []byte) { {{if .HasModelProperty}}
 			{{if .GetModelProperty.HasRelation}}{{if .GetModelProperty.GetEntity.GetEntityKind.IsEnum}}var {{.GetModelProperty.GetName}} {{.GetModelProperty.GetEntity.GetFullName}}
 			{{.GetModelProperty.GetName}}.DAO().ById(decoder.{{.GetMethod}}(value)).One(&{{.GetModelProperty.GetName}})
-			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(decoder.{{.GetMethod}}(value)){{end}}
+			{{$sourceVarName}}.{{.GetSetterName}}({{.GetModelProperty.GetName}}){{end}}{{else if .IsSlice}}{{if .IsNotModelSlice}}if {{$sourceVarName}}.{{.GetGetterName}}() == nil {
+				{{$sourceVarName}}.{{.GetSetterName}}({{.GetSliceConstruct}})
+			}
+			{{$sourceVarName}}.{{.GetGetterName}}().Add(decoder.{{.GetMethod}}(value)){{end}}{{else}}{{$sourceVarName}}.{{.GetSetterName}}(decoder.{{.GetMethod}}(value)){{end}}
 		{{end}}}),{{end}}
 	}
 )
@@ -86,11 +89,13 @@ func (i *Importer) Do(env types.Environment) {
 				impEntity := entity.(types.ImporterEntity)
 				kind := "types.ProtoUnkownKind"
 
+				var autoImports []string
 				srcEntity := config.GetEntity(impEntity.GetSource())
 				if srcEntity == nil {
 					logger.Error("source %s for %s not found", impEntity.GetSource(), impEntity.GetName())
 				} else {
 					impEntity.AddImport(srcEntity.GetContainer().GetImport())
+					autoImports = impEntity.GetImports()
 					if srcEntity.GetEntityKind() == types.ModelEntityKind {
 						modelEntity := srcEntity.(types.ModelEntity)
 						kind = "types.ProtoModelKind"
@@ -100,6 +105,9 @@ func (i *Importer) Do(env types.Environment) {
 									prop.SetModelProperty(modelProp)
 									break
 								}
+							}
+							if prop.IsSlice() {
+								impEntity.AddImport(types.SliceImport)
 							}
 						}
 					}
@@ -119,6 +127,9 @@ func (i *Importer) Do(env types.Environment) {
 					"MultipleName": impEntity.GetMultipleName(),
 					"ShortName":    strings.ToLower(impEntity.GetName()[0:1]),
 					"Package":      container.GetShortPackage(),
+					"AutoImports": append([]string{
+						types.DefaultImport,
+					}, autoImports...),
 					"Imports": append([]string{
 						types.DefaultImport,
 					}, impEntity.GetImports()...),

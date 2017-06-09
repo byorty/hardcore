@@ -128,6 +128,8 @@ func (p Property) GetProtoKind() string {
 	default:
 		if p.GetKind() == TimeKind {
 			return "ProtoTimeKind"
+		} else if sliceKind, ok := types.SliceProtoKinds[p.GetKind()]; ok {
+			return sliceKind
 		} else {
 			return fmt.Sprintf("Proto%sKind", utils.UpperFirst(p.GetKind()))
 		}

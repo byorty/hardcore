@@ -3,6 +3,7 @@ package types
 type ImportableProperty interface {
 	GetName() string
 	GetAliasName() string
+	GetGetterName() string
 	GetSetterName() string
 	GetKind() string
 	HasModelProperty() bool
@@ -10,6 +11,10 @@ type ImportableProperty interface {
 	GetModelProperty() Property
 	GetProtoKind() string
 	GetMethod() string
+	IsSlice() bool
+	IsModelSlice() bool
+	IsNotModelSlice() bool
+	GetSliceConstruct() string
 }
 
 type ImporterEntity interface {

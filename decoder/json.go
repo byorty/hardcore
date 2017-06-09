@@ -21,6 +21,7 @@ const (
 	jsonBackslash          = '\\'
 	jsonComma              = ','
 	jsonColon              = ':'
+	jsonSpace              = ' '
 )
 
 type decoderState int
@@ -30,6 +31,8 @@ const (
 	startDetectKeyState
 	endDetectKeyState
 	detectValue
+	detectSliceValue
+	detectSliceStart
 )
 
 func NewJson(data []byte) types.Decoder {
@@ -47,50 +50,81 @@ type JsonImpl struct {
 func (j *JsonImpl) Decode(importer types.Importer) {
 	var key string
 	var start, quoteCount, deep int
+	var kind types.ProtoKind
 	state := startState
-	var prop types.ImportableProperty
 	for i := 0; i < j.len; i++ {
 		char := j.data[i]
 		switch {
 		case state == startState && char == jsonStartBrace:
 			state = startDetectKeyState
-		case state == startState && char == jsonStartSquareBracket:
-
+		case (state == startState || state == detectSliceStart) && char == jsonStartSquareBracket:
+			state = detectSliceValue
+			start = i + 1
 		case state == startDetectKeyState && char == jsonDoubleQuotes:
 			start = i + 1
 			state = endDetectKeyState
 		case state == endDetectKeyState && char == jsonDoubleQuotes:
 			key = string(j.data[start:i])
 			if existsProp, ok := importer.Get(key); ok {
-				prop = existsProp
+				kind = existsProp.GetProtoKind()
+			} else {
+				state = startDetectKeyState
 			}
-		case state == endDetectKeyState && char == jsonColon && is.NotNil(prop):
-			start = i + 1
-			state = detectValue
-		case state == detectValue && char == jsonDoubleQuotes && (prop.GetProtoKind().IsString() || prop.GetProtoKind().IsStringEnum()):
+		case state == endDetectKeyState && char == jsonColon && is.NotNil(kind):
+			if kind.IsSlice() {
+				state = detectSliceStart
+			} else {
+				start = i + 1
+				state = detectValue
+			}
+		case (state == detectValue || state == detectSliceValue) && quoteCount == 0 && char == jsonSpace && (kind.IsString() || kind.IsStringEnum()):
+			start++
+			continue
+		case (state == detectValue || state == detectSliceValue) && char == jsonDoubleQuotes && (kind.IsString() || kind.IsStringEnum()):
 			quoteCount++
+		case state == detectSliceValue:
+			isEndOfVal := (char == jsonComma || char == jsonEndSquareBracket) && deep == 0
+			switch {
+			case kind.IsModelSlice() && char == jsonStartBrace:
+				deep++
+			case kind.IsModelSlice() && char == jsonEndBrace:
+				deep--
+			case kind.IsNumberSlice() || kind.IsBoolSlice():
+				if char == jsonSpace {
+					continue
+				}
+				if isEndOfVal {
+					importer.Decode(key, j, bytes.TrimSpace(j.data[start:i]))
+					start = i + 1
+					if char == jsonEndSquareBracket {
+						state = startDetectKeyState
+					}
+				}
+			case kind.IsModelSlice() && deep == 0 && isEndOfVal:
+				importer.Decode(key, NewJson(j.data[start:i]), []byte{})
+				start = i + 1
+				if char == jsonEndSquareBracket {
+					state = startDetectKeyState
+				}
+			}
 		case state == detectValue:
-			kind := prop.GetProtoKind()
-			isEndOfVal := char == jsonComma || char == jsonEndBrace || char == jsonEndSquareBracket
+			isEndOfVal := (char == jsonComma || char == jsonEndBrace || char == jsonEndSquareBracket) && deep == 0
 			switch {
 			case (kind.IsNumber() || kind.IsBool() || kind.IsNotStringEnum()) && isEndOfVal:
 				importer.Decode(key, j, bytes.TrimSpace(j.data[start:i]))
-				prop = nil
 				state = startDetectKeyState
 			case (kind.IsString() || kind.IsStringEnum()) && quoteCount == 2 && isEndOfVal:
 				value := bytes.TrimSpace(j.data[start:i])
 				value = bytes.Trim(j.data[start:i], `"`)
 				importer.Decode(key, j, value)
-				prop = nil
 				quoteCount = 0
 				state = startDetectKeyState
 			case (kind.IsModel() && char == jsonStartBrace) || (kind.IsSlice() && char == jsonStartSquareBracket):
 				deep++
 			case (kind.IsModel() && char == jsonEndBrace) || (kind.IsSlice() && char == jsonEndSquareBracket):
 				deep--
-			case (kind.IsModel() || kind.IsSlice()) && deep == 0 && isEndOfVal:
+			case kind.IsModel() && deep == 0 && isEndOfVal:
 				importer.Decode(key, j, bytes.TrimSpace(j.data[start:i]))
-				prop = nil
 				state = startDetectKeyState
 			}
 		}

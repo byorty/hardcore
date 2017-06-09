@@ -8,6 +8,10 @@ type User struct {
 	AutoUser
 }
 
+func (u *User) HasPosts() bool {
+	return u.posts != nil
+}
+
 type Users []*User
 
 type UserDao struct {
