@@ -113,12 +113,14 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 			case (kind.IsNumber() || kind.IsBool() || kind.IsNotStringEnum()) && isEndOfVal:
 				importer.Decode(key, j, bytes.TrimSpace(j.data[start:i]))
 				state = startDetectKeyState
+				kind = types.ProtoUnknownKind
 			case (kind.IsString() || kind.IsStringEnum()) && quoteCount == 2 && isEndOfVal:
 				value := bytes.TrimSpace(j.data[start:i])
 				value = bytes.Trim(j.data[start:i], `"`)
 				importer.Decode(key, j, value)
 				quoteCount = 0
 				state = startDetectKeyState
+				kind = types.ProtoUnknownKind
 			case (kind.IsModel() && char == jsonStartBrace) || (kind.IsSlice() && char == jsonStartSquareBracket):
 				deep++
 			case (kind.IsModel() && char == jsonEndBrace) || (kind.IsSlice() && char == jsonEndSquareBracket):
@@ -126,6 +128,7 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 			case kind.IsModel() && deep == 0 && isEndOfVal:
 				importer.Decode(key, j, bytes.TrimSpace(j.data[start:i]))
 				state = startDetectKeyState
+				kind = types.ProtoUnknownKind
 			}
 		}
 	}

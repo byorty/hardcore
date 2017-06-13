@@ -14,7 +14,7 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-	router := mux.NewRouter()
+	router := mux.NewHttpRouter()
 	server := httptest.NewUnstartedServer(router)
 	server.Start()
 	serverUrl, _ := url.Parse(server.URL)
