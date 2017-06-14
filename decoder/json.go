@@ -50,7 +50,7 @@ type JsonImpl struct {
 func (j *JsonImpl) Decode(importer types.Importer) {
 	var key string
 	var start, quoteCount, deep int
-	var kind types.ProtoKind
+	kind := types.ProtoUnknownKind
 	state := startState
 	for i := 0; i < j.len; i++ {
 		char := j.data[i]
@@ -60,17 +60,21 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 		case (state == startState || state == detectSliceStart) && char == jsonStartSquareBracket:
 			state = detectSliceValue
 			start = i + 1
-		case state == startDetectKeyState && char == jsonDoubleQuotes:
+		case state == startDetectKeyState && (char == jsonStartBrace || char == jsonStartSquareBracket):
+			deep++
+		case state == startDetectKeyState && (char == jsonEndBrace || char == jsonEndSquareBracket):
+			deep--
+		case state == startDetectKeyState && char == jsonDoubleQuotes && deep == 0:
 			start = i + 1
 			state = endDetectKeyState
-		case state == endDetectKeyState && char == jsonDoubleQuotes:
+		case state == endDetectKeyState && char == jsonDoubleQuotes && deep == 0:
 			key = string(j.data[start:i])
 			if existsProp, ok := importer.Get(key); ok {
 				kind = existsProp.GetProtoKind()
 			} else {
 				state = startDetectKeyState
 			}
-		case state == endDetectKeyState && char == jsonColon && is.NotNil(kind):
+		case state == endDetectKeyState && char == jsonColon && quoteCount == 0 && kind != types.ProtoUnknownKind:
 			if kind.IsSlice() {
 				state = detectSliceStart
 			} else {
@@ -223,17 +227,17 @@ func unquoteBytes(s []byte) (t []byte, ok bool) {
 				w += utf8.EncodeRune(b[w:], rr)
 			}
 
-		// Quote, control characters are invalid.
+			// Quote, control characters are invalid.
 		case c == jsonDoubleQuotes, c < ' ':
 			return
 
-		// ASCII
+			// ASCII
 		case c < utf8.RuneSelf:
 			b[w] = c
 			r++
 			w++
 
-		// Coerce to well-formed UTF-8.
+			// Coerce to well-formed UTF-8.
 		default:
 			rr, size := utf8.DecodeRune(s[r:])
 			r += size
