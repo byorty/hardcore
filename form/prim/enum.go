@@ -174,3 +174,9 @@ func Uint64Enum(name string) types.Primitive {
 	p.init(name)
 	return p
 }
+
+func StringEnum(name string) types.Primitive {
+	p := new(EnumImpl)
+	p.init(name)
+	return p
+}
