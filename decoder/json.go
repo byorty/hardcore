@@ -84,7 +84,7 @@ func (j *JsonImpl) Decode(importer types.Importer) {
 		case (state == detectValue || state == detectSliceValue) && quoteCount == 0 && char == jsonSpace && (kind.IsString() || kind.IsStringEnum()):
 			start++
 			continue
-		case (state == detectValue || state == detectSliceValue) && char == jsonDoubleQuotes && (kind.IsString() || kind.IsStringEnum()):
+		case (state == detectValue || state == detectSliceValue) && j.data[i-1] != jsonBackslash && char == jsonDoubleQuotes && (kind.IsString() || kind.IsStringEnum()):
 			quoteCount++
 		case state == detectSliceValue:
 			isEndOfVal := (char == jsonComma || char == jsonEndSquareBracket) && deep == 0
