@@ -89,7 +89,7 @@ import ({{range .Imports}}
 
 var (
     {{.VarName}}Properties = []_{{$name}}PropertyImpl{ {{range .Properties}}
-		new{{$name}}Property("{{.GetAliasName}}", {{if .HasGetter}}types.{{.GetProtoKind}}{{else}}types.ProtoUnkownKind{{end}}, func({{$sourceVarName}} {{$sourceName}}, encoder types.Encoder) {
+		new{{$name}}Property("{{.GetAliasName}}", {{if .HasGetter}}types.{{.GetProtoKind}}{{else}}types.ProtoUnknownKind{{end}}, func({{$sourceVarName}} {{$sourceName}}, encoder types.Encoder) {
 			{{if .HasGetter}}encoder.{{.GetMethod}}({{$sourceVarName}}.{{.GetGetterName}}()){{end}}
 		}),{{end}}
 	}
