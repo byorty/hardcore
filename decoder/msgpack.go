@@ -21,11 +21,7 @@ func NewMsgpack(data []byte) types.Decoder {
 }
 
 func (m *MsgpackImpl) DecodeInt(value []byte) int {
-	if i, ok := m.decodeFixInt(value); ok {
-		return int(i)
-	} else {
-		return int(m.DecodeInt32(value))
-	}
+	return int(m.DecodeInt32(value))
 }
 
 func (m *MsgpackImpl) DecodeInt8(value []byte) int8 {
@@ -33,27 +29,15 @@ func (m *MsgpackImpl) DecodeInt8(value []byte) int8 {
 }
 
 func (m *MsgpackImpl) DecodeInt16(value []byte) int16 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return int16(i)
-	} else {
-		return int16(binary.BigEndian.Uint32(value))
-	}
+	return int16(binary.BigEndian.Uint32(value))
 }
 
 func (m *MsgpackImpl) DecodeInt32(value []byte) int32 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return int32(i)
-	} else {
-		return int32(binary.BigEndian.Uint32(value))
-	}
+	return int32(binary.BigEndian.Uint32(value))
 }
 
 func (m *MsgpackImpl) DecodeInt64(value []byte) int64 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return int64(i)
-	} else {
-		return int64(binary.BigEndian.Uint64(value))
-	}
+	return int64(binary.BigEndian.Uint64(value))
 }
 
 func (m *MsgpackImpl) decodeFixInt(value []byte) (byte, bool) {
@@ -66,11 +50,7 @@ func (m *MsgpackImpl) decodeFixInt(value []byte) (byte, bool) {
 }
 
 func (m *MsgpackImpl) DecodeUint(value []byte) uint {
-	if i, ok := m.decodeFixInt(value); ok {
-		return uint(i)
-	} else {
-		return uint(m.DecodeUint32(value))
-	}
+	return uint(m.DecodeUint32(value))
 }
 
 func (m *MsgpackImpl) DecodeUint8(value []byte) uint8 {
@@ -78,27 +58,15 @@ func (m *MsgpackImpl) DecodeUint8(value []byte) uint8 {
 }
 
 func (m *MsgpackImpl) DecodeUint16(value []byte) uint16 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return uint16(i)
-	} else {
-		return binary.BigEndian.Uint16(value)
-	}
+	return binary.BigEndian.Uint16(value)
 }
 
 func (m *MsgpackImpl) DecodeUint32(value []byte) uint32 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return uint32(i)
-	} else {
-		return binary.BigEndian.Uint32(value)
-	}
+	return binary.BigEndian.Uint32(value)
 }
 
 func (m *MsgpackImpl) DecodeUint64(value []byte) uint64 {
-	if i, ok := m.decodeFixInt(value); ok {
-		return uint64(i)
-	} else {
-		return binary.BigEndian.Uint64(value)
-	}
+	return binary.BigEndian.Uint64(value)
 }
 
 func (m *MsgpackImpl) DecodeFloat32(value []byte) float32 {
@@ -182,7 +150,7 @@ func (m *MsgpackImpl) decodeValue(importer types.Importer, char byte, i int, key
 		importer.Decode(key, m, buf)
 		return i + l, startDetectKeyState
 	} else if m.isPositiveFixInt(char) {
-		importer.Decode(key, m, []byte{char})
+		importer.Decode(key, m, []byte{0, 0, 0, char})
 		return i, startDetectKeyState
 	} else {
 		switch char {
@@ -206,24 +174,20 @@ func (m *MsgpackImpl) decodeValue(importer types.Importer, char byte, i int, key
 			return i + l, startDetectKeyState
 
 		case types.MsgpackInt8, types.MsgpackUint8:
-			buf, l := m.readNumber8(i)
-			importer.Decode(key, m, buf)
-			return i + l, startDetectKeyState
+			importer.Decode(key, m, m.data[i+1:])
+			return i + 1, startDetectKeyState
 
 		case types.MsgpackInt16, types.MsgpackUint16:
-			buf, l := m.readNumber16(i)
-			importer.Decode(key, m, buf)
-			return i + l, startDetectKeyState
+			importer.Decode(key, m, m.data[i+1:])
+			return i + 2, startDetectKeyState
 
 		case types.MsgpackInt32, types.MsgpackUint32, types.MsgpackFloat32:
-			buf, l := m.readNumber32(i)
-			importer.Decode(key, m, buf)
-			return i + l, startDetectKeyState
+			importer.Decode(key, m, m.data[i+1:])
+			return i + 4, startDetectKeyState
 
 		case types.MsgpackInt64, types.MsgpackUint64, types.MsgpackFloat64:
-			buf, l := m.readNumber64(i)
-			importer.Decode(key, m, buf)
-			return i + l, startDetectKeyState
+			importer.Decode(key, m, m.data[i+1:])
+			return i + 8, startDetectKeyState
 
 		default:
 			return i, startDetectKeyState
@@ -268,22 +232,6 @@ func (m *MsgpackImpl) readHeader32(i int) ([]byte, int) {
 	length := int(binary.BigEndian.Uint32(m.data[start : start+4]))
 	start += 4
 	return m.data[start : start+length], length + 4
-}
-
-func (m *MsgpackImpl) readNumber8(i int) ([]byte, int) {
-	return []byte{m.data[i+1]}, 1
-}
-
-func (m *MsgpackImpl) readNumber16(i int) ([]byte, int) {
-	return m.data[i+1 : i+2], 2
-}
-
-func (m *MsgpackImpl) readNumber32(i int) ([]byte, int) {
-	return m.data[i+1 : i+4], 4
-}
-
-func (m *MsgpackImpl) readNumber64(i int) ([]byte, int) {
-	return m.data[i+1 : i+8], 8
 }
 
 func (m *MsgpackImpl) lownibble(u8 uint8) int {
