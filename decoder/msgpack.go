@@ -29,15 +29,15 @@ func (m *MsgpackImpl) DecodeInt8(value []byte) int8 {
 }
 
 func (m *MsgpackImpl) DecodeInt16(value []byte) int16 {
-	return int16(binary.BigEndian.Uint32(value))
+	return int16(m.DecodeUint16(value))
 }
 
 func (m *MsgpackImpl) DecodeInt32(value []byte) int32 {
-	return int32(binary.BigEndian.Uint32(value))
+	return int32(m.DecodeUint32(value))
 }
 
 func (m *MsgpackImpl) DecodeInt64(value []byte) int64 {
-	return int64(binary.BigEndian.Uint64(value))
+	return int64(m.DecodeUint64(value))
 }
 
 func (m *MsgpackImpl) decodeFixInt(value []byte) (byte, bool) {
