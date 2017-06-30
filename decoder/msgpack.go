@@ -140,13 +140,13 @@ func (m *MsgpackImpl) decodeModel(importer types.Importer) {
 
 		case state == startState && m.char == types.MsgpackMap16:
 			i++
-			numEls = int(binary.BigEndian.Uint16(m.data[i: i+1]))
+			numEls = int(binary.BigEndian.Uint16(m.data[i : i+1]))
 			state = startDetectKeyState
 			i++
 
 		case state == startState && m.char == types.MsgpackMap32:
 			i++
-			numEls = int(binary.BigEndian.Uint16(m.data[i: i+3]))
+			numEls = int(binary.BigEndian.Uint16(m.data[i : i+3]))
 			i = i + 3
 			state = startDetectKeyState
 
@@ -226,7 +226,7 @@ func (m *MsgpackImpl) isFixRaw(char byte) bool {
 func (m *MsgpackImpl) readFixRaw(i int, char byte) ([]byte, int) {
 	length := m.getFixRawLen(char)
 	start := i + 1
-	return m.data[start: start+length], length
+	return m.data[start : start+length], length
 }
 
 func (m *MsgpackImpl) getFixRawLen(char byte) int {
@@ -241,21 +241,21 @@ func (m *MsgpackImpl) readHeader8(i int) ([]byte, int) {
 	start := i + 1
 	length := int(m.data[start])
 	start += 1
-	return m.data[start: start+length], length + 1
+	return m.data[start : start+length], length + 1
 }
 
 func (m *MsgpackImpl) readHeader16(i int) ([]byte, int) {
 	start := i + 1
-	length := int(binary.BigEndian.Uint16(m.data[start: start+2]))
+	length := int(binary.BigEndian.Uint16(m.data[start : start+2]))
 	start += 2
-	return m.data[start: start+length], length + 2
+	return m.data[start : start+length], length + 2
 }
 
 func (m *MsgpackImpl) readHeader32(i int) ([]byte, int) {
 	start := i + 1
-	length := int(binary.BigEndian.Uint32(m.data[start: start+4]))
+	length := int(binary.BigEndian.Uint32(m.data[start : start+4]))
 	start += 4
-	return m.data[start: start+length], length + 4
+	return m.data[start : start+length], length + 4
 }
 
 func (m *MsgpackImpl) lownibble(u8 uint8) int {
