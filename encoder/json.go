@@ -50,11 +50,11 @@ func (j *JsonImpl) EncodeModel(exporter types.Exporter) {
 		j.buf.WriteString(prop.GetName())
 		j.buf.Write(jsonQuotes)
 		j.buf.Write(jsonColon)
-		if prop.GetProtoKind() == types.ProtoStringKind {
+		if prop.GetProtoKind().IsString() || prop.GetProtoKind().IsStringEnum() {
 			j.buf.Write(jsonQuotes)
 		}
 		exporter.Export(x, j)
-		if prop.GetProtoKind() == types.ProtoStringKind {
+		if prop.GetProtoKind().IsString() || prop.GetProtoKind().IsStringEnum() {
 			j.buf.Write(jsonQuotes)
 		}
 		if x < lastIndex {
