@@ -50,7 +50,13 @@ func (j *JsonImpl) EncodeModel(exporter types.Exporter) {
 		j.buf.WriteString(prop.GetName())
 		j.buf.Write(jsonQuotes)
 		j.buf.Write(jsonColon)
+		if prop.GetProtoKind() == types.ProtoStringKind {
+			j.buf.Write(jsonQuotes)
+		}
 		exporter.Export(x, j)
+		if prop.GetProtoKind() == types.ProtoStringKind {
+			j.buf.Write(jsonQuotes)
+		}
 		if x < lastIndex {
 			j.buf.Write(jsonComma)
 		}
@@ -124,7 +130,6 @@ func (j *JsonImpl) encodeFloat(value float64, bitSize int) {
 }
 
 func (j *JsonImpl) EncodeString(value string) {
-	j.buf.Write(jsonQuotes)
 	start := 0
 	for x := 0; x < len(value); {
 		if y := value[x]; y < utf8.RuneSelf {
@@ -182,7 +187,6 @@ func (j *JsonImpl) EncodeString(value string) {
 	if start < len(value) {
 		j.buf.WriteString(value[start:])
 	}
-	j.buf.Write(jsonQuotes)
 }
 
 func (j *JsonImpl) EncodeBool(value bool) {
