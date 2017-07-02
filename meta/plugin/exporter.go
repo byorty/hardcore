@@ -4,6 +4,7 @@ import (
 	"github.com/byorty/hardcore/meta/types"
 	"github.com/byorty/hardcore/utils"
 	"strings"
+	"github.com/byorty/hardcore/meta/model"
 )
 
 var (
@@ -124,9 +125,19 @@ func (e *Exporter) Do(env types.Environment) {
 						}
 					} else if srcEntity.GetEntityKind() == types.EnumEntityKind {
 						for _, prop := range expEntity.GetProperties() {
-							if prop.GetName() == "id" || prop.GetName() == "name" {
+							switch prop.GetName() {
+							case "id":
+								enumEntity := srcEntity.(*model.Enum)
+								enumProp := new(model.Property)
+								enumProp.Kind = string(enumEntity.Kind)
 								prop.SetHasGetter(true)
+								prop.SetProperty(enumProp)
 								break
+							case "name":
+								enumProp := new(model.Property)
+								enumProp.Kind = "string"
+								prop.SetHasGetter(true)
+								prop.SetProperty(enumProp)
 							}
 						}
 					}
