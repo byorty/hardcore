@@ -4,7 +4,6 @@ import "time"
 
 type ExportableProperty interface {
 	ProtoEntity
-	HasName() bool
 	GetName() string
 }
 
