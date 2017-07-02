@@ -107,12 +107,14 @@ func (e *Exporter) Do(env types.Environment) {
 			for _, entity := range container.GetEntities() {
 				expEntity := entity.(types.ExporterEntity)
 
+				var sourceName string
 				srcEntity := config.GetEntity(expEntity.GetSource())
 				if srcEntity == nil {
 					logger.Error("source %s for %s not found", expEntity.GetSource(), expEntity.GetName())
 				} else {
 					expEntity.AddImport(srcEntity.GetContainer().GetImport())
 					if srcEntity.GetEntityKind() == types.ModelEntityKind {
+						sourceName = srcEntity.GetPointerFullName()
 						modelEntity := srcEntity.(types.ModelEntity)
 						for _, prop := range expEntity.GetProperties() {
 							for _, modelProp := range modelEntity.GetProperties() {
@@ -124,6 +126,7 @@ func (e *Exporter) Do(env types.Environment) {
 							}
 						}
 					} else if srcEntity.GetEntityKind() == types.EnumEntityKind {
+						sourceName = srcEntity.GetFullName()
 						for _, prop := range expEntity.GetProperties() {
 							switch prop.GetName() {
 							case "id":
@@ -171,7 +174,7 @@ func (e *Exporter) Do(env types.Environment) {
 					"ExportableVarName":  exportableVarName,
 					"ExportablesName":    srcEntity.GetFullMultipleName(),
 					"ExportablesVarName": utils.LowerFirst(srcEntity.GetMultipleName()),
-					"SourceName":         srcEntity.GetPointerFullName(),
+					"SourceName":         sourceName,
 					"SourceVarName":      utils.LowerFirst(srcEntity.GetName()),
 					"IsMutiple":          isMutiple,
 				}
