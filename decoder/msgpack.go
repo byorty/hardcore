@@ -101,11 +101,19 @@ func (m *MsgpackImpl) DecodeUint64(value []byte) uint64 {
 }
 
 func (m *MsgpackImpl) DecodeFloat32(value []byte) float32 {
-	return math.Float32frombits(m.DecodeUint32(value))
+	if m.isPositiveFixInt(m.char) {
+		return float32(value[0])
+	} else {
+		return math.Float32frombits(m.DecodeUint32(value))
+	}
 }
 
 func (m *MsgpackImpl) DecodeFloat64(value []byte) float64 {
-	return math.Float64frombits(m.DecodeUint64(value))
+	if m.isPositiveFixInt(m.char) {
+		return float64(value[0])
+	} else {
+		return math.Float64frombits(m.DecodeUint64(value))
+	}
 }
 
 func (m *MsgpackImpl) DecodeString(value []byte) string {
@@ -185,7 +193,8 @@ func (m *MsgpackImpl) decodeValue(importer types.Importer, i int, key string) (i
 		return i, startDetectKeyState
 	} else {
 		switch m.char {
-		case types.MsgpackNil, types.MsgpackTrue, types.MsgpackFalse:
+		//case types.MsgpackNil:
+		case types.MsgpackTrue, types.MsgpackFalse:
 			importer.Decode(key, m, []byte{m.char})
 			return i, startDetectKeyState
 
