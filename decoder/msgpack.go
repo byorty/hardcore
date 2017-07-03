@@ -22,17 +22,21 @@ func NewMsgpack(data []byte) types.Decoder {
 }
 
 func (m *MsgpackImpl) DecodeInt(value []byte) int {
-	switch m.char {
-	case types.MsgpackInt8:
+	if m.isPositiveFixInt(m.char) {
 		return int(value[0])
-	case types.MsgpackInt16:
-		return int(m.DecodeUint16(value))
-	case types.MsgpackInt32:
-		return int(m.DecodeUint32(value))
-	case types.MsgpackInt64:
-		return int(m.DecodeUint64(value))
-	default:
-		return 0
+	} else {
+		switch m.char {
+		case types.MsgpackInt8, types.MsgpackUint8:
+			return int(value[0])
+		case types.MsgpackInt16, types.MsgpackUint16:
+			return int(m.DecodeUint16(value))
+		case types.MsgpackInt32, types.MsgpackUint32:
+			return int(m.DecodeUint32(value))
+		case types.MsgpackInt64, types.MsgpackUint64:
+			return int(m.DecodeUint64(value))
+		default:
+			return 0
+		}
 	}
 }
 
@@ -62,17 +66,21 @@ func (m *MsgpackImpl) decodeFixInt(value []byte) (byte, bool) {
 }
 
 func (m *MsgpackImpl) DecodeUint(value []byte) uint {
-	switch m.char {
-	case types.MsgpackUint8:
+	if m.isPositiveFixInt(m.char) {
 		return uint(value[0])
-	case types.MsgpackUint16:
-		return uint(m.DecodeUint16(value))
-	case types.MsgpackUint32:
-		return uint(m.DecodeUint32(value))
-	case types.MsgpackUint64:
-		return uint(m.DecodeUint64(value))
-	default:
-		return 0
+	} else {
+		switch m.char {
+		case types.MsgpackUint8:
+			return uint(value[0])
+		case types.MsgpackUint16:
+			return uint(m.DecodeUint16(value))
+		case types.MsgpackUint32:
+			return uint(m.DecodeUint32(value))
+		case types.MsgpackUint64:
+			return uint(m.DecodeUint64(value))
+		default:
+			return 0
+		}
 	}
 }
 
@@ -173,7 +181,7 @@ func (m *MsgpackImpl) decodeValue(importer types.Importer, i int, key string) (i
 		importer.Decode(key, m, buf)
 		return i + l, startDetectKeyState
 	} else if m.isPositiveFixInt(m.char) {
-		importer.Decode(key, m, []byte{0, 0, 0, m.char})
+		importer.Decode(key, m, []byte{m.char})
 		return i, startDetectKeyState
 	} else {
 		switch m.char {
