@@ -33,8 +33,12 @@ func (i *IntImpl) ImportFromString(strValue string) bool {
 		}
 		return true
 	} else {
-		i.error = i.wrong
-		return false
+		if i.IsRequired() {
+			i.error = i.wrong
+			return false
+		} else {
+			return true
+		}
 	}
 }
 

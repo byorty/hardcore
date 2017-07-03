@@ -33,8 +33,12 @@ func (u *UintImpl) ImportFromString(strValue string) bool {
 		}
 		return true
 	} else {
-		u.error = u.wrong
-		return false
+		if u.IsRequired() {
+			u.error = u.wrong
+			return false
+		} else {
+			return true
+		}
 	}
 }
 

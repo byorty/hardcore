@@ -25,10 +25,15 @@ func (t *TmplImpl) Run() {
 	logger := scope.App().GetLogger()
 	dirname := filepath.Join(scope.App().GetRootPath(), scope.App().GetTmplPath())
 	filepath.Walk(dirname, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			tmplFiles = append(tmplFiles, path)
+		if err == nil {
+			if !info.IsDir() {
+				tmplFiles = append(tmplFiles, path)
+			}
+			return nil
+		} else {
+			scope.App().GetLogger().Error(err)
+			return err
 		}
-		return nil
 	})
 
 	tmplCache := make(map[string]*template.Template)

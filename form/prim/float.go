@@ -27,8 +27,12 @@ func (f *FloatImpl) ImportFromString(strValue string) bool {
 		}
 		return true
 	} else {
-		f.error = f.wrong
-		return false
+		if f.IsRequired() {
+			f.error = f.wrong
+			return false
+		} else {
+			return true
+		}
 	}
 }
 
