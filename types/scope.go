@@ -1,12 +1,12 @@
 package types
 
 import (
+	"context"
 	"crypto/tls"
 	"github.com/gorilla/websocket"
 	"html/template"
 	"net/http"
 	"time"
-	"context"
 )
 
 type ApplicationScope interface {

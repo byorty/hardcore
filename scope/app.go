@@ -1,6 +1,7 @@
 package scope
 
 import (
+	"context"
 	"crypto/tls"
 	"github.com/byorty/hardcore/is"
 	"github.com/byorty/hardcore/log"
@@ -9,7 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 	"html/template"
 	"time"
-	"context"
 )
 
 var app types.ApplicationScope
