@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	"context"
 )
 
 type ApplicationScope interface {
@@ -59,6 +60,7 @@ type ApplicationScope interface {
 	SetSecurityPort(int) ApplicationScope
 	GetUpgrader() *websocket.Upgrader
 	SetUpgrader(*websocket.Upgrader) ApplicationScope
+	GetContext() context.Context
 }
 
 type SessionScope interface {

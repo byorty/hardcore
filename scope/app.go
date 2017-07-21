@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"html/template"
 	"time"
+	"context"
 )
 
 var app types.ApplicationScope
@@ -40,6 +41,7 @@ type AppImpl struct {
 	privateKeyFilename string
 	tlsConfig          *tls.Config
 	upgrader           *websocket.Upgrader
+	ctx                context.Context
 }
 
 func New() types.ApplicationScope {
@@ -54,6 +56,7 @@ func New() types.ApplicationScope {
 		startDelim:   "{{",
 		endDelim:     "}}",
 		exit:         make(chan bool),
+		ctx:          context.Background(),
 	}
 }
 
@@ -283,6 +286,10 @@ func (a AppImpl) GetUpgrader() *websocket.Upgrader {
 func (a *AppImpl) SetUpgrader(upgrader *websocket.Upgrader) types.ApplicationScope {
 	a.upgrader = upgrader
 	return a
+}
+
+func (a AppImpl) GetContext() context.Context {
+	return a.ctx
 }
 
 func App() types.ApplicationScope {
